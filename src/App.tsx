@@ -9,6 +9,7 @@ import Riwayat from "./pages/Riwayat";
 import PreviewInvoice from "./pages/PreviewInvoice";
 import NotFound from "./pages/NotFound";
 
+// Invoice Generator App
 const queryClient = new QueryClient();
 
 const App = () => (
