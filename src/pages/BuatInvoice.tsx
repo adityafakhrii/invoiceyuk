@@ -1,19 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Upload, FileText, ArrowRight, Check } from 'lucide-react';
+import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { 
   Invoice, 
   InvoiceItem, 
-  generateInvoiceNumber 
+  generateInvoiceNumber,
+  getSavedBusinessNames,
+  saveBusinessName,
+  formatDate
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 const templates = [
   { id: 'simple', name: 'Simple Professional', description: 'Clean & minimalis' },
@@ -25,19 +32,60 @@ const BuatInvoice = () => {
   const navigate = useNavigate();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
 
+  // Business info
   const [businessName, setBusinessName] = useState('');
   const [businessLogo, setBusinessLogo] = useState<string>('');
+  const [savedNames, setSavedNames] = useState<string[]>([]);
+  const [showSavedNames, setShowSavedNames] = useState(false);
+
+  // Client info
   const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
+  const [clientContact, setClientContact] = useState('');
+  const [clientAddress, setClientAddress] = useState('');
+
+  // Invoice details
   const [invoiceNumber, setInvoiceNumber] = useState(generateInvoiceNumber());
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().split('T')[0]);
-  const [dueDate, setDueDate] = useState('');
+  const [invoiceDate, setInvoiceDate] = useState<Date>(new Date());
+  const [dueDate, setDueDate] = useState<Date | undefined>();
+
+  // Items
   const [items, setItems] = useState<InvoiceItem[]>([
     { id: '1', name: '', quantity: 1, price: 0 }
   ]);
   const [tax, setTax] = useState<string>('');
   const [notes, setNotes] = useState('');
+
+  // Payment info
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+
+  // Signature
+  const [signatureName, setSignatureName] = useState('');
+  const [signatureImage, setSignatureImage] = useState<string>('');
+
+  // Social media
+  const [whatsapp, setWhatsapp] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [email, setEmail] = useState('');
+
+  // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
+
+  useEffect(() => {
+    setSavedNames(getSavedBusinessNames());
+  }, []);
+
+  useEffect(() => {
+    const handleClear = () => setInvoiceDate(undefined as any);
+    const handleToday = () => setInvoiceDate(new Date());
+    document.addEventListener('calendar-clear', handleClear);
+    document.addEventListener('calendar-today', handleToday);
+    return () => {
+      document.removeEventListener('calendar-clear', handleClear);
+      document.removeEventListener('calendar-today', handleToday);
+    };
+  }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,6 +93,17 @@ const BuatInvoice = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setBusinessLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSignatureImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -71,6 +130,16 @@ const BuatInvoice = () => {
     );
   };
 
+  const handleBusinessNameChange = (value: string) => {
+    setBusinessName(value);
+    setShowSavedNames(value.length > 0 && savedNames.some(n => n.toLowerCase().includes(value.toLowerCase())));
+  };
+
+  const selectBusinessName = (name: string) => {
+    setBusinessName(name);
+    setShowSavedNames(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -95,18 +164,35 @@ const BuatInvoice = () => {
       return;
     }
 
+    // Save business name for future use
+    saveBusinessName(businessName);
+    setSavedNames(getSavedBusinessNames());
+
     const invoice: Invoice = {
       id: Date.now().toString(),
       invoiceNumber,
       businessName,
       businessLogo: businessLogo || undefined,
       clientName,
-      clientEmail: clientEmail || undefined,
-      invoiceDate,
-      dueDate,
+      clientContact: clientContact || undefined,
+      clientAddress: clientAddress || undefined,
+      invoiceDate: invoiceDate.toISOString().split('T')[0],
+      dueDate: dueDate.toISOString().split('T')[0],
       items: validItems,
       tax: tax ? parseFloat(tax) : undefined,
       notes: notes || undefined,
+      paymentInfo: paymentMethod ? {
+        method: paymentMethod,
+        accountName: accountName,
+        accountNumber: accountNumber,
+      } : undefined,
+      signatureName: signatureName || undefined,
+      signatureImage: signatureImage || undefined,
+      socialMedia: (whatsapp || instagram || email) ? {
+        whatsapp: whatsapp || undefined,
+        instagram: instagram || undefined,
+        email: email || undefined,
+      } : undefined,
       status: 'unpaid',
       template: selectedTemplate,
       createdAt: new Date().toISOString(),
@@ -143,14 +229,32 @@ const BuatInvoice = () => {
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-2 relative">
                     <Label htmlFor="businessName">Nama Bisnis / Brand *</Label>
                     <Input
                       id="businessName"
                       placeholder="Contoh: Studio Kreatif Gue"
                       value={businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
+                      onChange={(e) => handleBusinessNameChange(e.target.value)}
+                      onFocus={() => setShowSavedNames(savedNames.length > 0)}
+                      onBlur={() => setTimeout(() => setShowSavedNames(false), 200)}
                     />
+                    {showSavedNames && savedNames.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                        {savedNames
+                          .filter(n => n.toLowerCase().includes(businessName.toLowerCase()))
+                          .map((name, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => selectBusinessName(name)}
+                              className="w-full text-left px-4 py-2 hover:bg-muted text-sm text-foreground"
+                            >
+                              {name}
+                            </button>
+                          ))}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -200,13 +304,23 @@ const BuatInvoice = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="clientEmail">Email Klien (Opsional)</Label>
+                    <Label htmlFor="clientContact">Kontak (Opsional)</Label>
                     <Input
-                      id="clientEmail"
-                      type="email"
-                      placeholder="klien@email.com"
-                      value={clientEmail}
-                      onChange={(e) => setClientEmail(e.target.value)}
+                      id="clientContact"
+                      placeholder="Contoh: 08123456789"
+                      value={clientContact}
+                      onChange={(e) => setClientContact(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="clientAddress">Alamat (Opsional)</Label>
+                    <Textarea
+                      id="clientAddress"
+                      placeholder="Contoh: Jl. Sudirman No. 123, Jakarta"
+                      value={clientAddress}
+                      onChange={(e) => setClientAddress(e.target.value)}
+                      rows={2}
                     />
                   </div>
                 </div>
@@ -227,23 +341,55 @@ const BuatInvoice = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="invoiceDate">Tanggal Invoice</Label>
-                    <Input
-                      id="invoiceDate"
-                      type="date"
-                      value={invoiceDate}
-                      onChange={(e) => setInvoiceDate(e.target.value)}
-                    />
+                    <Label>Tanggal Invoice</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !invoiceDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {invoiceDate ? format(invoiceDate, "dd/MM/yyyy") : <span>Pilih tanggal</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={invoiceDate}
+                          onSelect={(date) => date && setInvoiceDate(date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="dueDate">Due Date *</Label>
-                    <Input
-                      id="dueDate"
-                      type="date"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                    />
+                    <Label>Due Date *</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dueDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pilih tanggal</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dueDate}
+                          onSelect={setDueDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </section>
@@ -325,11 +471,141 @@ const BuatInvoice = () => {
                 </div>
               </section>
 
+              {/* Payment Info */}
+              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+                <h2 className="text-lg font-bold text-foreground mb-6">Informasi Pembayaran</h2>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentMethod">Metode Pembayaran</Label>
+                    <Input
+                      id="paymentMethod"
+                      placeholder="Contoh: GoPay, BCA, Mandiri"
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accountName">Nama Pemilik Rekening</Label>
+                    <Input
+                      id="accountName"
+                      placeholder="Contoh: Aditya Fakhri"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accountNumber">Nomor Rekening / Akun</Label>
+                    <Input
+                      id="accountNumber"
+                      placeholder="Contoh: 0895 3241 05731"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* Signature */}
+              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+                <h2 className="text-lg font-bold text-foreground mb-6">Tanda Tangan</h2>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="signatureName">Nama Penanda Tangan</Label>
+                    <Input
+                      id="signatureName"
+                      placeholder="Contoh: Aditya Fakhri Riansyah"
+                      value={signatureName}
+                      onChange={(e) => setSignatureName(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Tanda Tangan (Opsional)</Label>
+                    <div className="flex items-center gap-4">
+                      {signatureImage ? (
+                        <div className="relative w-32 h-16 rounded-lg overflow-hidden border border-border bg-white">
+                          <img src={signatureImage} alt="Signature" className="w-full h-full object-contain" />
+                          <button
+                            type="button"
+                            onClick={() => setSignatureImage('')}
+                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex items-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed border-border hover:border-accent cursor-pointer transition-colors">
+                          <Upload className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Upload TTD</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleSignatureUpload}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Social Media */}
+              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+                <h2 className="text-lg font-bold text-foreground mb-6">Sosial Media (Footer Invoice)</h2>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp" className="flex items-center gap-2">
+                      <Phone className="w-4 h-4" />
+                      WhatsApp
+                    </Label>
+                    <Input
+                      id="whatsapp"
+                      placeholder="+62 812 3456 7890"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="instagram" className="flex items-center gap-2">
+                      <Instagram className="w-4 h-4" />
+                      Instagram
+                    </Label>
+                    <Input
+                      id="instagram"
+                      placeholder="@username"
+                      value={instagram}
+                      onChange={(e) => setInstagram(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="flex items-center gap-2">
+                      <Mail className="w-4 h-4" />
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="email@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </section>
+
               {/* Notes */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Catatan Tambahan</h2>
                 <Textarea
-                  placeholder="Contoh: Pembayaran via transfer ke rekening BCA..."
+                  placeholder="Contoh: Harap transfer sebelum due date..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={4}

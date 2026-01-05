@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Printer, FileText } from 'lucide-react';
+import { ArrowLeft, Download, Printer, Phone, Instagram, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
@@ -133,7 +133,7 @@ const PreviewInvoice = () => {
 
             {/* Invoice Preview */}
             <div className="bg-card rounded-2xl shadow-elegant overflow-hidden print:shadow-none print:rounded-none">
-              <div ref={invoiceRef} className="bg-card">
+              <div ref={invoiceRef} className="bg-white">
                 {/* Header */}
                 <div className={cn('p-8 md:p-10', styles.headerBg)}>
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
@@ -144,17 +144,7 @@ const PreviewInvoice = () => {
                           alt="Logo"
                           className="w-16 h-16 rounded-lg object-cover"
                         />
-                      ) : (
-                        <div className={cn(
-                          "w-16 h-16 rounded-lg flex items-center justify-center",
-                          invoice.template === 'simple' ? 'bg-gradient-primary' : 'bg-primary-foreground/20'
-                        )}>
-                          <FileText className={cn(
-                            "w-8 h-8",
-                            invoice.template === 'simple' ? 'text-primary-foreground' : 'text-primary-foreground'
-                          )} />
-                        </div>
-                      )}
+                      ) : null}
                       <div>
                         <h2 className={cn('text-xl font-bold', styles.headerText)}>
                           {invoice.businessName}
@@ -180,8 +170,11 @@ const PreviewInvoice = () => {
                     <div>
                       <p className="text-sm text-muted-foreground mb-2">Tagihan Untuk:</p>
                       <p className="font-semibold text-lg text-foreground">{invoice.clientName}</p>
-                      {invoice.clientEmail && (
-                        <p className="text-muted-foreground">{invoice.clientEmail}</p>
+                      {invoice.clientContact && (
+                        <p className="text-muted-foreground">{invoice.clientContact}</p>
+                      )}
+                      {invoice.clientAddress && (
+                        <p className="text-muted-foreground whitespace-pre-wrap">{invoice.clientAddress}</p>
                       )}
                     </div>
                     <div className="md:text-right">
@@ -236,29 +229,63 @@ const PreviewInvoice = () => {
                     </table>
                   </div>
 
-                  {/* Totals */}
-                  <div className="flex justify-end mb-8">
-                    <div className="w-full md:w-72 space-y-2">
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Subtotal</span>
-                        <span>{formatCurrency(subtotal)}</span>
+                  {/* Payment Info + Totals */}
+                  <div className="grid md:grid-cols-2 gap-8 mb-8">
+                    {/* Payment Info */}
+                    {invoice.paymentInfo && (
+                      <div>
+                        <p className="text-sm font-bold text-foreground mb-3 uppercase">Pembayaran:</p>
+                        <p className="font-medium text-foreground">{invoice.paymentInfo.method}</p>
+                        <p className="text-muted-foreground">{invoice.paymentInfo.accountName}</p>
+                        <p className="text-muted-foreground">{invoice.paymentInfo.accountNumber}</p>
                       </div>
-                      {invoice.tax && (
+                    )}
+
+                    {/* Totals */}
+                    <div className={cn(!invoice.paymentInfo && 'md:col-start-2')}>
+                      <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
-                          <span>Pajak ({invoice.tax}%)</span>
+                          <span>SUB TOTAL :</span>
+                          <span>{formatCurrency(subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>PAJAK :</span>
                           <span>{formatCurrency(taxAmount)}</span>
                         </div>
-                      )}
-                      <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
-                        <span>Total</span>
-                        <span className={styles.accentColor}>{formatCurrency(total)}</span>
+                        <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
+                          <span>TOTAL :</span>
+                          <span className={styles.accentColor}>{formatCurrency(total)}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  {/* Signature */}
+                  {(invoice.signatureName || invoice.signatureImage) && (
+                    <div className="flex justify-end mb-8">
+                      <div className="text-center">
+                        {invoice.signatureImage ? (
+                          <img
+                            src={invoice.signatureImage}
+                            alt="Signature"
+                            className="h-16 mx-auto mb-2 object-contain"
+                          />
+                        ) : (
+                          <div className="h-16 mb-2" />
+                        )}
+                        {invoice.signatureName && (
+                          <>
+                            <div className="border-b border-foreground w-48 mb-1" />
+                            <p className="text-sm font-medium text-foreground">{invoice.signatureName}</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Notes */}
                   {invoice.notes && (
-                    <div className="border-t border-border pt-6">
+                    <div className="border-t border-border pt-6 mb-6">
                       <p className="text-sm font-semibold text-foreground mb-2">Catatan:</p>
                       <p className="text-muted-foreground whitespace-pre-wrap">{invoice.notes}</p>
                     </div>
@@ -267,9 +294,33 @@ const PreviewInvoice = () => {
 
                 {/* Footer */}
                 <div className="px-8 md:px-10 py-6 bg-muted/30 border-t border-border">
-                  <p className="text-center text-sm text-muted-foreground">
-                    Terima kasih atas kepercayaan Anda 🙏
+                  <p className="text-center text-sm font-semibold text-foreground mb-4 uppercase">
+                    Terimakasih Atas Kerja Sama Anda
                   </p>
+                  
+                  {/* Social Media */}
+                  {invoice.socialMedia && (
+                    <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+                      {invoice.socialMedia.whatsapp && (
+                        <div className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          <span>{invoice.socialMedia.whatsapp}</span>
+                        </div>
+                      )}
+                      {invoice.socialMedia.instagram && (
+                        <div className="flex items-center gap-1">
+                          <Instagram className="w-3 h-3" />
+                          <span>{invoice.socialMedia.instagram}</span>
+                        </div>
+                      )}
+                      {invoice.socialMedia.email && (
+                        <div className="flex items-center gap-1">
+                          <Mail className="w-3 h-3" />
+                          <span>{invoice.socialMedia.email}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
