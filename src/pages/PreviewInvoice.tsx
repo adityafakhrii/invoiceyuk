@@ -268,39 +268,9 @@ const PreviewInvoice = () => {
                     </div>
                   </div>
 
-                  {/* Signature */}
-                  {(invoice.signatureName || invoice.signatureImage) && (
-                    <div className="flex justify-end mb-8">
-                      <div className="text-center">
-                        {invoice.signatureImage ? (
-                          <img
-                            src={invoice.signatureImage}
-                            alt="Signature"
-                            className="h-16 mx-auto mb-2 object-contain"
-                          />
-                        ) : invoice.signatureName ? (
-                          <p 
-                            className="text-3xl mb-2 h-16 flex items-end justify-center"
-                            style={getSignatureFontStyle()}
-                          >
-                            {invoice.signatureName}
-                          </p>
-                        ) : (
-                          <div className="h-16 mb-2" />
-                        )}
-                        {invoice.signatureName && (
-                          <>
-                            <div className="border-b border-foreground w-48 mb-1" />
-                            <p className="text-sm font-medium text-foreground">{invoice.signatureName}</p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Notes */}
                   {invoice.notes && (
-                    <div className="border-t border-border pt-6 mb-6">
+                    <div className="border-t border-border pt-6">
                       <p className="text-sm font-semibold text-foreground mb-2">Catatan:</p>
                       <p className="text-muted-foreground whitespace-pre-wrap">{invoice.notes}</p>
                     </div>
@@ -309,6 +279,28 @@ const PreviewInvoice = () => {
 
                 {/* Footer */}
                 <div className="px-8 md:px-10 py-6 bg-muted/30 border-t border-border">
+                  {/* Signature - centered above thank you text */}
+                  {(invoice.signatureName || invoice.signatureImage) && (
+                    <div className="flex justify-center mb-6">
+                      <div className="text-center">
+                        {invoice.signatureImage ? (
+                          <img
+                            src={invoice.signatureImage}
+                            alt="Signature"
+                            className="h-16 mx-auto object-contain"
+                          />
+                        ) : invoice.signatureName ? (
+                          <p 
+                            className="text-3xl h-16 flex items-end justify-center"
+                            style={getSignatureFontStyle()}
+                          >
+                            {invoice.signatureName}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
+
                   <p className="text-center text-sm font-semibold text-foreground mb-4 uppercase">
                     Terimakasih Atas Kerja Sama Anda
                   </p>
