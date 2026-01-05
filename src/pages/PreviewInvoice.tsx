@@ -154,17 +154,17 @@ const PreviewInvoice = () => {
                         />
                       ) : null}
                       <div>
-                        <h2 className={cn('text-xl font-bold', styles.headerText)}>
+                        <h2 className={cn('text-2xl md:text-3xl font-bold', styles.headerText)}>
                           {invoice.businessName}
                         </h2>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <p className={cn('text-sm font-medium opacity-80', styles.headerText)}>
+                      <p className={cn('text-xs font-medium opacity-80', styles.headerText)}>
                         INVOICE
                       </p>
-                      <p className={cn('text-2xl font-bold', styles.headerText)}>
+                      <p className={cn('text-base font-semibold', styles.headerText)}>
                         {invoice.invoiceNumber}
                       </p>
                     </div>
@@ -307,24 +307,24 @@ const PreviewInvoice = () => {
                   
                   {/* Social Media */}
                   {invoice.socialMedia && (invoice.socialMedia.whatsapp || invoice.socialMedia.instagram || invoice.socialMedia.email) && (
-                    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '24px', fontSize: '14px', color: '#64748b' }}>
                       {invoice.socialMedia.whatsapp && (
-                        <div className="flex items-center gap-1.5">
-                          <Phone className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <Phone style={{ width: '14px', height: '14px', flexShrink: 0 }} />
                           <span>{invoice.socialMedia.whatsapp}</span>
-                        </div>
+                        </span>
                       )}
                       {invoice.socialMedia.instagram && (
-                        <div className="flex items-center gap-1.5">
-                          <Instagram className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <Instagram style={{ width: '14px', height: '14px', flexShrink: 0 }} />
                           <span>{invoice.socialMedia.instagram}</span>
-                        </div>
+                        </span>
                       )}
                       {invoice.socialMedia.email && (
-                        <div className="flex items-center gap-1.5">
-                          <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <Mail style={{ width: '14px', height: '14px', flexShrink: 0 }} />
                           <span>{invoice.socialMedia.email}</span>
-                        </div>
+                        </span>
                       )}
                     </div>
                   )}
