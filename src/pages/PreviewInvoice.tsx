@@ -254,7 +254,7 @@ const PreviewInvoice = () => {
                         </div>
                         <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
                           <span>TOTAL :</span>
-                          <span className={styles.accentColor}>{formatCurrency(total)}</span>
+                          <span>{formatCurrency(total)}</span>
                         </div>
                       </div>
                     </div>
@@ -299,23 +299,23 @@ const PreviewInvoice = () => {
                   </p>
                   
                   {/* Social Media */}
-                  {invoice.socialMedia && (
-                    <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+                  {invoice.socialMedia && (invoice.socialMedia.whatsapp || invoice.socialMedia.instagram || invoice.socialMedia.email) && (
+                    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
                       {invoice.socialMedia.whatsapp && (
-                        <div className="flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                           <span>{invoice.socialMedia.whatsapp}</span>
                         </div>
                       )}
                       {invoice.socialMedia.instagram && (
-                        <div className="flex items-center gap-1">
-                          <Instagram className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5">
+                          <Instagram className="w-3.5 h-3.5 flex-shrink-0" />
                           <span>{invoice.socialMedia.instagram}</span>
                         </div>
                       )}
                       {invoice.socialMedia.email && (
-                        <div className="flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5">
+                          <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                           <span>{invoice.socialMedia.email}</span>
                         </div>
                       )}

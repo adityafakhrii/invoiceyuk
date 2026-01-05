@@ -175,6 +175,17 @@ const Riwayat = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          {invoice.status === 'unpaid' && (
+                            <Button 
+                              variant="default" 
+                              size="sm"
+                              onClick={() => handleToggleStatus(invoice.id)}
+                              className="bg-accent hover:bg-accent/90"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                              <span className="hidden sm:inline">Paid</span>
+                            </Button>
+                          )}
                           <Link to={`/preview/${invoice.id}`}>
                             <Button variant="outline-light" size="sm">
                               <Eye className="w-4 h-4" />
