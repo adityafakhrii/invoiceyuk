@@ -1,0 +1,112 @@
+import { cn } from '@/lib/utils';
+
+interface TemplatePreviewProps {
+  template: 'simple' | 'elegant' | 'corporate';
+  isSelected?: boolean;
+}
+
+const TemplatePreview = ({ template, isSelected }: TemplatePreviewProps) => {
+  const getStyles = () => {
+    switch (template) {
+      case 'elegant':
+        return {
+          header: 'bg-gradient-to-r from-slate-800 to-slate-600',
+          headerText: 'text-white',
+          accent: 'bg-emerald-500',
+        };
+      case 'corporate':
+        return {
+          header: 'bg-slate-900',
+          headerText: 'text-white',
+          accent: 'bg-slate-700',
+        };
+      default:
+        return {
+          header: 'bg-gray-100',
+          headerText: 'text-gray-800',
+          accent: 'bg-emerald-500',
+        };
+    }
+  };
+
+  const styles = getStyles();
+
+  return (
+    <div className={cn(
+      "w-full aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all",
+      isSelected ? "border-accent shadow-glow" : "border-border"
+    )}>
+      <div className="w-full h-full bg-white flex flex-col">
+        {/* Header */}
+        <div className={cn("p-2", styles.header)}>
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-white/30" />
+              <div className={cn("w-8 h-1.5 rounded", styles.headerText, "bg-current opacity-80")} />
+            </div>
+            <div className="text-right">
+              <div className={cn("w-6 h-1 rounded bg-current opacity-60", styles.headerText)} />
+              <div className={cn("w-10 h-1.5 rounded mt-0.5 bg-current", styles.headerText)} />
+            </div>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 p-2 space-y-2">
+          {/* Info */}
+          <div className="flex justify-between">
+            <div className="space-y-0.5">
+              <div className="w-8 h-1 bg-gray-200 rounded" />
+              <div className="w-12 h-1.5 bg-gray-300 rounded" />
+            </div>
+            <div className="space-y-0.5 text-right">
+              <div className="w-6 h-1 bg-gray-200 rounded ml-auto" />
+              <div className="w-10 h-1 bg-gray-200 rounded ml-auto" />
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="border border-gray-200 rounded">
+            <div className="bg-gray-100 p-1">
+              <div className="flex justify-between">
+                <div className="w-8 h-1 bg-gray-300 rounded" />
+                <div className="w-6 h-1 bg-gray-300 rounded" />
+              </div>
+            </div>
+            <div className="p-1 space-y-1">
+              <div className="flex justify-between">
+                <div className="w-10 h-1 bg-gray-200 rounded" />
+                <div className="w-6 h-1 bg-gray-200 rounded" />
+              </div>
+              <div className="flex justify-between">
+                <div className="w-8 h-1 bg-gray-200 rounded" />
+                <div className="w-5 h-1 bg-gray-200 rounded" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total */}
+          <div className="flex justify-end pt-1">
+            <div className="space-y-0.5">
+              <div className="flex justify-between gap-2">
+                <div className="w-6 h-1 bg-gray-200 rounded" />
+                <div className="w-8 h-1 bg-gray-200 rounded" />
+              </div>
+              <div className="flex justify-between gap-2 pt-0.5 border-t border-gray-200">
+                <div className="w-6 h-1.5 bg-gray-400 rounded" />
+                <div className={cn("w-10 h-1.5 rounded", styles.accent)} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-gray-50 p-1.5 border-t border-gray-200">
+          <div className="w-16 h-1 bg-gray-300 rounded mx-auto" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TemplatePreview;
