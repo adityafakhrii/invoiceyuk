@@ -275,13 +275,10 @@ const PreviewInvoice = () => {
                       <p className="text-muted-foreground whitespace-pre-wrap">{invoice.notes}</p>
                     </div>
                   )}
-                </div>
 
-                {/* Footer */}
-                <div className="px-8 md:px-10 py-6 bg-muted/30 border-t border-border">
-                  {/* Signature - centered above thank you text */}
+                  {/* Signature - centered above footer */}
                   {(invoice.signatureName || invoice.signatureImage) && (
-                    <div className="flex justify-center mb-6">
+                    <div className="flex justify-center pt-8 pb-4">
                       <div className="text-center">
                         {invoice.signatureImage ? (
                           <img
@@ -300,7 +297,10 @@ const PreviewInvoice = () => {
                       </div>
                     </div>
                   )}
+                </div>
 
+                {/* Footer */}
+                <div className="px-8 md:px-10 py-6 bg-muted/30 border-t border-border">
                   <p className="text-center text-sm font-semibold text-foreground mb-4 uppercase">
                     Terimakasih Atas Kerja Sama Anda
                   </p>
