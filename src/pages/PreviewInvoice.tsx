@@ -122,9 +122,9 @@ const PreviewInvoice = () => {
           <div className="max-w-4xl mx-auto">
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 print:hidden">
-              <Button variant="ghost" onClick={() => navigate(-1)}>
+              <Button variant="ghost" onClick={() => navigate('/riwayat')}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Kembali
+                Selesai
               </Button>
 
               <div className="flex gap-3">
@@ -256,10 +256,12 @@ const PreviewInvoice = () => {
                           <span>SUB TOTAL :</span>
                           <span>{formatCurrency(subtotal)}</span>
                         </div>
-                        <div className="flex justify-between text-muted-foreground">
-                          <span>PAJAK :</span>
-                          <span>{formatCurrency(taxAmount)}</span>
-                        </div>
+                        {invoice.tax && invoice.tax > 0 && (
+                          <div className="flex justify-between text-muted-foreground">
+                            <span>PAJAK ({invoice.tax}%) :</span>
+                            <span>{formatCurrency(taxAmount)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
                           <span>TOTAL :</span>
                           <span>{formatCurrency(total)}</span>
