@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
@@ -186,6 +186,12 @@ const Riwayat = () => {
                               <span className="hidden sm:inline">Paid</span>
                             </Button>
                           )}
+                          <Link to={`/edit-invoice/${invoice.id}`}>
+                            <Button variant="outline-light" size="sm">
+                              <Pencil className="w-4 h-4" />
+                              <span className="hidden sm:inline">Edit</span>
+                            </Button>
+                          </Link>
                           <Link to={`/preview/${invoice.id}`}>
                             <Button variant="outline-light" size="sm">
                               <Eye className="w-4 h-4" />

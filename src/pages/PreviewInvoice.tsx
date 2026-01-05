@@ -9,6 +9,7 @@ import {
   formatDate,
   calculateSubtotal,
   calculateTotal,
+  signatureFonts,
 } from '@/lib/invoice';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -104,6 +105,13 @@ const PreviewInvoice = () => {
   };
 
   const styles = getTemplateStyles();
+
+  // Get signature font style
+  const getSignatureFontStyle = () => {
+    if (invoice.signatureImage) return {};
+    const font = signatureFonts.find(f => f.id === invoice.signatureFont) || signatureFonts[0];
+    return { fontFamily: font.fontFamily };
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -270,6 +278,13 @@ const PreviewInvoice = () => {
                             alt="Signature"
                             className="h-16 mx-auto mb-2 object-contain"
                           />
+                        ) : invoice.signatureName ? (
+                          <p 
+                            className="text-3xl mb-2 h-16 flex items-end justify-center"
+                            style={getSignatureFontStyle()}
+                          >
+                            {invoice.signatureName}
+                          </p>
                         ) : (
                           <div className="h-16 mb-2" />
                         )}

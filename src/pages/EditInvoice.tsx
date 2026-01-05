@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Upload, FileText, ArrowRight, CalendarIcon, Phone, Instagram, Mail } from 'lucide-react';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,11 +13,10 @@ import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { 
   Invoice, 
-  InvoiceItem, 
-  generateInvoiceNumber,
+  InvoiceItem,
+  SignatureFont,
   getSavedBusinessNames,
   saveBusinessName,
-  SignatureFont,
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -29,9 +28,12 @@ const templates = [
   { id: 'corporate', name: 'Corporate Clean', description: 'Formal & profesional' },
 ] as const;
 
-const BuatInvoice = () => {
+const EditInvoice = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const addInvoice = useInvoiceStore((state) => state.addInvoice);
+  const { getInvoice, updateInvoice } = useInvoiceStore();
+  
+  const invoice = id ? getInvoice(id) : undefined;
 
   // Business info
   const [businessName, setBusinessName] = useState('');
@@ -45,14 +47,12 @@ const BuatInvoice = () => {
   const [clientAddress, setClientAddress] = useState('');
 
   // Invoice details
-  const [invoiceNumber, setInvoiceNumber] = useState(generateInvoiceNumber());
+  const [invoiceNumber, setInvoiceNumber] = useState('');
   const [invoiceDate, setInvoiceDate] = useState<Date>(new Date());
   const [dueDate, setDueDate] = useState<Date | undefined>();
 
   // Items
-  const [items, setItems] = useState<InvoiceItem[]>([
-    { id: '1', name: '', quantity: 1, price: 0 }
-  ]);
+  const [items, setItems] = useState<InvoiceItem[]>([{ id: '1', name: '', quantity: 1, price: 0 }]);
   const [tax, setTax] = useState<string>('');
   const [notes, setNotes] = useState('');
 
@@ -73,6 +73,33 @@ const BuatInvoice = () => {
 
   // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
+
+  // Load invoice data
+  useEffect(() => {
+    if (invoice) {
+      setBusinessName(invoice.businessName);
+      setBusinessLogo(invoice.businessLogo || '');
+      setClientName(invoice.clientName);
+      setClientContact(invoice.clientContact || '');
+      setClientAddress(invoice.clientAddress || '');
+      setInvoiceNumber(invoice.invoiceNumber);
+      setInvoiceDate(new Date(invoice.invoiceDate));
+      setDueDate(new Date(invoice.dueDate));
+      setItems(invoice.items);
+      setTax(invoice.tax?.toString() || '');
+      setNotes(invoice.notes || '');
+      setPaymentMethod(invoice.paymentInfo?.method || '');
+      setAccountName(invoice.paymentInfo?.accountName || '');
+      setAccountNumber(invoice.paymentInfo?.accountNumber || '');
+      setSignatureName(invoice.signatureName || '');
+      setSignatureImage(invoice.signatureImage || '');
+      setSignatureFont(invoice.signatureFont || 'dancing');
+      setWhatsapp(invoice.socialMedia?.whatsapp || '');
+      setInstagram(invoice.socialMedia?.instagram || '');
+      setEmail(invoice.socialMedia?.email || '');
+      setSelectedTemplate(invoice.template);
+    }
+  }, [invoice]);
 
   useEffect(() => {
     setSavedNames(getSavedBusinessNames());
@@ -96,16 +123,16 @@ const BuatInvoice = () => {
     ]);
   };
 
-  const removeItem = (id: string) => {
+  const removeItem = (itemId: string) => {
     if (items.length > 1) {
-      setItems(items.filter((item) => item.id !== id));
+      setItems(items.filter((item) => item.id !== itemId));
     }
   };
 
-  const updateItem = (id: string, field: keyof InvoiceItem, value: string | number) => {
+  const updateItem = (itemId: string, field: keyof InvoiceItem, value: string | number) => {
     setItems(
       items.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
+        item.id === itemId ? { ...item, [field]: value } : item
       )
     );
   };
@@ -122,6 +149,8 @@ const BuatInvoice = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!id || !invoice) return;
 
     if (!businessName.trim()) {
       toast({ title: 'Oops!', description: 'Nama bisnis wajib diisi ya', variant: 'destructive' });
@@ -148,8 +177,7 @@ const BuatInvoice = () => {
     saveBusinessName(businessName);
     setSavedNames(getSavedBusinessNames());
 
-    const invoice: Invoice = {
-      id: Date.now().toString(),
+    const updatedInvoice: Partial<Invoice> = {
       invoiceNumber,
       businessName,
       businessLogo: businessLogo || undefined,
@@ -174,15 +202,28 @@ const BuatInvoice = () => {
         instagram: instagram || undefined,
         email: email || undefined,
       } : undefined,
-      status: 'unpaid',
       template: selectedTemplate,
-      createdAt: new Date().toISOString(),
     };
 
-    addInvoice(invoice);
-    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat' });
-    navigate(`/preview/${invoice.id}`);
+    updateInvoice(id, updatedInvoice);
+    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
+    navigate(`/preview/${id}`);
   };
+
+  if (!invoice) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-32 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">Invoice Tidak Ditemukan</h1>
+          <p className="text-muted-foreground mb-6">Invoice yang lo cari gak ada nih</p>
+          <Link to="/riwayat">
+            <Button variant="hero">Ke Riwayat Invoice</Button>
+          </Link>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -194,10 +235,10 @@ const BuatInvoice = () => {
             {/* Header */}
             <div className="text-center mb-10">
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Buat Invoice Baru
+                Edit Invoice
               </h1>
               <p className="text-muted-foreground">
-                Isi form di bawah, nanti invoice kece siap dikirim ke klien 🚀
+                Update invoice {invoice.invoiceNumber} ✏️
               </p>
             </div>
 
@@ -588,7 +629,7 @@ const BuatInvoice = () => {
               {/* Submit Button */}
               <div className="flex justify-center pt-4">
                 <Button type="submit" variant="hero" size="xl">
-                  Buat Invoice
+                  Update Invoice
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -600,4 +641,4 @@ const BuatInvoice = () => {
   );
 };
 
-export default BuatInvoice;
+export default EditInvoice;

@@ -17,6 +17,8 @@ export interface SocialMedia {
   email?: string;
 }
 
+export type SignatureFont = 'dancing' | 'vibes' | 'pacifico';
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -33,11 +35,18 @@ export interface Invoice {
   paymentInfo?: PaymentInfo;
   signatureName?: string;
   signatureImage?: string;
+  signatureFont?: SignatureFont;
   socialMedia?: SocialMedia;
   status: 'paid' | 'unpaid';
   template: 'simple' | 'elegant' | 'corporate';
   createdAt: string;
 }
+
+export const signatureFonts: { id: SignatureFont; name: string; fontFamily: string }[] = [
+  { id: 'dancing', name: 'Dancing Script', fontFamily: "'Dancing Script', cursive" },
+  { id: 'vibes', name: 'Great Vibes', fontFamily: "'Great Vibes', cursive" },
+  { id: 'pacifico', name: 'Pacifico', fontFamily: "'Pacifico', cursive" },
+];
 
 export const calculateSubtotal = (items: InvoiceItem[]): number => {
   return items.reduce((sum, item) => sum + item.quantity * item.price, 0);
