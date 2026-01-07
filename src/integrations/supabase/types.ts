@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      pin_reset_requests: {
+        Row: {
+          id: string
+          processed_at: string | null
+          processed_by: string | null
+          requested_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pin_reset_requests_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "pin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pin_reset_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "pin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pin_users: {
         Row: {
           created_at: string
@@ -83,6 +125,15 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      reject_pin_reset: {
+        Args: { _admin_id: string; _request_id: string }
+        Returns: boolean
+      }
+      request_pin_reset: { Args: { _user_id: string }; Returns: string }
+      reset_user_pin: {
+        Args: { _admin_id: string; _new_pin: string; _user_id: string }
         Returns: boolean
       }
       verify_pin: {

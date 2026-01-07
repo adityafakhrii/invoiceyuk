@@ -7,7 +7,13 @@ import {
   Users, 
   Shield, 
   User,
-  Loader2
+  Loader2,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Check,
+  X,
+  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +45,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuthStore, AppRole } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -51,6 +58,13 @@ interface PinUser {
   created_at: string;
 }
 
+interface PinResetRequest {
+  id: string;
+  user_id: string;
+  user_name: string;
+  requested_at: string;
+}
+
 const userSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
   pin: z.string().length(6, 'PIN harus 6 digit').regex(/^\d+$/, 'PIN harus angka'),
@@ -61,9 +75,19 @@ const AdminUsers = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
   const [users, setUsers] = useState<PinUser[]>([]);
+  const [resetRequests, setResetRequests] = useState<PinResetRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPin, setShowPin] = useState(false);
+
+  // Reset PIN dialog
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+  const [resetUserId, setResetUserId] = useState<string>('');
+  const [resetUserName, setResetUserName] = useState<string>('');
+  const [resetNewPin, setResetNewPin] = useState('');
+  const [showResetPin, setShowResetPin] = useState(false);
+  const [resetPinError, setResetPinError] = useState('');
 
   // Form state
   const [newName, setNewName] = useState('');
@@ -86,6 +110,7 @@ const AdminUsers = () => {
       return;
     }
     fetchUsers();
+    fetchResetRequests();
   }, [isAuthenticated, user, navigate]);
 
   const fetchUsers = async () => {
@@ -123,6 +148,39 @@ const AdminUsers = () => {
     }
   };
 
+  const fetchResetRequests = async () => {
+    try {
+      const { data: requests, error } = await supabase
+        .from('pin_reset_requests')
+        .select('id, user_id, requested_at')
+        .eq('status', 'pending')
+        .order('requested_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Get user names for requests
+      const requestsWithNames: PinResetRequest[] = [];
+      for (const req of requests || []) {
+        const { data: userData } = await supabase
+          .from('pin_users')
+          .select('name')
+          .eq('id', req.user_id)
+          .single();
+        
+        requestsWithNames.push({
+          id: req.id,
+          user_id: req.user_id,
+          user_name: userData?.name || 'Unknown',
+          requested_at: req.requested_at,
+        });
+      }
+
+      setResetRequests(requestsWithNames);
+    } catch (error) {
+      console.error('Error fetching reset requests:', error);
+    }
+  };
+
   const handleAddUser = async () => {
     setErrors({});
     
@@ -156,6 +214,7 @@ const AdminUsers = () => {
       setNewName('');
       setNewPin('');
       setNewRole('user');
+      setShowPin(false);
       setIsDialogOpen(false);
       fetchUsers();
     } catch (error) {
@@ -192,6 +251,67 @@ const AdminUsers = () => {
       toast({ 
         title: 'Error', 
         description: 'Gagal menghapus user', 
+        variant: 'destructive' 
+      });
+    }
+  };
+
+  const openResetDialog = (userId: string, userName: string) => {
+    setResetUserId(userId);
+    setResetUserName(userName);
+    setResetNewPin('');
+    setShowResetPin(false);
+    setResetPinError('');
+    setIsResetDialogOpen(true);
+  };
+
+  const handleResetPin = async () => {
+    if (resetNewPin.length !== 6 || !/^\d+$/.test(resetNewPin)) {
+      setResetPinError('PIN harus 6 digit angka');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.rpc('reset_user_pin', {
+        _user_id: resetUserId,
+        _new_pin: resetNewPin,
+        _admin_id: user?.id,
+      });
+
+      if (error) throw error;
+
+      toast({ title: 'Berhasil!', description: `PIN ${resetUserName} berhasil direset` });
+      setIsResetDialogOpen(false);
+      fetchResetRequests();
+    } catch (error) {
+      console.error('Error resetting PIN:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Gagal mereset PIN', 
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRejectReset = async (requestId: string, userName: string) => {
+    try {
+      const { error } = await supabase.rpc('reject_pin_reset', {
+        _request_id: requestId,
+        _admin_id: user?.id,
+      });
+
+      if (error) throw error;
+
+      toast({ title: 'Ditolak', description: `Permintaan reset PIN ${userName} ditolak` });
+      fetchResetRequests();
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast({ 
+        title: 'Error', 
+        description: 'Gagal menolak permintaan', 
         variant: 'destructive' 
       });
     }
@@ -260,14 +380,24 @@ const AdminUsers = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="pin">PIN (6 digit)</Label>
-                    <Input
-                      id="pin"
-                      type="password"
-                      maxLength={6}
-                      placeholder="******"
-                      value={newPin}
-                      onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="pin"
+                        type={showPin ? 'text' : 'password'}
+                        maxLength={6}
+                        placeholder="******"
+                        value={newPin}
+                        onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPin(!showPin)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                     {errors.pin && (
                       <p className="text-xs text-destructive">{errors.pin}</p>
                     )}
@@ -298,72 +428,212 @@ const AdminUsers = () => {
             </Dialog>
           </div>
 
-          {/* Users List */}
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-20">
-              <Users className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">Belum ada user</h3>
-              <p className="text-muted-foreground">Klik tombol "Tambah User" untuk menambahkan user baru</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {users.map((u) => (
-                <div 
-                  key={u.id} 
-                  className="bg-card rounded-xl border border-border p-4 shadow-card flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      u.role === 'admin' ? 'bg-accent/10' : 'bg-primary/10'
-                    }`}>
-                      {u.role === 'admin' ? (
-                        <Shield className="w-5 h-5 text-accent" />
-                      ) : (
-                        <User className="w-5 h-5 text-primary" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">{u.name}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{u.role}</p>
-                    </div>
-                  </div>
+          {/* Tabs */}
+          <Tabs defaultValue="users" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="users" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Daftar User
+              </TabsTrigger>
+              <TabsTrigger value="requests" className="flex items-center gap-2 relative">
+                <KeyRound className="w-4 h-4" />
+                Reset PIN
+                {resetRequests.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
+                    {resetRequests.length}
+                  </span>
+                )}
+              </TabsTrigger>
+            </TabsList>
 
-                  {u.id !== user?.id && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Hapus User?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Apakah kamu yakin ingin menghapus user "{u.name}"? Aksi ini tidak bisa dibatalkan.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Batal</AlertDialogCancel>
-                          <AlertDialogAction 
-                            onClick={() => handleDeleteUser(u.id, u.name)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Hapus
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
+            {/* Users Tab */}
+            <TabsContent value="users">
+              {isLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                 </div>
-              ))}
-            </div>
-          )}
+              ) : users.length === 0 ? (
+                <div className="text-center py-20">
+                  <Users className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">Belum ada user</h3>
+                  <p className="text-muted-foreground">Klik tombol "Tambah User" untuk menambahkan user baru</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {users.map((u) => (
+                    <div 
+                      key={u.id} 
+                      className="bg-card rounded-xl border border-border p-4 shadow-card flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          u.role === 'admin' ? 'bg-accent/10' : 'bg-primary/10'
+                        }`}>
+                          {u.role === 'admin' ? (
+                            <Shield className="w-5 h-5 text-accent" />
+                          ) : (
+                            <User className="w-5 h-5 text-primary" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">{u.name}</p>
+                          <p className="text-xs text-muted-foreground capitalize">{u.role}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {u.id !== user?.id && (
+                          <>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-muted-foreground hover:text-accent"
+                              onClick={() => openResetDialog(u.id, u.name)}
+                            >
+                              <KeyRound className="w-4 h-4" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Hapus User?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Apakah kamu yakin ingin menghapus user "{u.name}"? Aksi ini tidak bisa dibatalkan.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDeleteUser(u.id, u.name)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Hapus
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Reset Requests Tab */}
+            <TabsContent value="requests">
+              {resetRequests.length === 0 ? (
+                <div className="text-center py-20">
+                  <AlertCircle className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">Tidak ada permintaan</h3>
+                  <p className="text-muted-foreground">Belum ada user yang mengajukan reset PIN</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {resetRequests.map((req) => (
+                    <div 
+                      key={req.id} 
+                      className="bg-card rounded-xl border border-border p-4 shadow-card flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                          <KeyRound className="w-5 h-5 text-yellow-500" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">{req.user_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(req.requested_at).toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-green-500 hover:text-green-600 hover:bg-green-500/10"
+                          onClick={() => openResetDialog(req.user_id, req.user_name)}
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleRejectReset(req.id, req.user_name)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
+
+      {/* Reset PIN Dialog */}
+      <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset PIN</DialogTitle>
+            <DialogDescription>
+              Masukkan PIN baru untuk {resetUserName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="resetPin">PIN Baru (6 digit)</Label>
+              <div className="relative">
+                <Input
+                  id="resetPin"
+                  type={showResetPin ? 'text' : 'password'}
+                  maxLength={6}
+                  placeholder="******"
+                  value={resetNewPin}
+                  onChange={(e) => {
+                    setResetNewPin(e.target.value.replace(/\D/g, ''));
+                    setResetPinError('');
+                  }}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowResetPin(!showResetPin)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showResetPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {resetPinError && (
+                <p className="text-xs text-destructive">{resetPinError}</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsResetDialogOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleResetPin} disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Reset PIN
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
