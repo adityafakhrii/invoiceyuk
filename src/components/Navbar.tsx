@@ -27,10 +27,10 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 group">
+          <Link to="/dashboard" className="flex items-center gap-3 group">
             <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 rounded-lg" />
-            <div className="flex flex-col">
-              <span className="font-bold text-xl text-primary">InvoiceYuk</span>
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-xl tracking-tight" style={{ color: 'hsl(var(--primary))' }}>InvoiceYuk</span>
               <span className="text-xs text-muted-foreground hidden sm:block">Bikin Invoice, Gampang Banget!</span>
             </div>
           </Link>
