@@ -1,0 +1,180 @@
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  FileText, 
+  Plus, 
+  History, 
+  Users, 
+  LogOut,
+  LayoutDashboard,
+  ArrowRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/authStore';
+import { useInvoiceStore } from '@/store/invoiceStore';
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const invoices = useInvoiceStore((state) => state.invoices);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/pin-login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const unpaidCount = invoices.filter(inv => inv.status === 'unpaid').length;
+  const paidCount = invoices.filter(inv => inv.status === 'paid').length;
+
+  const menuItems = [
+    {
+      icon: Plus,
+      title: 'Buat Invoice Baru',
+      description: 'Buat invoice profesional dalam hitungan detik',
+      to: '/buat-invoice',
+      color: 'bg-accent/10 text-accent',
+    },
+    {
+      icon: History,
+      title: 'Riwayat Invoice',
+      description: 'Lihat semua invoice yang sudah dibuat',
+      to: '/riwayat',
+      color: 'bg-primary/10 text-primary',
+    },
+  ];
+
+  if (user?.role === 'admin') {
+    menuItems.push({
+      icon: Users,
+      title: 'Kelola User',
+      description: 'Tambah dan kelola user dengan PIN',
+      to: '/admin/users',
+      color: 'bg-cyan-500/10 text-cyan-500',
+    });
+  }
+
+  if (!isAuthenticated) return null;
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="bg-card border-b border-border sticky top-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center">
+                <FileText className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <div>
+                <span className="font-bold text-foreground">
+                  Invoice<span className="text-accent">Kece</span>
+                </span>
+                <p className="text-xs text-muted-foreground">Dashboard</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={handleLogout}>
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            Selamat datang, {user?.name}! 👋
+          </h1>
+          <p className="text-muted-foreground">
+            Kelola semua invoice bisnis kamu dari sini
+          </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{invoices.length}</p>
+                <p className="text-xs text-muted-foreground">Total Invoice</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                <LayoutDashboard className="w-5 h-5 text-yellow-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{unpaidCount}</p>
+                <p className="text-xs text-muted-foreground">Belum Dibayar</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-green-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{paidCount}</p>
+                <p className="text-xs text-muted-foreground">Sudah Dibayar</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Users className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground capitalize">{user?.role}</p>
+                <p className="text-xs text-muted-foreground">Role Kamu</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {menuItems.map((item) => (
+            <Link key={item.to} to={item.to}>
+              <div className="bg-card rounded-2xl border border-border p-6 shadow-card hover:shadow-elegant hover:border-accent/30 transition-all duration-300 h-full group">
+                <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                  {item.title}
+                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </h3>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;
