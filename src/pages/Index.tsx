@@ -7,10 +7,11 @@ import {
   ArrowRight,
   Sparkles,
   Shield,
-  Clock
+  Clock,
+  LogIn
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/Navbar';
+import LandingNavbar from '@/components/LandingNavbar';
 
 const Index = () => {
   const features = [
@@ -47,14 +48,14 @@ const Index = () => {
   ];
 
   const steps = [
-    { number: "01", title: "Isi Data", description: "Masukin info bisnis & klien lo" },
-    { number: "02", title: "Pilih Template", description: "Pilih gaya invoice yang kece" },
-    { number: "03", title: "Download", description: "Export PDF & kirim ke klien" },
+    { number: "01", title: "Login Dashboard", description: "Masuk pakai PIN yang udah dikasih admin" },
+    { number: "02", title: "Isi Data Invoice", description: "Masukin info bisnis, klien, dan item" },
+    { number: "03", title: "Download PDF", description: "Export PDF & kirim ke klien" },
   ];
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <LandingNavbar />
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
@@ -86,17 +87,17 @@ const Index = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-300">
-              <Link to="/buat-invoice">
+              <Link to="/pin-login">
                 <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                  Bikin Invoice Sekarang
-                  <ArrowRight className="w-5 h-5" />
+                  <LogIn className="w-5 h-5" />
+                  Masuk Dashboard
                 </Button>
               </Link>
-              <Link to="/riwayat">
+              <a href="#features">
                 <Button variant="outline-light" size="xl" className="w-full sm:w-auto">
-                  Lihat Riwayat
+                  Lihat Fitur
                 </Button>
-              </Link>
+              </a>
             </div>
 
             {/* Social Proof */}
@@ -107,7 +108,7 @@ const Index = () => {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-accent" />
-                Tanpa Registrasi
+                Akses dengan PIN
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-accent" />
@@ -180,14 +181,14 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-secondary/30">
+      <section id="how-it-works" className="py-20 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Simpel Banget, Tinggal 3 Langkah
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Karena bikin invoice gak perlu ribet. Cukup isi, pilih, download. Selesai!
+              Karena bikin invoice gak perlu ribet. Cukup login, isi, download. Selesai!
             </p>
           </div>
 
@@ -214,7 +215,7 @@ const Index = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20">
+      <section id="features" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -258,10 +259,10 @@ const Index = () => {
               <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">
                 Invoice elegan = pembayaran makin niat. Mulai sekarang, gratis!
               </p>
-              <Link to="/buat-invoice">
+              <Link to="/pin-login">
                 <Button variant="accent" size="xl">
-                  Bikin Invoice Sekarang
-                  <ArrowRight className="w-5 h-5" />
+                  <LogIn className="w-5 h-5" />
+                  Masuk Dashboard
                 </Button>
               </Link>
             </div>
@@ -280,6 +281,11 @@ const Index = () => {
               <span className="font-bold text-foreground">
                 Invoice<span className="text-accent">Kece</span>
               </span>
+            </div>
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <a href="#features" className="hover:text-foreground transition-colors">Fitur</a>
+              <a href="#how-it-works" className="hover:text-foreground transition-colors">Cara Kerja</a>
+              <Link to="/pin-login" className="hover:text-foreground transition-colors">Dashboard</Link>
             </div>
             <p className="text-sm text-muted-foreground">
               © 2024 InvoiceKece. Bikin invoice gak pake ribet.

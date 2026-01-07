@@ -8,6 +8,9 @@ import BuatInvoice from "./pages/BuatInvoice";
 import EditInvoice from "./pages/EditInvoice";
 import Riwayat from "./pages/Riwayat";
 import PreviewInvoice from "./pages/PreviewInvoice";
+import PinLogin from "./pages/PinLogin";
+import Dashboard from "./pages/Dashboard";
+import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
 // Invoice Generator App
@@ -21,6 +24,9 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/pin-login" element={<PinLogin />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/buat-invoice" element={<BuatInvoice />} />
           <Route path="/edit-invoice/:id" element={<EditInvoice />} />
           <Route path="/riwayat" element={<Riwayat />} />

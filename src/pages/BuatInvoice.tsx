@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
+import { useAuthStore } from '@/store/authStore';
 import { 
   Invoice, 
   InvoiceItem, 
@@ -32,6 +33,7 @@ const templates = [
 const BuatInvoice = () => {
   const navigate = useNavigate();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
+  const { isAuthenticated } = useAuthStore();
 
   // Business info
   const [businessName, setBusinessName] = useState('');
@@ -75,8 +77,12 @@ const BuatInvoice = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/pin-login');
+      return;
+    }
     setSavedNames(getSavedBusinessNames());
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
