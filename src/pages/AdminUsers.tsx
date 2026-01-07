@@ -158,6 +158,7 @@ const AdminUsers = () => {
         _username: newUsername.trim().toLowerCase(),
         _pin: newPin,
         _role: newRole,
+        _caller_id: user?.id,
       });
 
       if (error) {
@@ -199,7 +200,7 @@ const AdminUsers = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('delete_pin_user', { _user_id: userId });
+      const { error } = await supabase.rpc('delete_pin_user', { _user_id: userId, _caller_id: user?.id });
 
       if (error) throw error;
 
