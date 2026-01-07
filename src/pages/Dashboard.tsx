@@ -1,20 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Receipt, 
-  FileEdit, 
-  History, 
-  Users, 
-  LogOut,
-  LayoutDashboard,
-  ArrowRight,
-  User,
-  Loader2
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/store/authStore';
-import { useInvoiceStore } from '@/store/invoiceStore';
-import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Receipt, FileEdit, History, Users, LogOut, LayoutDashboard, ArrowRight, User, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
+import { useInvoiceStore } from "@/store/invoiceStore";
+import logoInvoiceYuk from "@/assets/logo-invoiceyuk.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -24,7 +14,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/pin-login');
+      navigate("/pin-login");
       return;
     }
     if (user && !hasFetched) {
@@ -36,50 +26,50 @@ const Dashboard = () => {
   const handleLogout = () => {
     clearInvoices();
     logout();
-    navigate('/');
+    navigate("/");
   };
 
-  const unpaidCount = invoices.filter(inv => inv.status === 'unpaid').length;
-  const paidCount = invoices.filter(inv => inv.status === 'paid').length;
+  const unpaidCount = invoices.filter((inv) => inv.status === "unpaid").length;
+  const paidCount = invoices.filter((inv) => inv.status === "paid").length;
 
   const menuItems = [
     {
       icon: Receipt,
-      title: 'Buat Invoice',
-      description: 'Buat invoice profesional dalam hitungan detik',
-      to: '/buat-invoice',
-      color: 'bg-accent/10 text-accent',
+      title: "Buat Invoice",
+      description: "Buat invoice profesional dalam hitungan detik",
+      to: "/buat-invoice",
+      color: "bg-accent/10 text-accent",
     },
     {
       icon: FileEdit,
-      title: 'Buat Quotation',
-      description: 'Buat penawaran harga untuk klien potensial',
-      to: '/buat-quotation',
-      color: 'bg-purple-500/10 text-purple-500',
+      title: "Buat Quotation",
+      description: "Buat penawaran harga untuk klien potensial",
+      to: "/buat-quotation",
+      color: "bg-purple-500/10 text-purple-500",
     },
     {
       icon: History,
-      title: 'Riwayat Dokumen',
-      description: 'Lihat semua invoice & quotation yang sudah dibuat',
-      to: '/riwayat',
-      color: 'bg-primary/10 text-primary',
+      title: "Riwayat Dokumen",
+      description: "Lihat semua invoice & quotation yang sudah dibuat",
+      to: "/riwayat",
+      color: "bg-primary/10 text-primary",
     },
     {
       icon: User,
-      title: 'Pengaturan Profil',
-      description: 'Ubah nama, username, dan PIN',
-      to: '/profile',
-      color: 'bg-green-500/10 text-green-500',
+      title: "Pengaturan Profil",
+      description: "Ubah nama, username, dan PIN",
+      to: "/profile",
+      color: "bg-green-500/10 text-green-500",
     },
   ];
 
-  if (user?.role === 'admin') {
+  if (user?.role === "admin") {
     menuItems.push({
       icon: Users,
-      title: 'Kelola User',
-      description: 'Tambah dan kelola user',
-      to: '/admin/users',
-      color: 'bg-cyan-500/10 text-cyan-500',
+      title: "Kelola User",
+      description: "Tambah dan kelola user",
+      to: "/admin/users",
+      color: "bg-cyan-500/10 text-cyan-500",
     });
   }
 
@@ -94,6 +84,9 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-auto" />
               <div>
+                <span className="font-bold text-xl tracking-tight" style={{ color: "hsl(var(--primary))" }}>
+                  InvoiceYuk
+                </span>
                 <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
               </div>
             </div>
@@ -115,12 +108,8 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Selamat datang, {user?.name}! 👋
-          </h1>
-          <p className="text-muted-foreground">
-            Kelola semua invoice bisnis kamu dari sini
-          </p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Selamat datang, {user?.name}! 👋</h1>
+          <p className="text-muted-foreground">Kelola semua invoice bisnis kamu dari sini</p>
         </div>
 
         {/* Stats Cards */}
@@ -191,7 +180,9 @@ const Dashboard = () => {
           {menuItems.map((item) => (
             <Link key={item.to} to={item.to}>
               <div className="bg-card rounded-2xl border border-border p-6 shadow-card hover:shadow-elegant hover:border-accent/30 transition-all duration-300 h-full group">
-                <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+                >
                   <item.icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
