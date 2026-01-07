@@ -33,7 +33,7 @@ const templates = [
 const BuatInvoice = () => {
   const navigate = useNavigate();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
-  const { isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
 
   // Business info
   const [businessName, setBusinessName] = useState('');
@@ -185,7 +185,9 @@ const BuatInvoice = () => {
       createdAt: new Date().toISOString(),
     };
 
-    addInvoice(invoice);
+    if (user) {
+      addInvoice(invoice, user.id);
+    }
     toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat' });
     navigate(`/preview/${invoice.id}`);
   };

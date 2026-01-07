@@ -10,6 +10,7 @@ import Riwayat from "./pages/Riwayat";
 import PreviewInvoice from "./pages/PreviewInvoice";
 import PinLogin from "./pages/PinLogin";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/pin-login" element={<PinLogin />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/buat-invoice" element={<BuatInvoice />} />
           <Route path="/edit-invoice/:id" element={<EditInvoice />} />

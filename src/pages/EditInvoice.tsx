@@ -11,6 +11,7 @@ import Navbar from '@/components/Navbar';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
+import { useAuthStore } from '@/store/authStore';
 import { 
   Invoice, 
   InvoiceItem,
@@ -205,7 +206,9 @@ const EditInvoice = () => {
       template: selectedTemplate,
     };
 
-    updateInvoice(id, updatedInvoice);
+    if (user) {
+      updateInvoice(id, updatedInvoice, user.id);
+    }
     toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
     navigate(`/preview/${id}`);
   };

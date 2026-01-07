@@ -6,6 +6,7 @@ export type AppRole = 'admin' | 'user';
 interface AuthUser {
   id: string;
   name: string;
+  username: string;
   role: AppRole;
 }
 
@@ -14,6 +15,7 @@ interface AuthState {
   isAuthenticated: boolean;
   login: (user: AuthUser) => void;
   logout: () => void;
+  updateUser: (updates: Partial<AuthUser>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,6 +25,9 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       login: (user) => set({ user, isAuthenticated: true }),
       logout: () => set({ user: null, isAuthenticated: false }),
+      updateUser: (updates) => set((state) => ({
+        user: state.user ? { ...state.user, ...updates } : null
+      })),
     }),
     {
       name: 'auth-storage',

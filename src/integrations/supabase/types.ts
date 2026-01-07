@@ -14,41 +14,82 @@ export type Database = {
   }
   public: {
     Tables: {
-      pin_reset_requests: {
+      invoices: {
         Row: {
+          business_logo: string | null
+          business_name: string
+          client_address: string | null
+          client_contact: string | null
+          client_name: string
+          created_at: string
+          due_date: string
           id: string
-          processed_at: string | null
-          processed_by: string | null
-          requested_at: string
+          invoice_date: string
+          invoice_number: string
+          items: Json
+          notes: string | null
+          payment_info: Json | null
+          signature_font: string | null
+          signature_image: string | null
+          signature_name: string | null
+          social_media: Json | null
           status: string
+          tax: number | null
+          template: string
+          updated_at: string
           user_id: string
         }
         Insert: {
+          business_logo?: string | null
+          business_name: string
+          client_address?: string | null
+          client_contact?: string | null
+          client_name: string
+          created_at?: string
+          due_date: string
           id?: string
-          processed_at?: string | null
-          processed_by?: string | null
-          requested_at?: string
+          invoice_date: string
+          invoice_number: string
+          items: Json
+          notes?: string | null
+          payment_info?: Json | null
+          signature_font?: string | null
+          signature_image?: string | null
+          signature_name?: string | null
+          social_media?: Json | null
           status?: string
+          tax?: number | null
+          template?: string
+          updated_at?: string
           user_id: string
         }
         Update: {
+          business_logo?: string | null
+          business_name?: string
+          client_address?: string | null
+          client_contact?: string | null
+          client_name?: string
+          created_at?: string
+          due_date?: string
           id?: string
-          processed_at?: string | null
-          processed_by?: string | null
-          requested_at?: string
+          invoice_date?: string
+          invoice_number?: string
+          items?: Json
+          notes?: string | null
+          payment_info?: Json | null
+          signature_font?: string | null
+          signature_image?: string | null
+          signature_name?: string | null
+          social_media?: Json | null
           status?: string
+          tax?: number | null
+          template?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "pin_reset_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "pin_users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pin_reset_requests_user_id_fkey"
+            foreignKeyName: "invoices_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "pin_users"
@@ -63,6 +104,7 @@ export type Database = {
           name: string
           pin: string
           updated_at: string
+          username: string
         }
         Insert: {
           created_at?: string
@@ -70,6 +112,7 @@ export type Database = {
           name: string
           pin: string
           updated_at?: string
+          username: string
         }
         Update: {
           created_at?: string
@@ -77,6 +120,7 @@ export type Database = {
           name?: string
           pin?: string
           updated_at?: string
+          username?: string
         }
         Relationships: []
       }
@@ -111,13 +155,55 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_pin_user: {
+      change_user_pin: {
+        Args: { _new_pin: string; _old_pin: string; _user_id: string }
+        Returns: boolean
+      }
+      create_invoice: {
         Args: {
-          _name: string
-          _pin: string
-          _role?: Database["public"]["Enums"]["app_role"]
+          _business_logo: string
+          _business_name: string
+          _client_address: string
+          _client_contact: string
+          _client_name: string
+          _due_date: string
+          _invoice_date: string
+          _invoice_number: string
+          _items: Json
+          _notes: string
+          _payment_info: Json
+          _signature_font: string
+          _signature_image: string
+          _signature_name: string
+          _social_media: Json
+          _status: string
+          _tax: number
+          _template: string
+          _user_id: string
         }
         Returns: string
+      }
+      create_pin_user:
+        | {
+            Args: {
+              _name: string
+              _pin: string
+              _role?: Database["public"]["Enums"]["app_role"]
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _name: string
+              _pin: string
+              _role?: Database["public"]["Enums"]["app_role"]
+              _username: string
+            }
+            Returns: string
+          }
+      delete_invoice: {
+        Args: { _invoice_id: string; _user_id: string }
+        Returns: boolean
       }
       delete_pin_user: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
@@ -127,23 +213,52 @@ export type Database = {
         }
         Returns: boolean
       }
-      reject_pin_reset: {
-        Args: { _admin_id: string; _request_id: string }
+      update_invoice: {
+        Args: {
+          _business_logo: string
+          _business_name: string
+          _client_address: string
+          _client_contact: string
+          _client_name: string
+          _due_date: string
+          _invoice_date: string
+          _invoice_id: string
+          _invoice_number: string
+          _items: Json
+          _notes: string
+          _payment_info: Json
+          _signature_font: string
+          _signature_image: string
+          _signature_name: string
+          _social_media: Json
+          _status: string
+          _tax: number
+          _template: string
+          _user_id: string
+        }
         Returns: boolean
       }
-      request_pin_reset: { Args: { _user_id: string }; Returns: string }
-      reset_user_pin: {
-        Args: { _admin_id: string; _new_pin: string; _user_id: string }
+      update_user_profile: {
+        Args: { _name: string; _user_id: string; _username: string }
         Returns: boolean
       }
-      verify_pin: {
-        Args: { _pin: string }
-        Returns: {
-          user_id: string
-          user_name: string
-          user_role: Database["public"]["Enums"]["app_role"]
-        }[]
-      }
+      verify_pin:
+        | {
+            Args: { _pin: string }
+            Returns: {
+              user_id: string
+              user_name: string
+              user_role: Database["public"]["Enums"]["app_role"]
+            }[]
+          }
+        | {
+            Args: { _pin: string; _username: string }
+            Returns: {
+              user_id: string
+              user_name: string
+              user_role: Database["public"]["Enums"]["app_role"]
+            }[]
+          }
     }
     Enums: {
       app_role: "admin" | "user"
