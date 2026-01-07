@@ -218,6 +218,33 @@ export type Database = {
       delete_pin_user:
         | { Args: { _user_id: string }; Returns: boolean }
         | { Args: { _caller_id?: string; _user_id: string }; Returns: boolean }
+      fetch_user_invoices: {
+        Args: { _user_id: string }
+        Returns: {
+          business_logo: string
+          business_name: string
+          client_address: string
+          client_contact: string
+          client_name: string
+          created_at: string
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          items: Json
+          notes: string
+          payment_info: Json
+          signature_font: string
+          signature_image: string
+          signature_name: string
+          social_media: Json
+          status: string
+          tax: number
+          template: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

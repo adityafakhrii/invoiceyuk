@@ -21,11 +21,10 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
   fetchInvoices: async (userId: string) => {
     set({ isLoading: true });
     try {
-      const { data, error } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+      // Use SECURITY DEFINER RPC function for server-side user_id enforcement
+      const { data, error } = await supabase.rpc('fetch_user_invoices', {
+        _user_id: userId
+      });
 
       if (error) throw error;
 
