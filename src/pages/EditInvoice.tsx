@@ -32,6 +32,7 @@ const templates = [
 const EditInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const { getInvoice, updateInvoice } = useInvoiceStore();
   
   const invoice = id ? getInvoice(id) : undefined;
