@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   FileText, 
@@ -7,7 +7,9 @@ import {
   Users, 
   LogOut,
   LayoutDashboard,
-  ArrowRight
+  ArrowRight,
+  User,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
@@ -16,15 +18,22 @@ import { useInvoiceStore } from '@/store/invoiceStore';
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const invoices = useInvoiceStore((state) => state.invoices);
+  const { invoices, fetchInvoices, clearInvoices, isLoading } = useInvoiceStore();
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/pin-login');
+      return;
     }
-  }, [isAuthenticated, navigate]);
+    if (user && !hasFetched) {
+      fetchInvoices(user.id);
+      setHasFetched(true);
+    }
+  }, [isAuthenticated, user, navigate, fetchInvoices, hasFetched]);
 
   const handleLogout = () => {
+    clearInvoices();
     logout();
     navigate('/');
   };
@@ -47,13 +56,20 @@ const Dashboard = () => {
       to: '/riwayat',
       color: 'bg-primary/10 text-primary',
     },
+    {
+      icon: User,
+      title: 'Pengaturan Profil',
+      description: 'Ubah nama, username, dan PIN',
+      to: '/profile',
+      color: 'bg-green-500/10 text-green-500',
+    },
   ];
 
   if (user?.role === 'admin') {
     menuItems.push({
       icon: Users,
       title: 'Kelola User',
-      description: 'Tambah dan kelola user dengan PIN',
+      description: 'Tambah dan kelola user',
       to: '/admin/users',
       color: 'bg-cyan-500/10 text-cyan-500',
     });
@@ -80,10 +96,10 @@ const Dashboard = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="text-right hidden sm:block">
+              <Link to="/profile" className="text-right hidden sm:block hover:opacity-80 transition-opacity">
                 <p className="text-sm font-medium text-foreground">{user?.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
-              </div>
+                <p className="text-xs text-muted-foreground">@{user?.username}</p>
+              </Link>
               <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -112,7 +128,11 @@ const Dashboard = () => {
                 <FileText className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{invoices.length}</p>
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                ) : (
+                  <p className="text-2xl font-bold text-foreground">{invoices.length}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Total Invoice</p>
               </div>
             </div>
@@ -124,7 +144,11 @@ const Dashboard = () => {
                 <LayoutDashboard className="w-5 h-5 text-yellow-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{unpaidCount}</p>
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                ) : (
+                  <p className="text-2xl font-bold text-foreground">{unpaidCount}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Belum Dibayar</p>
               </div>
             </div>
@@ -136,7 +160,11 @@ const Dashboard = () => {
                 <FileText className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{paidCount}</p>
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                ) : (
+                  <p className="text-2xl font-bold text-foreground">{paidCount}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Sudah Dibayar</p>
               </div>
             </div>
@@ -156,7 +184,7 @@ const Dashboard = () => {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {menuItems.map((item) => (
             <Link key={item.to} to={item.to}>
               <div className="bg-card rounded-2xl border border-border p-6 shadow-card hover:shadow-elegant hover:border-accent/30 transition-all duration-300 h-full group">

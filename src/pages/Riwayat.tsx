@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
+import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, formatDate, calculateTotal } from '@/lib/invoice';
 import { cn } from '@/lib/utils';
 import {
@@ -21,9 +22,21 @@ import {
 import { toast } from '@/hooks/use-toast';
 
 const Riwayat = () => {
-  const { invoices, toggleStatus, deleteInvoice } = useInvoiceStore();
+  const navigate = useNavigate();
+  const { invoices, toggleStatus, deleteInvoice, fetchInvoices, isLoading } = useInvoiceStore();
+  const { user, isAuthenticated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/pin-login');
+      return;
+    }
+    if (user) {
+      fetchInvoices(user.id);
+    }
+  }, [isAuthenticated, user, navigate, fetchInvoices]);
 
   const filteredInvoices = invoices.filter((invoice) => {
     const matchesSearch =
@@ -39,13 +52,17 @@ const Riwayat = () => {
   });
 
   const handleDelete = (id: string) => {
-    deleteInvoice(id);
-    toast({ title: 'Invoice dihapus', description: 'Invoice berhasil dihapus dari riwayat' });
+    if (user) {
+      deleteInvoice(id, user.id);
+      toast({ title: 'Invoice dihapus', description: 'Invoice berhasil dihapus dari riwayat' });
+    }
   };
 
   const handleToggleStatus = (id: string) => {
-    toggleStatus(id);
-    toast({ title: 'Status diperbarui' });
+    if (user) {
+      toggleStatus(id, user.id);
+      toast({ title: 'Status diperbarui' });
+    }
   };
 
   return (
