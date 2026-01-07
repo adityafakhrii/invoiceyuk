@@ -149,7 +149,8 @@ const PinLogin = () => {
           {/* Footer */}
           <div className="mt-8 text-center">
             <Link to="/" className="flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-auto" />
+              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-8 rounded-lg" />
+              <span className="font-semibold text-foreground">InvoiceYuk</span>
             </Link>
             <p className="text-xs text-muted-foreground mt-2">Bikin Invoice, Gampang Banget!</p>
           </div>

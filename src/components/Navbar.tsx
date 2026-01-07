@@ -27,8 +27,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 group">
-            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-auto" />
+          <Link to="/dashboard" className="flex items-center gap-3 group">
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-9 rounded-lg" />
+            <div className="hidden sm:block">
+              <span className="font-bold text-lg text-foreground">InvoiceYuk</span>
+              <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
+            </div>
           </Link>
 
           {/* Navigation Links */}

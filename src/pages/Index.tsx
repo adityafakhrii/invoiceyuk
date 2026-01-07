@@ -132,7 +132,7 @@ const Index = () => {
                 <div className="bg-background rounded-xl p-6 md:p-8 border border-border">
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-12 w-auto mb-3" />
+                      <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 rounded-lg mb-3" />
                       <h3 className="font-bold text-lg text-foreground">Studio Kreatif Lo</h3>
                       <p className="text-sm text-muted-foreground">studio@bisnis.co</p>
                     </div>
@@ -274,7 +274,8 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-auto" />
+              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-8 rounded-lg" />
+              <span className="font-bold text-foreground">InvoiceYuk</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#features" className="hover:text-foreground transition-colors">Fitur</a>

@@ -26,9 +26,10 @@ const LandingNavbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-auto" />
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-9 rounded-lg" />
             <div className="hidden sm:block">
-              <span className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</span>
+              <span className="font-bold text-lg text-foreground">InvoiceYuk</span>
+              <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
             </div>
           </Link>
 
