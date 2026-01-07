@@ -1,29 +1,30 @@
 import { Link } from 'react-router-dom';
 import { 
-  FileText, 
+  Receipt, 
   Zap, 
   Download, 
   CheckCircle2, 
-  ArrowRight,
   Sparkles,
   Shield,
   Clock,
-  LogIn
+  LogIn,
+  FileEdit
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LandingNavbar from '@/components/LandingNavbar';
+import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const Index = () => {
   const features = [
     {
       icon: Zap,
       title: "Super Cepat",
-      description: "Isi form, klik, invoice jadi. Gak pake lama, gak pake ribet."
+      description: "Isi form, klik, invoice/quotation jadi. Gak pake lama, gak pake ribet."
     },
     {
       icon: Sparkles,
       title: "Template Elegan",
-      description: "Pilih template yang bikin invoice lo keliatan premium & profesional."
+      description: "Pilih template yang bikin dokumen lo keliatan premium & profesional."
     },
     {
       icon: Download,
@@ -38,7 +39,7 @@ const Index = () => {
     {
       icon: Clock,
       title: "Riwayat Lengkap",
-      description: "Semua invoice tersimpan rapi. Gampang dicari kapan aja."
+      description: "Semua dokumen tersimpan rapi. Gampang dicari kapan aja."
     },
     {
       icon: CheckCircle2,
@@ -48,8 +49,8 @@ const Index = () => {
   ];
 
   const steps = [
-    { number: "01", title: "Login Dashboard", description: "Masuk pakai PIN yang udah dikasih admin" },
-    { number: "02", title: "Isi Data Invoice", description: "Masukin info bisnis, klien, dan item" },
+    { number: "01", title: "Login Dashboard", description: "Masuk pakai username dan PIN" },
+    { number: "02", title: "Isi Data Dokumen", description: "Masukin info bisnis, klien, dan item" },
     { number: "03", title: "Download PDF", description: "Export PDF & kirim ke klien" },
   ];
 
@@ -69,14 +70,14 @@ const Index = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium mb-6 animate-fade-in">
               <Sparkles className="w-4 h-4" />
-              Invoice Generator untuk Bisnis Modern
+              Invoice & Quotation Generator untuk Bisnis Modern
             </div>
 
             {/* Headline */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight mb-6 animate-fade-in delay-100">
-              Bikin Invoice
+              Bikin Invoice & Quotation
               <br />
-              <span className="text-gradient">Bukan Lagi Drama</span> 👋
+              <span className="text-gradient">Gampang Banget!</span> 👋
             </h1>
 
             {/* Subheadline */}
@@ -131,15 +132,13 @@ const Index = () => {
                 <div className="bg-background rounded-xl p-6 md:p-8 border border-border">
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center mb-3">
-                        <FileText className="w-6 h-6 text-primary-foreground" />
-                      </div>
+                      <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-12 w-auto mb-3" />
                       <h3 className="font-bold text-lg text-foreground">Studio Kreatif Lo</h3>
                       <p className="text-sm text-muted-foreground">studio@bisnis.co</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-medium text-muted-foreground">INVOICE</p>
-                      <p className="text-2xl font-bold text-foreground">#INV-2024-001</p>
+                      <p className="text-2xl font-bold text-foreground">#INV-2026-001</p>
                     </div>
                   </div>
                   
@@ -219,10 +218,10 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Kenapa Harus Pakai InvoiceKece?
+              Kenapa Harus Pakai InvoiceYuk?
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              Karena invoice bukan cuma formalitas, tapi branding bisnis lo.
+              Karena invoice & quotation bukan cuma formalitas, tapi branding bisnis lo.
             </p>
           </div>
 
@@ -254,10 +253,10 @@ const Index = () => {
             
             <div className="relative">
               <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-                Siap Bikin Invoice yang Kece?
+                Siap Bikin Dokumen Profesional?
               </h2>
               <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">
-                Invoice elegan = pembayaran makin niat. Mulai sekarang, gratis!
+                Invoice & quotation elegan = pembayaran makin niat. Mulai sekarang, gratis!
               </p>
               <Link to="/pin-login">
                 <Button variant="accent" size="xl">
@@ -275,12 +274,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                <FileText className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-foreground">
-                Invoice<span className="text-accent">Kece</span>
-              </span>
+              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-auto" />
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#features" className="hover:text-foreground transition-colors">Fitur</a>
@@ -288,7 +282,7 @@ const Index = () => {
               <Link to="/pin-login" className="hover:text-foreground transition-colors">Dashboard</Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © 2024 InvoiceKece. Bikin invoice gak pake ribet.
+              © 2026 InvoiceYuk. Bikin invoice gak pake ribet.
             </p>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FileText, Plus, History, LayoutDashboard, LogOut } from 'lucide-react';
+import { Receipt, FileEdit, History, LayoutDashboard, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
+import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const Navbar = () => {
   const location = useLocation();
@@ -11,7 +12,8 @@ const Navbar = () => {
 
   const navLinks = [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/buat-invoice', label: 'Buat Invoice', icon: Plus },
+    { path: '/buat-invoice', label: 'Invoice', icon: Receipt },
+    { path: '/buat-quotation', label: 'Quotation', icon: FileEdit },
     { path: '/riwayat', label: 'Riwayat', icon: History },
   ];
 
@@ -26,12 +28,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-card group-hover:shadow-glow transition-shadow duration-300">
-              <FileText className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl text-foreground">
-              Invoice<span className="text-accent">Kece</span>
-            </span>
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-auto" />
           </Link>
 
           {/* Navigation Links */}
