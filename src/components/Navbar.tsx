@@ -29,9 +29,9 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center gap-3 group">
             <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-9 rounded-lg" />
-            <div className="hidden sm:block">
+            <div>
               <span className="font-bold text-lg text-foreground">InvoiceYuk</span>
-              <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
+              <p className="text-xs text-muted-foreground hidden sm:block">Bikin Invoice, Gampang Banget!</p>
             </div>
           </Link>
 
