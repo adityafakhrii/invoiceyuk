@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { FileText, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const LandingNavbar = () => {
   const location = useLocation();
@@ -24,13 +25,11 @@ const LandingNavbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-card group-hover:shadow-glow transition-shadow duration-300">
-              <FileText className="w-5 h-5 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-auto" />
+            <div className="hidden sm:block">
+              <span className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</span>
             </div>
-            <span className="font-bold text-xl text-foreground">
-              Invoice<span className="text-accent">Kece</span>
-            </span>
           </Link>
 
           {/* Navigation Links */}

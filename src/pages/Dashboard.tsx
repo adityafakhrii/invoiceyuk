@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-  FileText, 
-  Plus, 
+  Receipt, 
+  FileEdit, 
   History, 
   Users, 
   LogOut,
@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/authStore';
 import { useInvoiceStore } from '@/store/invoiceStore';
+import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -43,16 +44,23 @@ const Dashboard = () => {
 
   const menuItems = [
     {
-      icon: Plus,
-      title: 'Buat Invoice Baru',
+      icon: Receipt,
+      title: 'Buat Invoice',
       description: 'Buat invoice profesional dalam hitungan detik',
       to: '/buat-invoice',
       color: 'bg-accent/10 text-accent',
     },
     {
+      icon: FileEdit,
+      title: 'Buat Quotation',
+      description: 'Buat penawaran harga untuk klien potensial',
+      to: '/buat-quotation',
+      color: 'bg-purple-500/10 text-purple-500',
+    },
+    {
       icon: History,
-      title: 'Riwayat Invoice',
-      description: 'Lihat semua invoice yang sudah dibuat',
+      title: 'Riwayat Dokumen',
+      description: 'Lihat semua invoice & quotation yang sudah dibuat',
       to: '/riwayat',
       color: 'bg-primary/10 text-primary',
     },
@@ -84,14 +92,9 @@ const Dashboard = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-primary flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary-foreground" />
-              </div>
+              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-auto" />
               <div>
-                <span className="font-bold text-foreground">
-                  Invoice<span className="text-accent">Kece</span>
-                </span>
-                <p className="text-xs text-muted-foreground">Dashboard</p>
+                <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
               </div>
             </div>
 
@@ -125,7 +128,7 @@ const Dashboard = () => {
           <div className="bg-card rounded-xl border border-border p-4 shadow-card">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary" />
+                <Receipt className="w-5 h-5 text-primary" />
               </div>
               <div>
                 {isLoading ? (
@@ -157,7 +160,7 @@ const Dashboard = () => {
           <div className="bg-card rounded-xl border border-border p-4 shadow-card">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-green-500" />
+                <Receipt className="w-5 h-5 text-green-500" />
               </div>
               <div>
                 {isLoading ? (
