@@ -96,25 +96,19 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data: pinUsers, error: pinError } = await supabase
-        .from('pin_users')
-        .select('id, name, username, created_at')
-        .order('created_at', { ascending: false });
+      // Use SECURITY DEFINER RPC function for server-side admin authorization
+      const { data, error } = await supabase.rpc('list_all_users', {
+        _caller_id: user?.id
+      });
 
-      if (pinError) throw pinError;
+      if (error) throw error;
 
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
-      const usersWithRoles: PinUser[] = (pinUsers || []).map(pu => ({
-        id: pu.id,
-        name: pu.name,
-        username: pu.username,
-        created_at: pu.created_at,
-        role: (roles?.find(r => r.user_id === pu.id)?.role as AppRole) || 'user',
+      const usersWithRoles: PinUser[] = (data || []).map((u: { user_id: string; user_name: string; username: string; user_role: AppRole; created_at: string }) => ({
+        id: u.user_id,
+        name: u.user_name,
+        username: u.username,
+        role: u.user_role,
+        created_at: u.created_at,
       }));
 
       setUsers(usersWithRoles);

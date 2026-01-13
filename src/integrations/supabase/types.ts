@@ -252,6 +252,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_all_users: {
+        Args: { _caller_id: string }
+        Returns: {
+          created_at: string
+          user_id: string
+          user_name: string
+          user_role: Database["public"]["Enums"]["app_role"]
+          username: string
+        }[]
+      }
       update_invoice: {
         Args: {
           _business_logo: string
