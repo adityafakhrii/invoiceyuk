@@ -183,34 +183,16 @@ export type Database = {
         }
         Returns: string
       }
-      create_pin_user:
-        | {
-            Args: {
-              _name: string
-              _pin: string
-              _role?: Database["public"]["Enums"]["app_role"]
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              _name: string
-              _pin: string
-              _role?: Database["public"]["Enums"]["app_role"]
-              _username: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              _caller_id?: string
-              _name: string
-              _pin: string
-              _role?: Database["public"]["Enums"]["app_role"]
-              _username: string
-            }
-            Returns: string
-          }
+      create_pin_user: {
+        Args: {
+          _caller_id?: string
+          _name: string
+          _pin: string
+          _role?: Database["public"]["Enums"]["app_role"]
+          _username: string
+        }
+        Returns: string
+      }
       delete_invoice: {
         Args: { _invoice_id: string; _user_id: string }
         Returns: boolean
@@ -291,23 +273,14 @@ export type Database = {
         Args: { _name: string; _user_id: string; _username: string }
         Returns: boolean
       }
-      verify_pin:
-        | {
-            Args: { _pin: string }
-            Returns: {
-              user_id: string
-              user_name: string
-              user_role: Database["public"]["Enums"]["app_role"]
-            }[]
-          }
-        | {
-            Args: { _pin: string; _username: string }
-            Returns: {
-              user_id: string
-              user_name: string
-              user_role: Database["public"]["Enums"]["app_role"]
-            }[]
-          }
+      verify_pin: {
+        Args: { _pin: string; _username: string }
+        Returns: {
+          user_id: string
+          user_name: string
+          user_role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"

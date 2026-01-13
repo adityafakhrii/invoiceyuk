@@ -18,6 +18,7 @@ import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
@@ -85,7 +86,7 @@ const Profile = () => {
       });
 
       if (error) {
-        if (error.message.includes('duplicate key') || error.message.includes('unique')) {
+        if (isDuplicateError(error) && isFieldError(error, 'username')) {
           setProfileErrors({ username: 'Username sudah digunakan' });
           return;
         }
@@ -95,10 +96,10 @@ const Profile = () => {
       updateUser({ name: name.trim(), username: username.trim().toLowerCase() });
       toast({ title: 'Berhasil!', description: 'Profil berhasil diperbarui' });
     } catch (error) {
-      console.error('Error updating profile:', error);
+      logErrorSecurely('handleSaveProfile', error);
       toast({ 
         title: 'Error', 
-        description: 'Gagal memperbarui profil', 
+        description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     } finally {
@@ -152,10 +153,10 @@ const Profile = () => {
       setNewPin('');
       setConfirmPin('');
     } catch (error) {
-      console.error('Error changing PIN:', error);
+      logErrorSecurely('handleChangePin', error);
       toast({ 
         title: 'Error', 
-        description: 'Gagal mengubah PIN', 
+        description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     } finally {
