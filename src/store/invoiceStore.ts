@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Invoice, InvoiceItem } from '@/lib/invoice';
 import { supabase } from '@/integrations/supabase/client';
+import { logErrorSecurely } from '@/lib/errors';
 
 interface InvoiceStore {
   invoices: Invoice[];
@@ -53,7 +54,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
       set({ invoices, isLoading: false });
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      logErrorSecurely('fetchInvoices', error);
       set({ isLoading: false });
     }
   },
@@ -87,7 +88,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
       const newInvoice = { ...invoice, id: data };
       set((state) => ({ invoices: [newInvoice, ...state.invoices] }));
     } catch (error) {
-      console.error('Error adding invoice:', error);
+      logErrorSecurely('addInvoice', error);
       throw error;
     }
   },
@@ -130,7 +131,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('Error updating invoice:', error);
+      logErrorSecurely('updateInvoice', error);
       throw error;
     }
   },
@@ -148,7 +149,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         invoices: state.invoices.filter((inv) => inv.id !== id),
       }));
     } catch (error) {
-      console.error('Error deleting invoice:', error);
+      logErrorSecurely('deleteInvoice', error);
       throw error;
     }
   },

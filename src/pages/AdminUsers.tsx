@@ -45,6 +45,7 @@ import { useAuthStore, AppRole } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
 
 interface PinUser {
   id: string;
@@ -113,10 +114,10 @@ const AdminUsers = () => {
 
       setUsers(usersWithRoles);
     } catch (error) {
-      console.error('Error fetching users:', error);
+      logErrorSecurely('fetchUsers', error);
       toast({ 
         title: 'Error', 
-        description: 'Gagal memuat data user', 
+        description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     } finally {
@@ -156,7 +157,7 @@ const AdminUsers = () => {
       });
 
       if (error) {
-        if (error.message.includes('duplicate key') || error.message.includes('unique')) {
+        if (isDuplicateError(error) && isFieldError(error, 'username')) {
           setErrors({ username: 'Username sudah digunakan' });
           return;
         }
@@ -172,10 +173,10 @@ const AdminUsers = () => {
       setIsDialogOpen(false);
       fetchUsers();
     } catch (error) {
-      console.error('Error adding user:', error);
+      logErrorSecurely('handleAddUser', error);
       toast({ 
         title: 'Error', 
-        description: 'Gagal menambahkan user', 
+        description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     } finally {
@@ -201,10 +202,10 @@ const AdminUsers = () => {
       toast({ title: 'Berhasil!', description: `User ${userName} berhasil dihapus` });
       fetchUsers();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      logErrorSecurely('handleDeleteUser', error);
       toast({ 
         title: 'Error', 
-        description: 'Gagal menghapus user', 
+        description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     }

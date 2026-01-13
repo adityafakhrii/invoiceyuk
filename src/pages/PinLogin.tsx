@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
+import { logErrorSecurely } from '@/lib/errors';
 
 const PinLogin = () => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const PinLogin = () => {
         setPin('');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      logErrorSecurely('handleLogin', error);
       toast({ 
         title: 'Error', 
         description: 'Terjadi kesalahan saat login', 
