@@ -187,9 +187,9 @@ const BuatInvoice = () => {
 
     if (user) {
       addInvoice(invoice, user.id);
+      toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat dan disimpan' });
+      navigate('/riwayat');
     }
-    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat' });
-    navigate(`/preview/${invoice.id}`);
   };
 
   return (
