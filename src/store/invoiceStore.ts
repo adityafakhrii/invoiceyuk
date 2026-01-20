@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Invoice, InvoiceItem } from '@/lib/invoice';
 import { supabase } from '@/integrations/supabase/client';
 import { logErrorSecurely } from '@/lib/errors';
+import type { Json } from '@/integrations/supabase/types';
 
 interface InvoiceStore {
   invoices: Invoice[];
@@ -61,24 +62,26 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
   addInvoice: async (invoice: Invoice, userId: string) => {
     try {
+      // Items, payment_info, and social_media should be passed as objects, not JSON strings
+      // The Supabase client will handle JSON serialization for jsonb columns
       const { data, error } = await supabase.rpc('create_invoice', {
         _user_id: userId,
         _invoice_number: invoice.invoiceNumber,
         _business_name: invoice.businessName,
-        _business_logo: invoice.businessLogo || null,
+        _business_logo: invoice.businessLogo || '',
         _client_name: invoice.clientName,
-        _client_contact: invoice.clientContact || null,
-        _client_address: invoice.clientAddress || null,
+        _client_contact: invoice.clientContact || '',
+        _client_address: invoice.clientAddress || '',
         _invoice_date: invoice.invoiceDate,
         _due_date: invoice.dueDate,
-        _items: JSON.stringify(invoice.items),
-        _tax: invoice.tax || null,
-        _notes: invoice.notes || null,
-        _payment_info: invoice.paymentInfo ? JSON.stringify(invoice.paymentInfo) : null,
-        _signature_name: invoice.signatureName || null,
-        _signature_image: invoice.signatureImage || null,
-        _signature_font: invoice.signatureFont || null,
-        _social_media: invoice.socialMedia ? JSON.stringify(invoice.socialMedia) : null,
+        _items: invoice.items as unknown as Json,
+        _tax: invoice.tax || 0,
+        _notes: invoice.notes || '',
+        _payment_info: (invoice.paymentInfo || {}) as unknown as Json,
+        _signature_name: invoice.signatureName || '',
+        _signature_image: invoice.signatureImage || '',
+        _signature_font: invoice.signatureFont || '',
+        _social_media: (invoice.socialMedia || {}) as unknown as Json,
         _status: invoice.status,
         _template: invoice.template,
       });
@@ -105,20 +108,20 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _user_id: userId,
         _invoice_number: merged.invoiceNumber,
         _business_name: merged.businessName,
-        _business_logo: merged.businessLogo || null,
+        _business_logo: merged.businessLogo || '',
         _client_name: merged.clientName,
-        _client_contact: merged.clientContact || null,
-        _client_address: merged.clientAddress || null,
+        _client_contact: merged.clientContact || '',
+        _client_address: merged.clientAddress || '',
         _invoice_date: merged.invoiceDate,
         _due_date: merged.dueDate,
-        _items: JSON.stringify(merged.items),
-        _tax: merged.tax || null,
-        _notes: merged.notes || null,
-        _payment_info: merged.paymentInfo ? JSON.stringify(merged.paymentInfo) : null,
-        _signature_name: merged.signatureName || null,
-        _signature_image: merged.signatureImage || null,
-        _signature_font: merged.signatureFont || null,
-        _social_media: merged.socialMedia ? JSON.stringify(merged.socialMedia) : null,
+        _items: merged.items as unknown as Json,
+        _tax: merged.tax || 0,
+        _notes: merged.notes || '',
+        _payment_info: (merged.paymentInfo || {}) as unknown as Json,
+        _signature_name: merged.signatureName || '',
+        _signature_image: merged.signatureImage || '',
+        _signature_font: merged.signatureFont || '',
+        _social_media: (merged.socialMedia || {}) as unknown as Json,
         _status: merged.status,
         _template: merged.template,
       });
