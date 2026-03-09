@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
+import { CurrencyCode, CURRENCIES } from '@/lib/invoice';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
