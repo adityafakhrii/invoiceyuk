@@ -80,7 +80,14 @@ const BuatInvoice = () => {
 
   // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>(dup?.template || 'simple');
-  const [currency, setCurrency] = useState<CurrencyCode>(dup?.currency || 'IDR');
+  const [currency, setCurrency] = useState<CurrencyCode>(() => {
+    if (dup?.currency) return dup.currency;
+    if (user) {
+      const saved = localStorage.getItem(`default-currency-${user.id}`);
+      if (saved && ['IDR', 'USD', 'EUR'].includes(saved)) return saved as CurrencyCode;
+    }
+    return 'IDR';
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
