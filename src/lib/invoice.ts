@@ -19,6 +19,14 @@ export interface SocialMedia {
 
 export type SignatureFont = 'dancing' | 'vibes' | 'pacifico';
 
+export type CurrencyCode = 'IDR' | 'USD' | 'EUR';
+
+export const CURRENCIES: { code: CurrencyCode; label: string; symbol: string; locale: string }[] = [
+  { code: 'IDR', label: 'Rupiah (IDR)', symbol: 'Rp', locale: 'id-ID' },
+  { code: 'USD', label: 'US Dollar (USD)', symbol: '$', locale: 'en-US' },
+  { code: 'EUR', label: 'Euro (EUR)', symbol: '€', locale: 'de-DE' },
+];
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -39,6 +47,7 @@ export interface Invoice {
   socialMedia?: SocialMedia;
   status: 'paid' | 'unpaid';
   template: 'simple' | 'elegant' | 'corporate';
+  currency: CurrencyCode;
   createdAt: string;
 }
 
