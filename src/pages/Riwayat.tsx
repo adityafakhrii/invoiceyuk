@@ -250,7 +250,7 @@ const Riwayat = () => {
                       <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
                         <div className="text-right">
                           <p className="font-bold text-lg text-foreground">
-                            {formatCurrency(calculateTotal(invoice.items, invoice.tax))}
+                            {formatCurrency(calculateTotal(invoice.items, invoice.tax), invoice.currency)}
                           </p>
                           <button
                             onClick={() => handleToggleStatus(invoice.id)}

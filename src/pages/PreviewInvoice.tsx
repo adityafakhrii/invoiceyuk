@@ -254,17 +254,17 @@ const PreviewInvoice = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
                           <span>SUB TOTAL :</span>
-                          <span>{formatCurrency(subtotal)}</span>
+                          <span>{formatCurrency(subtotal, invoice.currency)}</span>
                         </div>
                         {invoice.tax && invoice.tax > 0 && (
                           <div className="flex justify-between text-muted-foreground">
                             <span>PAJAK ({invoice.tax}%) :</span>
-                            <span>{formatCurrency(taxAmount)}</span>
+                            <span>{formatCurrency(taxAmount, invoice.currency)}</span>
                           </div>
                         )}
                         <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
                           <span>TOTAL :</span>
-                          <span>{formatCurrency(total)}</span>
+                          <span>{formatCurrency(total, invoice.currency)}</span>
                         </div>
                       </div>
                     </div>
