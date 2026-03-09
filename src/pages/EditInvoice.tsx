@@ -103,6 +103,7 @@ const EditInvoice = () => {
       setInstagram(invoice.socialMedia?.instagram || '');
       setEmail(invoice.socialMedia?.email || '');
       setSelectedTemplate(invoice.template);
+      setCurrency(invoice.currency || 'IDR');
     }
   }, [invoice]);
 
