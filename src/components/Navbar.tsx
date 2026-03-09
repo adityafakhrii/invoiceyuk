@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Receipt, FileEdit, History, LayoutDashboard, LogOut } from 'lucide-react';
+import { Receipt, FileEdit, History, LayoutDashboard, LogOut, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
