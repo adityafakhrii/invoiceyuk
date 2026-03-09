@@ -80,6 +80,7 @@ const BuatInvoice = () => {
 
   // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>(dup?.template || 'simple');
+  const [currency, setCurrency] = useState<CurrencyCode>(dup?.currency || 'IDR');
 
   useEffect(() => {
     if (!isAuthenticated) {
