@@ -89,6 +89,49 @@ const PreviewInvoice = () => {
     window.print();
   };
 
+  // WhatsApp
+  const [waNumber, setWaNumber] = useState(invoice.clientContact || '');
+  const [waDialogOpen, setWaDialogOpen] = useState(false);
+
+  const formatWhatsAppNumber = (num: string): string => {
+    let clean = num.replace(/[^0-9]/g, '');
+    if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+    if (!clean.startsWith('62')) clean = '62' + clean;
+    return clean;
+  };
+
+  const handleSendWhatsApp = () => {
+    const clean = waNumber.replace(/[^0-9+]/g, '');
+    if (clean.length < 8) {
+      toast({ title: 'Oops!', description: 'Nomor WhatsApp tidak valid', variant: 'destructive' });
+      return;
+    }
+
+    const formattedNum = formatWhatsAppNumber(clean);
+    const itemsList = invoice.items
+      .map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`)
+      .join('%0A');
+
+    const message = encodeURIComponent(
+      `Halo ${invoice.clientName},\n\n` +
+      `Berikut invoice dari *${invoice.businessName}*:\n\n` +
+      `📄 No: ${invoice.invoiceNumber}\n` +
+      `📅 Tanggal: ${formatDate(invoice.invoiceDate)}\n` +
+      `⏰ Jatuh Tempo: ${formatDate(invoice.dueDate)}\n\n` +
+      `*Detail Item:*\n` +
+      invoice.items.map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`).join('\n') +
+      `\n\n` +
+      (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
+      `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n\n` +
+      (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
+      `Terima kasih! 🙏`
+    );
+
+    window.open(`https://wa.me/${formattedNum}?text=${message}`, '_blank');
+    setWaDialogOpen(false);
+    toast({ title: 'WhatsApp dibuka! 📱', description: 'Pesan invoice siap dikirim ke klien' });
+  };
+
   const getTemplateStyles = () => {
     switch (invoice.template) {
       case 'elegant':
