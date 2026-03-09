@@ -13,6 +13,7 @@ import PinLogin from "./pages/PinLogin";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import AdminUsers from "./pages/AdminUsers";
+import Laporan from "./pages/Laporan";
 import NotFound from "./pages/NotFound";
 
 // InvoiceYuk - Bikin Invoice, Gampang Banget!
