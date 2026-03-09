@@ -92,8 +92,6 @@ const PreviewInvoice = () => {
   };
 
   // WhatsApp
-  const [waNumber, setWaNumber] = useState(invoice.clientContact || '');
-  const [waDialogOpen, setWaDialogOpen] = useState(false);
 
   const formatWhatsAppNumber = (num: string): string => {
     let clean = num.replace(/[^0-9]/g, '');
