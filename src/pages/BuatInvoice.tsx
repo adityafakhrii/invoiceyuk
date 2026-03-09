@@ -19,6 +19,8 @@ import {
   getSavedBusinessNames,
   saveBusinessName,
   SignatureFont,
+  CurrencyCode,
+  CURRENCIES,
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
