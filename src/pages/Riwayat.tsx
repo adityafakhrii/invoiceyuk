@@ -130,6 +130,9 @@ const Riwayat = () => {
               )}
             </div>
 
+            {/* Overdue Reminders */}
+            <InvoiceReminderBanner invoices={invoices} />
+
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <div className="relative flex-1">
