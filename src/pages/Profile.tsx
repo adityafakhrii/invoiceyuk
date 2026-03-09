@@ -42,6 +42,7 @@ const Profile = () => {
   const [username, setUsername] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileErrors, setProfileErrors] = useState<{ name?: string; username?: string }>({});
+  const [defaultCurrency, setDefaultCurrency] = useState<CurrencyCode>('IDR');
 
   // PIN form
   const [oldPin, setOldPin] = useState('');
