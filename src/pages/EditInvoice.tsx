@@ -209,6 +209,7 @@ const EditInvoice = () => {
         email: email || undefined,
       } : undefined,
       template: selectedTemplate,
+      currency,
     };
 
     if (user) {

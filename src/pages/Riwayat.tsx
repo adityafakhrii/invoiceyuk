@@ -83,6 +83,7 @@ const Riwayat = () => {
       'Kontak Klien': inv.clientContact || '-',
       'Tanggal Invoice': formatDate(inv.invoiceDate),
       'Jatuh Tempo': formatDate(inv.dueDate),
+      'Mata Uang': inv.currency || 'IDR',
       'Subtotal': calculateSubtotal(inv.items),
       'Pajak (%)': inv.tax || 0,
       'Total': calculateTotal(inv.items, inv.tax),
