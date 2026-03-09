@@ -188,6 +188,7 @@ const BuatInvoice = () => {
       } : undefined,
       status: 'unpaid',
       template: selectedTemplate,
+      currency,
       createdAt: new Date().toISOString(),
     };
 
