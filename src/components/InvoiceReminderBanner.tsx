@@ -113,7 +113,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0 ml-2">
                         <span className="text-amber-600 font-semibold">
-                          {formatCurrency(calculateTotal(inv.items, inv.tax))}
+                          {formatCurrency(calculateTotal(inv.items, inv.tax), inv.currency)}
                         </span>
                         <span className="text-amber-600/70">
                           ({daysLeft === 0 ? 'Hari ini' : `${daysLeft} hari lagi`})
