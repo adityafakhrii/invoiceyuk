@@ -67,12 +67,13 @@ export const calculateTotal = (items: InvoiceItem[], tax?: number): number => {
   return subtotal + taxAmount;
 };
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('id-ID', {
+export const formatCurrency = (amount: number, currency: CurrencyCode = 'IDR'): string => {
+  const config = CURRENCIES.find((c) => c.code === currency) || CURRENCIES[0];
+  return new Intl.NumberFormat(config.locale, {
     style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    currency: config.code,
+    minimumFractionDigits: currency === 'IDR' ? 0 : 2,
+    maximumFractionDigits: currency === 'IDR' ? 0 : 2,
   }).format(amount);
 };
 
