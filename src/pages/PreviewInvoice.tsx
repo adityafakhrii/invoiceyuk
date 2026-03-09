@@ -178,7 +178,48 @@ const PreviewInvoice = () => {
                 Selesai
               </Button>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
+                <Dialog open={waDialogOpen} onOpenChange={(open) => {
+                  setWaDialogOpen(open);
+                  if (open) setWaNumber(invoice.clientContact || '');
+                }}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline-light" className="bg-green-500/10 text-green-600 border-green-500/30 hover:bg-green-500/20">
+                      <MessageCircle className="w-4 h-4" />
+                      WhatsApp
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Kirim Invoice via WhatsApp</DialogTitle>
+                      <DialogDescription>
+                        Masukkan nomor WhatsApp klien untuk mengirim detail invoice
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="waNumber">Nomor WhatsApp</Label>
+                        <Input
+                          id="waNumber"
+                          placeholder="Contoh: 08123456789"
+                          value={waNumber}
+                          onChange={(e) => setWaNumber(e.target.value.replace(/[^0-9+\-\s]/g, ''))}
+                          maxLength={20}
+                        />
+                        <p className="text-xs text-muted-foreground">Format: 08xx atau +62xx</p>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline-light" onClick={() => setWaDialogOpen(false)}>
+                        Batal
+                      </Button>
+                      <Button onClick={handleSendWhatsApp} className="bg-green-600 hover:bg-green-700 text-white">
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        Kirim ke WhatsApp
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <Button variant="outline-light" onClick={handlePrint}>
                   <Printer className="w-4 h-4" />
                   Print
