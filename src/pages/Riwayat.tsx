@@ -169,6 +169,39 @@ const Riwayat = () => {
               </div>
             </div>
 
+            {/* Date Range Filter */}
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="w-4 h-4 mr-1" />
+                    {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                </PopoverContent>
+              </Popover>
+              <span className="text-muted-foreground text-sm">—</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="w-4 h-4 mr-1" />
+                    {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                </PopoverContent>
+              </Popover>
+              {(dateFrom || dateTo) && (
+                <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                  <X className="w-4 h-4 mr-1" />
+                  Reset
+                </Button>
+              )}
+            </div>
+
             {/* Invoice List */}
             {filteredInvoices.length === 0 ? (
               <div className="text-center py-20">
