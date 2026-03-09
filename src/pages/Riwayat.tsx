@@ -84,7 +84,7 @@ const Riwayat = () => {
     toast({ title: 'Export berhasil! 📥', description: `${dataToExport.length} invoice berhasil di-export ke CSV` });
   };
 
-
+  const handleToggleStatus = (id: string) => {
     if (user) {
       toggleStatus(id, user.id);
       toast({ title: 'Status diperbarui' });
