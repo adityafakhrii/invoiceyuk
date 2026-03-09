@@ -32,6 +32,8 @@ const PreviewInvoice = () => {
   const navigate = useNavigate();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const getInvoice = useInvoiceStore((state) => state.getInvoice);
+  const [waNumber, setWaNumber] = useState('');
+  const [waDialogOpen, setWaDialogOpen] = useState(false);
 
   const invoice = id ? getInvoice(id) : undefined;
 
