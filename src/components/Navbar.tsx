@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Receipt, FileEdit, History, LayoutDashboard, LogOut } from 'lucide-react';
+import { Receipt, FileEdit, History, LayoutDashboard, LogOut, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
@@ -15,6 +15,7 @@ const Navbar = () => {
     { path: '/buat-invoice', label: 'Invoice', icon: Receipt },
     { path: '/buat-quotation', label: 'Quotation', icon: FileEdit },
     { path: '/riwayat', label: 'Riwayat', icon: History },
+    { path: '/laporan', label: 'Laporan', icon: BarChart3 },
   ];
 
   const handleLogout = () => {

@@ -13,6 +13,7 @@ import PinLogin from "./pages/PinLogin";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import AdminUsers from "./pages/AdminUsers";
+import Laporan from "./pages/Laporan";
 import NotFound from "./pages/NotFound";
 
 // InvoiceYuk - Bikin Invoice, Gampang Banget!
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/edit-invoice/:id" element={<EditInvoice />} />
           <Route path="/riwayat" element={<Riwayat />} />
           <Route path="/preview/:id" element={<PreviewInvoice />} />
+          <Route path="/laporan" element={<Laporan />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
