@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
