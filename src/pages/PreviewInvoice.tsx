@@ -108,9 +108,6 @@ const PreviewInvoice = () => {
     }
 
     const formattedNum = formatWhatsAppNumber(clean);
-    const itemsList = invoice.items
-      .map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`)
-      .join('%0A');
 
     const message = encodeURIComponent(
       `Halo ${invoice.clientName},\n\n` +
