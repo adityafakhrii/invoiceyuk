@@ -77,6 +77,7 @@ const EditInvoice = () => {
 
   // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
+  const [currency, setCurrency] = useState<CurrencyCode>('IDR');
 
   // Load invoice data
   useEffect(() => {
