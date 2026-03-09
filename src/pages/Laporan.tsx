@@ -101,6 +101,69 @@ const Laporan = () => {
     );
   };
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const data = viewMode === 'monthly' ? monthlyData : yearlyData;
+    const title = viewMode === 'monthly' ? `Laporan Keuangan - ${selectedYear}` : 'Laporan Keuangan Tahunan';
+
+    // Title
+    doc.setFontSize(18);
+    doc.text(title, pageWidth / 2, 20, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text(`Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth / 2, 28, { align: 'center' });
+
+    // Summary
+    doc.setTextColor(0);
+    doc.setFontSize(12);
+    doc.text('Ringkasan', 14, 42);
+    doc.setFontSize(10);
+    doc.text(`Total Pendapatan: ${formatCurrency(stats.totalRevenue)}`, 14, 50);
+    doc.text(`Pendapatan ${selectedYear}: ${formatCurrency(stats.yearRevenue)}`, 14, 57);
+    doc.text(`Invoice Dibayar: ${stats.paidCount}`, 14, 64);
+    doc.text(`Pertumbuhan Bulan Ini: ${stats.growth >= 0 ? '+' : ''}${stats.growth.toFixed(1)}%`, 14, 71);
+
+    // Table header
+    let y = 85;
+    doc.setFillColor(240, 240, 245);
+    doc.rect(14, y - 5, pageWidth - 28, 8, 'F');
+    doc.setFontSize(10);
+    doc.setFont(undefined!, 'bold');
+    doc.text('Periode', 16, y);
+    doc.text('Jumlah Invoice', pageWidth / 2, y, { align: 'center' });
+    doc.text('Pendapatan', pageWidth - 16, y, { align: 'right' });
+
+    // Table rows
+    doc.setFont(undefined!, 'normal');
+    y += 10;
+    let totalRev = 0;
+    let totalCount = 0;
+    data.forEach((row) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(row.name, 16, y);
+      doc.text(String(row.count), pageWidth / 2, y, { align: 'center' });
+      doc.text(row.revenue > 0 ? formatCurrency(row.revenue) : '-', pageWidth - 16, y, { align: 'right' });
+      totalRev += row.revenue;
+      totalCount += row.count;
+      y += 8;
+    });
+
+    // Total row
+    y += 2;
+    doc.setDrawColor(200);
+    doc.line(14, y - 5, pageWidth - 14, y - 5);
+    doc.setFont(undefined!, 'bold');
+    doc.text('Total', 16, y);
+    doc.text(String(totalCount), pageWidth / 2, y, { align: 'center' });
+    doc.text(formatCurrency(totalRev), pageWidth - 16, y, { align: 'right' });
+
+    doc.save(`laporan-keuangan-${selectedYear}.pdf`);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -116,6 +179,12 @@ const Laporan = () => {
               <p className="text-muted-foreground">
                 Pantau pendapatan bisnis lo dari invoice yang sudah dibayar 📊
               </p>
+              {paidInvoices.length > 0 && (
+                <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportPDF}>
+                  <Download className="w-4 h-4 mr-1" />
+                  Download PDF
+                </Button>
+              )}
             </div>
 
             {/* Stats Cards */}
