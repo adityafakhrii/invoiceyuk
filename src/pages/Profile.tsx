@@ -244,6 +244,35 @@ const Profile = () => {
             </div>
           </section>
 
+          {/* Default Currency Section */}
+          <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card mb-6">
+            <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              Mata Uang Default
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
+            </p>
+            <div className="flex items-center gap-3">
+              <select
+                value={defaultCurrency}
+                onChange={(e) => {
+                  const val = e.target.value as CurrencyCode;
+                  setDefaultCurrency(val);
+                  if (user) {
+                    localStorage.setItem(`default-currency-${user.id}`, val);
+                  }
+                  toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
+                }}
+                className="flex h-10 w-full max-w-xs rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+          </section>
+
           {/* Change PIN Section */}
           <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
             <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
