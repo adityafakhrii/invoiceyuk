@@ -59,7 +59,32 @@ const Riwayat = () => {
     }
   };
 
-  const handleToggleStatus = (id: string) => {
+  const handleExportCSV = () => {
+    const dataToExport = filteredInvoices.map((inv) => ({
+      'No Invoice': inv.invoiceNumber,
+      'Nama Bisnis': inv.businessName,
+      'Nama Klien': inv.clientName,
+      'Kontak Klien': inv.clientContact || '-',
+      'Tanggal Invoice': formatDate(inv.invoiceDate),
+      'Jatuh Tempo': formatDate(inv.dueDate),
+      'Subtotal': calculateSubtotal(inv.items),
+      'Pajak (%)': inv.tax || 0,
+      'Total': calculateTotal(inv.items, inv.tax),
+      'Status': inv.status === 'paid' ? 'Lunas' : 'Belum Lunas',
+    }));
+
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'Export berhasil! 📥', description: `${dataToExport.length} invoice berhasil di-export ke CSV` });
+  };
+
+
     if (user) {
       toggleStatus(id, user.id);
       toast({ title: 'Status diperbarui' });
