@@ -106,6 +106,12 @@ const Riwayat = () => {
               <p className="text-muted-foreground">
                 Semua invoice yang pernah lo buat ada di sini 📋
               </p>
+              {invoices.length > 0 && (
+                <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportCSV}>
+                  <Download className="w-4 h-4 mr-1" />
+                  Export CSV
+                </Button>
+              )}
             </div>
 
             {/* Filters */}
