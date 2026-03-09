@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X } from 'lucide-react';
+import { format } from 'date-fns';
+import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
@@ -9,6 +11,8 @@ import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, formatDate, calculateTotal, calculateSubtotal } from '@/lib/invoice';
 import Papa from 'papaparse';
 import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +32,8 @@ const Riwayat = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -49,8 +55,17 @@ const Riwayat = () => {
       statusFilter === 'all' ||
       invoice.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const invoiceDate = new Date(invoice.invoiceDate);
+    const matchesDateFrom = !dateFrom || invoiceDate >= dateFrom;
+    const matchesDateTo = !dateTo || invoiceDate <= dateTo;
+
+    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
   });
+
+  const clearDateFilter = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+  };
 
   const handleDelete = (id: string) => {
     if (user) {
@@ -152,6 +167,39 @@ const Riwayat = () => {
                   Unpaid
                 </Button>
               </div>
+            </div>
+
+            {/* Date Range Filter */}
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="w-4 h-4 mr-1" />
+                    {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                </PopoverContent>
+              </Popover>
+              <span className="text-muted-foreground text-sm">—</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="w-4 h-4 mr-1" />
+                    {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                </PopoverContent>
+              </Popover>
+              {(dateFrom || dateTo) && (
+                <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                  <X className="w-4 h-4 mr-1" />
+                  Reset
+                </Button>
+              )}
             </div>
 
             {/* Invoice List */}
