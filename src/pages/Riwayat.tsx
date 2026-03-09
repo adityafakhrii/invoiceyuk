@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { formatCurrency, formatDate, calculateTotal } from '@/lib/invoice';
+import { formatCurrency, formatDate, calculateTotal, calculateSubtotal } from '@/lib/invoice';
+import Papa from 'papaparse';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -58,6 +59,31 @@ const Riwayat = () => {
     }
   };
 
+  const handleExportCSV = () => {
+    const dataToExport = filteredInvoices.map((inv) => ({
+      'No Invoice': inv.invoiceNumber,
+      'Nama Bisnis': inv.businessName,
+      'Nama Klien': inv.clientName,
+      'Kontak Klien': inv.clientContact || '-',
+      'Tanggal Invoice': formatDate(inv.invoiceDate),
+      'Jatuh Tempo': formatDate(inv.dueDate),
+      'Subtotal': calculateSubtotal(inv.items),
+      'Pajak (%)': inv.tax || 0,
+      'Total': calculateTotal(inv.items, inv.tax),
+      'Status': inv.status === 'paid' ? 'Lunas' : 'Belum Lunas',
+    }));
+
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast({ title: 'Export berhasil! 📥', description: `${dataToExport.length} invoice berhasil di-export ke CSV` });
+  };
+
   const handleToggleStatus = (id: string) => {
     if (user) {
       toggleStatus(id, user.id);
@@ -80,6 +106,12 @@ const Riwayat = () => {
               <p className="text-muted-foreground">
                 Semua invoice yang pernah lo buat ada di sini 📋
               </p>
+              {invoices.length > 0 && (
+                <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportCSV}>
+                  <Download className="w-4 h-4 mr-1" />
+                  Export CSV
+                </Button>
+              )}
             </div>
 
             {/* Filters */}
