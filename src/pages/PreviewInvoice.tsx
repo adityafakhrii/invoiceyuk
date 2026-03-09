@@ -1,7 +1,18 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Printer, Phone, Instagram, Mail } from 'lucide-react';
+import { ArrowLeft, Download, Printer, Phone, Instagram, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import {
@@ -21,6 +32,8 @@ const PreviewInvoice = () => {
   const navigate = useNavigate();
   const invoiceRef = useRef<HTMLDivElement>(null);
   const getInvoice = useInvoiceStore((state) => state.getInvoice);
+  const [waNumber, setWaNumber] = useState('');
+  const [waDialogOpen, setWaDialogOpen] = useState(false);
 
   const invoice = id ? getInvoice(id) : undefined;
 
@@ -78,6 +91,44 @@ const PreviewInvoice = () => {
     window.print();
   };
 
+  // WhatsApp
+
+  const formatWhatsAppNumber = (num: string): string => {
+    let clean = num.replace(/[^0-9]/g, '');
+    if (clean.startsWith('0')) clean = '62' + clean.slice(1);
+    if (!clean.startsWith('62')) clean = '62' + clean;
+    return clean;
+  };
+
+  const handleSendWhatsApp = () => {
+    const clean = waNumber.replace(/[^0-9+]/g, '');
+    if (clean.length < 8) {
+      toast({ title: 'Oops!', description: 'Nomor WhatsApp tidak valid', variant: 'destructive' });
+      return;
+    }
+
+    const formattedNum = formatWhatsAppNumber(clean);
+
+    const message = encodeURIComponent(
+      `Halo ${invoice.clientName},\n\n` +
+      `Berikut invoice dari *${invoice.businessName}*:\n\n` +
+      `📄 No: ${invoice.invoiceNumber}\n` +
+      `📅 Tanggal: ${formatDate(invoice.invoiceDate)}\n` +
+      `⏰ Jatuh Tempo: ${formatDate(invoice.dueDate)}\n\n` +
+      `*Detail Item:*\n` +
+      invoice.items.map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`).join('\n') +
+      `\n\n` +
+      (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
+      `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n\n` +
+      (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
+      `Terima kasih! 🙏`
+    );
+
+    window.open(`https://wa.me/${formattedNum}?text=${message}`, '_blank');
+    setWaDialogOpen(false);
+    toast({ title: 'WhatsApp dibuka! 📱', description: 'Pesan invoice siap dikirim ke klien' });
+  };
+
   const getTemplateStyles = () => {
     switch (invoice.template) {
       case 'elegant':
@@ -127,7 +178,48 @@ const PreviewInvoice = () => {
                 Selesai
               </Button>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
+                <Dialog open={waDialogOpen} onOpenChange={(open) => {
+                  setWaDialogOpen(open);
+                  if (open) setWaNumber(invoice.clientContact || '');
+                }}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline-light" className="bg-green-500/10 text-green-600 border-green-500/30 hover:bg-green-500/20">
+                      <MessageCircle className="w-4 h-4" />
+                      WhatsApp
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Kirim Invoice via WhatsApp</DialogTitle>
+                      <DialogDescription>
+                        Masukkan nomor WhatsApp klien untuk mengirim detail invoice
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="waNumber">Nomor WhatsApp</Label>
+                        <Input
+                          id="waNumber"
+                          placeholder="Contoh: 08123456789"
+                          value={waNumber}
+                          onChange={(e) => setWaNumber(e.target.value.replace(/[^0-9+\-\s]/g, ''))}
+                          maxLength={20}
+                        />
+                        <p className="text-xs text-muted-foreground">Format: 08xx atau +62xx</p>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline-light" onClick={() => setWaDialogOpen(false)}>
+                        Batal
+                      </Button>
+                      <Button onClick={handleSendWhatsApp} className="bg-green-600 hover:bg-green-700 text-white">
+                        <MessageCircle className="w-4 h-4 mr-1" />
+                        Kirim ke WhatsApp
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
                 <Button variant="outline-light" onClick={handlePrint}>
                   <Printer className="w-4 h-4" />
                   Print
