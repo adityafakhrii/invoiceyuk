@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { useInvoiceStore } from "@/store/invoiceStore";
 import logoInvoiceYuk from "@/assets/logo-invoiceyuk.png";
+import InvoiceReminderBanner from "@/components/InvoiceReminderBanner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
