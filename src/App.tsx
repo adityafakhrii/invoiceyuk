@@ -36,6 +36,7 @@ const App = () => (
           <Route path="/edit-invoice/:id" element={<EditInvoice />} />
           <Route path="/riwayat" element={<Riwayat />} />
           <Route path="/preview/:id" element={<PreviewInvoice />} />
+          <Route path="/laporan" element={<Laporan />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

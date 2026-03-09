@@ -15,6 +15,7 @@ const Navbar = () => {
     { path: '/buat-invoice', label: 'Invoice', icon: Receipt },
     { path: '/buat-quotation', label: 'Quotation', icon: FileEdit },
     { path: '/riwayat', label: 'Riwayat', icon: History },
+    { path: '/laporan', label: 'Laporan', icon: BarChart3 },
   ];
 
   const handleLogout = () => {
