@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
 import { useInvoiceStore } from "@/store/invoiceStore";
 import logoInvoiceYuk from "@/assets/logo-invoiceyuk.png";
+import InvoiceReminderBanner from "@/components/InvoiceReminderBanner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -174,6 +175,9 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Overdue Reminders */}
+        <InvoiceReminderBanner invoices={invoices} />
 
         {/* Menu Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
