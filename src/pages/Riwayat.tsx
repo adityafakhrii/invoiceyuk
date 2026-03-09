@@ -55,8 +55,17 @@ const Riwayat = () => {
       statusFilter === 'all' ||
       invoice.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const invoiceDate = new Date(invoice.invoiceDate);
+    const matchesDateFrom = !dateFrom || invoiceDate >= dateFrom;
+    const matchesDateTo = !dateTo || invoiceDate <= dateTo;
+
+    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
   });
+
+  const clearDateFilter = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+  };
 
   const handleDelete = (id: string) => {
     if (user) {
