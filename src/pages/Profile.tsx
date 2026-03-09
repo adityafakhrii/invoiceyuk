@@ -62,6 +62,11 @@ const Profile = () => {
     if (user) {
       setName(user.name);
       setUsername(user.username);
+      // Load default currency from localStorage
+      const saved = localStorage.getItem(`default-currency-${user.id}`);
+      if (saved && ['IDR', 'USD', 'EUR'].includes(saved)) {
+        setDefaultCurrency(saved as CurrencyCode);
+      }
     }
   }, [isAuthenticated, user, navigate]);
 
