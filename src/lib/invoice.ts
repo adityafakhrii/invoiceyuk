@@ -19,6 +19,14 @@ export interface SocialMedia {
 
 export type SignatureFont = 'dancing' | 'vibes' | 'pacifico';
 
+export type CurrencyCode = 'IDR' | 'USD' | 'EUR';
+
+export const CURRENCIES: { code: CurrencyCode; label: string; symbol: string; locale: string }[] = [
+  { code: 'IDR', label: 'Rupiah (IDR)', symbol: 'Rp', locale: 'id-ID' },
+  { code: 'USD', label: 'US Dollar (USD)', symbol: '$', locale: 'en-US' },
+  { code: 'EUR', label: 'Euro (EUR)', symbol: '€', locale: 'de-DE' },
+];
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -39,6 +47,7 @@ export interface Invoice {
   socialMedia?: SocialMedia;
   status: 'paid' | 'unpaid';
   template: 'simple' | 'elegant' | 'corporate';
+  currency: CurrencyCode;
   createdAt: string;
 }
 
@@ -58,12 +67,13 @@ export const calculateTotal = (items: InvoiceItem[], tax?: number): number => {
   return subtotal + taxAmount;
 };
 
-export const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('id-ID', {
+export const formatCurrency = (amount: number, currency: CurrencyCode = 'IDR'): string => {
+  const config = CURRENCIES.find((c) => c.code === currency) || CURRENCIES[0];
+  return new Intl.NumberFormat(config.locale, {
     style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    currency: config.code,
+    minimumFractionDigits: currency === 'IDR' ? 0 : 2,
+    maximumFractionDigits: currency === 'IDR' ? 0 : 2,
   }).format(amount);
 };
 

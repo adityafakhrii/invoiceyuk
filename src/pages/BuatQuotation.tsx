@@ -179,6 +179,7 @@ const BuatQuotation = () => {
       } : undefined,
       status: 'unpaid', // For quotation, this represents "pending"
       template: selectedTemplate,
+      currency: 'IDR',
       createdAt: new Date().toISOString(),
     };
 

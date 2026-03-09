@@ -16,6 +16,8 @@ import {
   Invoice, 
   InvoiceItem,
   SignatureFont,
+  CurrencyCode,
+  CURRENCIES,
   getSavedBusinessNames,
   saveBusinessName,
 } from '@/lib/invoice';
@@ -75,6 +77,7 @@ const EditInvoice = () => {
 
   // Template
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
+  const [currency, setCurrency] = useState<CurrencyCode>('IDR');
 
   // Load invoice data
   useEffect(() => {
@@ -100,6 +103,7 @@ const EditInvoice = () => {
       setInstagram(invoice.socialMedia?.instagram || '');
       setEmail(invoice.socialMedia?.email || '');
       setSelectedTemplate(invoice.template);
+      setCurrency(invoice.currency || 'IDR');
     }
   }, [invoice]);
 
@@ -205,6 +209,7 @@ const EditInvoice = () => {
         email: email || undefined,
       } : undefined,
       template: selectedTemplate,
+      currency,
     };
 
     if (user) {
@@ -356,7 +361,7 @@ const EditInvoice = () => {
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Detail Invoice</h2>
                 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="invoiceNumber">Nomor Invoice</Label>
                     <Input
@@ -364,6 +369,19 @@ const EditInvoice = () => {
                       value={invoiceNumber}
                       onChange={(e) => setInvoiceNumber(e.target.value)}
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Mata Uang</Label>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {CURRENCIES.map((c) => (
+                        <option key={c.code} value={c.code}>{c.label}</option>
+                      ))}
+                    </select>
                   </div>
                   
                   <div className="space-y-2">

@@ -83,6 +83,7 @@ const Riwayat = () => {
       'Kontak Klien': inv.clientContact || '-',
       'Tanggal Invoice': formatDate(inv.invoiceDate),
       'Jatuh Tempo': formatDate(inv.dueDate),
+      'Mata Uang': inv.currency || 'IDR',
       'Subtotal': calculateSubtotal(inv.items),
       'Pajak (%)': inv.tax || 0,
       'Total': calculateTotal(inv.items, inv.tax),
@@ -250,7 +251,7 @@ const Riwayat = () => {
                       <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
                         <div className="text-right">
                           <p className="font-bold text-lg text-foreground">
-                            {formatCurrency(calculateTotal(invoice.items, invoice.tax))}
+                            {formatCurrency(calculateTotal(invoice.items, invoice.tax), invoice.currency)}
                           </p>
                           <button
                             onClick={() => handleToggleStatus(invoice.id)}

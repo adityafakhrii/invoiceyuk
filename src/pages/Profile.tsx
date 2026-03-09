@@ -8,7 +8,8 @@ import {
   Loader2,
   Eye,
   EyeOff,
-  CheckCircle2
+  CheckCircle2,
+  Globe,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
+import { CurrencyCode, CURRENCIES } from '@/lib/invoice';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
@@ -40,6 +42,7 @@ const Profile = () => {
   const [username, setUsername] = useState('');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileErrors, setProfileErrors] = useState<{ name?: string; username?: string }>({});
+  const [defaultCurrency, setDefaultCurrency] = useState<CurrencyCode>('IDR');
 
   // PIN form
   const [oldPin, setOldPin] = useState('');
@@ -59,6 +62,11 @@ const Profile = () => {
     if (user) {
       setName(user.name);
       setUsername(user.username);
+      // Load default currency from localStorage
+      const saved = localStorage.getItem(`default-currency-${user.id}`);
+      if (saved && ['IDR', 'USD', 'EUR'].includes(saved)) {
+        setDefaultCurrency(saved as CurrencyCode);
+      }
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -233,6 +241,35 @@ const Profile = () => {
                 )}
                 Simpan Profil
               </Button>
+            </div>
+          </section>
+
+          {/* Default Currency Section */}
+          <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card mb-6">
+            <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              Mata Uang Default
+            </h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
+            </p>
+            <div className="flex items-center gap-3">
+              <select
+                value={defaultCurrency}
+                onChange={(e) => {
+                  const val = e.target.value as CurrencyCode;
+                  setDefaultCurrency(val);
+                  if (user) {
+                    localStorage.setItem(`default-currency-${user.id}`, val);
+                  }
+                  toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
+                }}
+                className="flex h-10 w-full max-w-xs rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {CURRENCIES.map((c) => (
+                  <option key={c.code} value={c.code}>{c.label}</option>
+                ))}
+              </select>
             </div>
           </section>
 
