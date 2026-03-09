@@ -226,10 +226,10 @@ const PreviewInvoice = () => {
                               {item.quantity}
                             </td>
                             <td className="px-4 py-4 text-right text-muted-foreground">
-                              {formatCurrency(item.price)}
+                              {formatCurrency(item.price, invoice.currency)}
                             </td>
                             <td className="px-4 py-4 text-right font-medium text-foreground">
-                              {formatCurrency(item.quantity * item.price)}
+                              {formatCurrency(item.quantity * item.price, invoice.currency)}
                             </td>
                           </tr>
                         ))}
