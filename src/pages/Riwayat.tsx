@@ -203,6 +203,14 @@ const Riwayat = () => {
                               <span className="hidden sm:inline">Paid</span>
                             </Button>
                           )}
+                          <Button 
+                            variant="outline-light" 
+                            size="sm"
+                            onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
+                          >
+                            <Copy className="w-4 h-4" />
+                            <span className="hidden sm:inline">Duplikat</span>
+                          </Button>
                           <Link to={`/edit-invoice/${invoice.id}`}>
                             <Button variant="outline-light" size="sm">
                               <Pencil className="w-4 h-4" />

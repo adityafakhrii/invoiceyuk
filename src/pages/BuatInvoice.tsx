@@ -32,19 +32,22 @@ const templates = [
 
 const BuatInvoice = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
   const { user, isAuthenticated } = useAuthStore();
 
+  const dup = (location.state as { duplicateFrom?: Invoice })?.duplicateFrom;
+
   // Business info
-  const [businessName, setBusinessName] = useState('');
-  const [businessLogo, setBusinessLogo] = useState<string>('');
+  const [businessName, setBusinessName] = useState(dup?.businessName || '');
+  const [businessLogo, setBusinessLogo] = useState<string>(dup?.businessLogo || '');
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [showSavedNames, setShowSavedNames] = useState(false);
 
   // Client info
-  const [clientName, setClientName] = useState('');
-  const [clientContact, setClientContact] = useState('');
-  const [clientAddress, setClientAddress] = useState('');
+  const [clientName, setClientName] = useState(dup?.clientName || '');
+  const [clientContact, setClientContact] = useState(dup?.clientContact || '');
+  const [clientAddress, setClientAddress] = useState(dup?.clientAddress || '');
 
   // Invoice details
   const [invoiceNumber, setInvoiceNumber] = useState(generateInvoiceNumber());
@@ -52,29 +55,29 @@ const BuatInvoice = () => {
   const [dueDate, setDueDate] = useState<Date | undefined>();
 
   // Items
-  const [items, setItems] = useState<InvoiceItem[]>([
-    { id: '1', name: '', quantity: 1, price: 0 }
-  ]);
-  const [tax, setTax] = useState<string>('');
-  const [notes, setNotes] = useState('');
+  const [items, setItems] = useState<InvoiceItem[]>(
+    dup?.items?.map((item, i) => ({ ...item, id: String(i + 1) })) || [{ id: '1', name: '', quantity: 1, price: 0 }]
+  );
+  const [tax, setTax] = useState<string>(dup?.tax ? String(dup.tax) : '');
+  const [notes, setNotes] = useState(dup?.notes || '');
 
   // Payment info
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [accountName, setAccountName] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState(dup?.paymentInfo?.method || '');
+  const [accountName, setAccountName] = useState(dup?.paymentInfo?.accountName || '');
+  const [accountNumber, setAccountNumber] = useState(dup?.paymentInfo?.accountNumber || '');
 
   // Signature
-  const [signatureName, setSignatureName] = useState('');
-  const [signatureImage, setSignatureImage] = useState<string>('');
-  const [signatureFont, setSignatureFont] = useState<SignatureFont>('dancing');
+  const [signatureName, setSignatureName] = useState(dup?.signatureName || '');
+  const [signatureImage, setSignatureImage] = useState<string>(dup?.signatureImage || '');
+  const [signatureFont, setSignatureFont] = useState<SignatureFont>(dup?.signatureFont || 'dancing');
 
   // Social media
-  const [whatsapp, setWhatsapp] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState(dup?.socialMedia?.whatsapp || '');
+  const [instagram, setInstagram] = useState(dup?.socialMedia?.instagram || '');
+  const [email, setEmail] = useState(dup?.socialMedia?.email || '');
 
   // Template
-  const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
+  const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>(dup?.template || 'simple');
 
   useEffect(() => {
     if (!isAuthenticated) {
