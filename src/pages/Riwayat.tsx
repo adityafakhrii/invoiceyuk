@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2 } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Navbar from '@/components/Navbar';
@@ -203,6 +203,14 @@ const Riwayat = () => {
                               <span className="hidden sm:inline">Paid</span>
                             </Button>
                           )}
+                          <Button 
+                            variant="outline-light" 
+                            size="sm"
+                            onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
+                          >
+                            <Copy className="w-4 h-4" />
+                            <span className="hidden sm:inline">Duplikat</span>
+                          </Button>
                           <Link to={`/edit-invoice/${invoice.id}`}>
                             <Button variant="outline-light" size="sm">
                               <Pencil className="w-4 h-4" />
