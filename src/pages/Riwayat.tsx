@@ -245,6 +245,7 @@ const Riwayat = () => {
                           <p className="text-sm text-muted-foreground">{invoice.invoiceNumber}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {invoice.businessName} • {formatDate(invoice.invoiceDate)}
+                            {invoice.category && <span className="ml-1">• {invoice.category}</span>}
                           </p>
                         </div>
                       </div>
