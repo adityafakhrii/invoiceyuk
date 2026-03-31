@@ -199,6 +199,7 @@ const BuatInvoice = () => {
       status: 'unpaid',
       template: selectedTemplate,
       currency,
+      downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
       createdAt: new Date().toISOString(),
     };
 
