@@ -148,6 +148,16 @@ const BuatInvoice = () => {
     setShowSavedNames(false);
   };
 
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setShowSavedCategories(value.length > 0 && savedCategories.some(c => c.toLowerCase().includes(value.toLowerCase())));
+  };
+
+  const selectCategory = (cat: string) => {
+    setCategory(cat);
+    setShowSavedCategories(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
