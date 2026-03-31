@@ -182,9 +182,13 @@ const BuatInvoice = () => {
       return;
     }
 
-    // Save business name for future use
+    // Save business name and category for future use
     saveBusinessName(businessName);
     setSavedNames(getSavedBusinessNames());
+    if (category.trim()) {
+      saveCategory(category);
+      setSavedCategories(getSavedCategories());
+    }
 
     const invoice: Invoice = {
       id: Date.now().toString(),
