@@ -201,9 +201,13 @@ const EditInvoice = () => {
       return;
     }
 
-    // Save business name for future use
+    // Save business name and category for future use
     saveBusinessName(businessName);
     setSavedNames(getSavedBusinessNames());
+    if (category.trim()) {
+      saveCategory(category);
+      setSavedCategories(getSavedCategories());
+    }
 
     const updatedInvoice: Partial<Invoice> = {
       invoiceNumber,
@@ -233,6 +237,7 @@ const EditInvoice = () => {
       template: selectedTemplate,
       currency,
       downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+      category: category.trim() || undefined,
     };
 
     if (user) {
