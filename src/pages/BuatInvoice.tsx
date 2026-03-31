@@ -220,6 +220,7 @@ const BuatInvoice = () => {
       template: selectedTemplate,
       currency,
       downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+      category: category.trim() || undefined,
       createdAt: new Date().toISOString(),
     };
 
