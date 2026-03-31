@@ -47,6 +47,9 @@ const EditInvoice = () => {
   const [businessLogo, setBusinessLogo] = useState<string>('');
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [showSavedNames, setShowSavedNames] = useState(false);
+  const [category, setCategory] = useState('');
+  const [savedCategories, setSavedCategories] = useState<string[]>([]);
+  const [showSavedCategories, setShowSavedCategories] = useState(false);
 
   // Client info
   const [clientName, setClientName] = useState('');
