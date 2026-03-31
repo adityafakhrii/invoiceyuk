@@ -87,6 +87,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _social_media: (invoice.socialMedia || {}) as unknown as Json,
         _status: invoice.status,
         _template: invoice.template,
+        _category: invoice.category || '',
       });
 
       if (error) throw error;
