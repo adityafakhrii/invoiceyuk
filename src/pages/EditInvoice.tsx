@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail } from 'lucide-react';
+import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail, Percent } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
