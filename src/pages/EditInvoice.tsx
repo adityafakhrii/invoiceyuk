@@ -114,11 +114,13 @@ const EditInvoice = () => {
       setCurrency(invoice.currency || 'IDR');
       setEnableDP(!!invoice.downPayment);
       setDownPayment(invoice.downPayment || 0);
+      setCategory(invoice.category || '');
     }
   }, [invoice]);
 
   useEffect(() => {
     setSavedNames(getSavedBusinessNames());
+    setSavedCategories(getSavedCategories());
   }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
