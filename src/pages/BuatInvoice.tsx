@@ -19,6 +19,8 @@ import {
   generateInvoiceNumber,
   getSavedBusinessNames,
   saveBusinessName,
+  getSavedCategories,
+  saveCategory,
   SignatureFont,
   CurrencyCode,
   CURRENCIES,
