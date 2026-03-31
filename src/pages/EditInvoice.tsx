@@ -21,6 +21,8 @@ import {
   CURRENCIES,
   getSavedBusinessNames,
   saveBusinessName,
+  getSavedCategories,
+  saveCategory,
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
