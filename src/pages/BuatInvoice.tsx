@@ -476,21 +476,71 @@ const BuatInvoice = () => {
                   </Button>
                 </div>
 
-                {/* Tax */}
+                {/* Tax & DP */}
                 <div className="mt-6 pt-6 border-t border-border">
-                  <div className="max-w-xs space-y-2">
-                    <Label htmlFor="tax">Pajak % (Opsional)</Label>
-                    <Input
-                      id="tax"
-                      type="number"
-                      min="0"
-                      max="100"
-                      placeholder="Contoh: 11"
-                      value={tax}
-                      onChange={(e) => setTax(e.target.value)}
-                    />
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="tax">Pajak % (Opsional)</Label>
+                      <Input
+                        id="tax"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="Contoh: 11"
+                        value={tax}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^\d.]/g, '');
+                          setTax(val);
+                        }}
+                        className="max-w-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                    </div>
                   </div>
                 </div>
+              </section>
+
+              {/* Down Payment (DP) */}
+              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Percent className="w-5 h-5 text-accent" />
+                    Down Payment / DP (Opsional)
+                  </h2>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <span className="text-sm text-muted-foreground">{enableDP ? 'Aktif' : 'Nonaktif'}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEnableDP(!enableDP);
+                        if (enableDP) setDownPayment(0);
+                      }}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                        enableDP ? "bg-primary" : "bg-muted"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                          enableDP ? "translate-x-6" : "translate-x-1"
+                        )}
+                      />
+                    </button>
+                  </label>
+                </div>
+                
+                {enableDP && (
+                  <div className="space-y-2">
+                    <Label>Jumlah DP</Label>
+                    <CurrencyInput
+                      value={downPayment}
+                      onChange={setDownPayment}
+                      placeholder="Contoh: 5.000.000"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Masukkan jumlah DP yang sudah dibayar klien. Sisa tagihan akan ditampilkan di invoice.
+                    </p>
+                  </div>
+                )}
               </section>
 
               {/* Payment Info */}
