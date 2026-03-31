@@ -103,6 +103,7 @@ const BuatInvoice = () => {
       return;
     }
     setSavedNames(getSavedBusinessNames());
+    setSavedCategories(getSavedCategories());
   }, [isAuthenticated, navigate]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
