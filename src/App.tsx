@@ -19,7 +19,11 @@ import NotFound from "./pages/NotFound";
 // InvoiceYuk - Bikin Invoice, Gampang Banget!
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // Check session expiry on every app render
+  useAuthStore.getState().checkSession();
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
