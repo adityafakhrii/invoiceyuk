@@ -43,6 +43,11 @@ export function mapDatabaseError(error: unknown): string {
   // Check for custom function exceptions (safe messages from our RPC functions)
   const message = pgError?.message?.toLowerCase() || '';
   
+  // Rate limiting
+  if (message.includes('terlalu banyak percobaan') || message.includes('too many')) {
+    return 'Terlalu banyak percobaan login. Coba lagi dalam 15 menit.';
+  }
+  
   // Authentication/Authorization errors
   if (message.includes('only admins') || message.includes('access denied')) {
     return 'Akses ditolak - hanya admin';

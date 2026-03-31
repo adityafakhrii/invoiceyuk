@@ -97,6 +97,24 @@ export type Database = {
           },
         ]
       }
+      login_attempts: {
+        Row: {
+          attempted_at: string
+          id: string
+          username: string
+        }
+        Insert: {
+          attempted_at?: string
+          id?: string
+          username: string
+        }
+        Update: {
+          attempted_at?: string
+          id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       pin_users: {
         Row: {
           created_at: string
@@ -159,6 +177,7 @@ export type Database = {
         Args: { _new_pin: string; _old_pin: string; _user_id: string }
         Returns: boolean
       }
+      cleanup_old_login_attempts: { Args: never; Returns: undefined }
       create_invoice: {
         Args: {
           _business_logo: string
