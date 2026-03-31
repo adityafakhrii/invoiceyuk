@@ -462,20 +462,22 @@ const EditInvoice = () => {
                       <div className="col-span-4 md:col-span-2 space-y-2">
                         {index === 0 && <Label>Qty</Label>}
                         <Input
-                          type="number"
-                          min="1"
+                          type="text"
+                          inputMode="numeric"
                           value={item.quantity}
-                          onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            updateItem(item.id, 'quantity', parseInt(val) || 1);
+                          }}
+                          className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </div>
                       <div className="col-span-6 md:col-span-4 space-y-2">
-                        {index === 0 && <Label>Harga (Rp)</Label>}
-                        <Input
-                          type="number"
-                          min="0"
+                        {index === 0 && <Label>Harga</Label>}
+                        <CurrencyInput
+                          value={item.price}
+                          onChange={(val) => updateItem(item.id, 'price', val)}
                           placeholder="0"
-                          value={item.price || ''}
-                          onChange={(e) => updateItem(item.id, 'price', parseInt(e.target.value) || 0)}
                         />
                       </div>
                       <div className="col-span-2 md:col-span-1">
