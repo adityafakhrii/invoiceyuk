@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Navbar from '@/components/Navbar';
+import CurrencyInput from '@/components/CurrencyInput';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
