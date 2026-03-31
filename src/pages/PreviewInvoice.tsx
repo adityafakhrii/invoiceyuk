@@ -360,6 +360,18 @@ const PreviewInvoice = () => {
                           <span>TOTAL :</span>
                           <span>{formatCurrency(total, invoice.currency)}</span>
                         </div>
+                        {dpAmount > 0 && (
+                          <>
+                            <div className="flex justify-between text-muted-foreground">
+                              <span>DOWN PAYMENT (DP) :</span>
+                              <span>- {formatCurrency(dpAmount, invoice.currency)}</span>
+                            </div>
+                            <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3 mt-2">
+                              <span>SISA TAGIHAN :</span>
+                              <span>{formatCurrency(remaining, invoice.currency)}</span>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
