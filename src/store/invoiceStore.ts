@@ -52,6 +52,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         template: inv.template as Invoice['template'],
         currency: ((inv as any).currency as Invoice['currency']) || 'IDR',
         downPayment: (inv as any).down_payment ? Number((inv as any).down_payment) : undefined,
+        category: (inv as any).category || undefined,
         createdAt: inv.created_at,
       }));
 
