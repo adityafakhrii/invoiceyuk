@@ -121,7 +121,9 @@ const PreviewInvoice = () => {
       invoice.items.map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`).join('\n') +
       `\n\n` +
       (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
-      `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n\n` +
+      `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n` +
+      (dpAmount > 0 ? `DP: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
+      `\n` +
       (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
       `Terima kasih! 🙏`
     );
