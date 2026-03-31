@@ -12,43 +12,52 @@ interface AuthUser {
   role: AppRole;
 }
 
-interface AuthState {
+interface PersistedAuthState {
   user: AuthUser | null;
-  isAuthenticated: boolean;
+  _isAuthenticated: boolean;
   expiresAt: number | null;
+}
+
+interface AuthState extends PersistedAuthState {
+  isAuthenticated: boolean;
   login: (user: AuthUser) => void;
   logout: () => void;
   updateUser: (updates: Partial<AuthUser>) => void;
-  isSessionValid: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
-      isAuthenticated: false,
+      _isAuthenticated: false,
       expiresAt: null,
-      login: (user) => set({ 
-        user, 
-        isAuthenticated: true, 
-        expiresAt: Date.now() + SESSION_TTL_MS 
-      }),
-      logout: () => set({ user: null, isAuthenticated: false, expiresAt: null }),
-      updateUser: (updates) => set((state) => ({
-        user: state.user ? { ...state.user, ...updates } : null
-      })),
-      isSessionValid: () => {
+      get isAuthenticated() {
         const state = get();
-        if (!state.isAuthenticated || !state.expiresAt) return false;
-        if (Date.now() > state.expiresAt) {
-          set({ user: null, isAuthenticated: false, expiresAt: null });
+        if (!state._isAuthenticated) return false;
+        if (state.expiresAt && Date.now() > state.expiresAt) {
+          // Session expired — clear it asynchronously
+          setTimeout(() => set({ user: null, _isAuthenticated: false, expiresAt: null }), 0);
           return false;
         }
         return true;
       },
+      login: (user) => set({ 
+        user, 
+        _isAuthenticated: true, 
+        expiresAt: Date.now() + SESSION_TTL_MS 
+      }),
+      logout: () => set({ user: null, _isAuthenticated: false, expiresAt: null }),
+      updateUser: (updates) => set((state) => ({
+        user: state.user ? { ...state.user, ...updates } : null
+      })),
     }),
     {
       name: 'auth-storage',
+      partialize: (state) => ({
+        user: state.user,
+        _isAuthenticated: state._isAuthenticated,
+        expiresAt: state.expiresAt,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state && state.expiresAt && Date.now() > state.expiresAt) {
           state.logout();
