@@ -283,6 +283,12 @@ const PreviewInvoice = () => {
                     </div>
                     <div className="md:text-right">
                       <div className="space-y-2">
+                        {invoice.category && (
+                          <div>
+                            <p className="text-sm text-muted-foreground">Kategori</p>
+                            <p className="font-medium text-foreground">{invoice.category}</p>
+                          </div>
+                        )}
                         <div>
                           <p className="text-sm text-muted-foreground">Tanggal Invoice</p>
                           <p className="font-medium text-foreground">{formatDate(invoice.invoiceDate)}</p>

@@ -49,6 +49,7 @@ export interface Invoice {
   template: 'simple' | 'elegant' | 'corporate';
   currency: CurrencyCode;
   downPayment?: number; // DP amount (absolute value, not percentage)
+  category?: string;
   createdAt: string;
 }
 
@@ -111,5 +112,25 @@ export const saveBusinessName = (name: string): void => {
   if (!names.includes(name) && name.trim()) {
     names.unshift(name);
     localStorage.setItem(SAVED_BUSINESS_NAMES_KEY, JSON.stringify(names.slice(0, 10)));
+  }
+};
+
+// Saved categories store
+const SAVED_CATEGORIES_KEY = 'saved-categories';
+
+export const getSavedCategories = (): string[] => {
+  try {
+    const saved = localStorage.getItem(SAVED_CATEGORIES_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveCategory = (name: string): void => {
+  const cats = getSavedCategories();
+  if (!cats.includes(name) && name.trim()) {
+    cats.unshift(name);
+    localStorage.setItem(SAVED_CATEGORIES_KEY, JSON.stringify(cats.slice(0, 20)));
   }
 };

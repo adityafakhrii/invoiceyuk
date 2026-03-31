@@ -19,6 +19,8 @@ import {
   generateInvoiceNumber,
   getSavedBusinessNames,
   saveBusinessName,
+  getSavedCategories,
+  saveCategory,
   SignatureFont,
   CurrencyCode,
   CURRENCIES,
@@ -46,6 +48,9 @@ const BuatInvoice = () => {
   const [businessLogo, setBusinessLogo] = useState<string>(dup?.businessLogo || '');
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [showSavedNames, setShowSavedNames] = useState(false);
+  const [category, setCategory] = useState(dup?.category || '');
+  const [savedCategories, setSavedCategories] = useState<string[]>([]);
+  const [showSavedCategories, setShowSavedCategories] = useState(false);
 
   // Client info
   const [clientName, setClientName] = useState(dup?.clientName || '');
@@ -98,6 +103,7 @@ const BuatInvoice = () => {
       return;
     }
     setSavedNames(getSavedBusinessNames());
+    setSavedCategories(getSavedCategories());
   }, [isAuthenticated, navigate]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +148,16 @@ const BuatInvoice = () => {
     setShowSavedNames(false);
   };
 
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setShowSavedCategories(value.length > 0 && savedCategories.some(c => c.toLowerCase().includes(value.toLowerCase())));
+  };
+
+  const selectCategory = (cat: string) => {
+    setCategory(cat);
+    setShowSavedCategories(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -166,9 +182,13 @@ const BuatInvoice = () => {
       return;
     }
 
-    // Save business name for future use
+    // Save business name and category for future use
     saveBusinessName(businessName);
     setSavedNames(getSavedBusinessNames());
+    if (category.trim()) {
+      saveCategory(category);
+      setSavedCategories(getSavedCategories());
+    }
 
     const invoice: Invoice = {
       id: Date.now().toString(),
@@ -200,6 +220,7 @@ const BuatInvoice = () => {
       template: selectedTemplate,
       currency,
       downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+      category: category.trim() || undefined,
       createdAt: new Date().toISOString(),
     };
 
@@ -292,6 +313,34 @@ const BuatInvoice = () => {
                       )}
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-6 space-y-2 relative">
+                  <Label htmlFor="category">Kategori Invoice (Opsional)</Label>
+                  <Input
+                    id="category"
+                    placeholder="Contoh: Desain Grafis, Konsultasi, Fotografi"
+                    value={category}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                    onFocus={() => setShowSavedCategories(savedCategories.length > 0 && category.length === 0 ? true : savedCategories.some(c => c.toLowerCase().includes(category.toLowerCase())))}
+                    onBlur={() => setTimeout(() => setShowSavedCategories(false), 200)}
+                  />
+                  {showSavedCategories && savedCategories.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                      {savedCategories
+                        .filter(c => category.length === 0 || c.toLowerCase().includes(category.toLowerCase()))
+                        .map((cat, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => selectCategory(cat)}
+                            className="w-full text-left px-4 py-2 hover:bg-muted text-sm text-foreground"
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                    </div>
+                  )}
                 </div>
               </section>
 

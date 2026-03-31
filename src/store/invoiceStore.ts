@@ -52,6 +52,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         template: inv.template as Invoice['template'],
         currency: ((inv as any).currency as Invoice['currency']) || 'IDR',
         downPayment: (inv as any).down_payment ? Number((inv as any).down_payment) : undefined,
+        category: (inv as any).category || undefined,
         createdAt: inv.created_at,
       }));
 
@@ -86,6 +87,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _social_media: (invoice.socialMedia || {}) as unknown as Json,
         _status: invoice.status,
         _template: invoice.template,
+        _category: invoice.category || '',
       });
 
       if (error) throw error;
@@ -126,6 +128,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _social_media: (merged.socialMedia || {}) as unknown as Json,
         _status: merged.status,
         _template: merged.template,
+        _category: merged.category || '',
       });
 
       if (error) throw error;

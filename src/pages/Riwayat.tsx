@@ -50,7 +50,8 @@ const Riwayat = () => {
     const matchesSearch =
       invoice.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      invoice.businessName.toLowerCase().includes(searchQuery.toLowerCase());
+      invoice.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (invoice.category || '').toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus =
       statusFilter === 'all' ||
@@ -244,6 +245,7 @@ const Riwayat = () => {
                           <p className="text-sm text-muted-foreground">{invoice.invoiceNumber}</p>
                           <p className="text-xs text-muted-foreground mt-1">
                             {invoice.businessName} • {formatDate(invoice.invoiceDate)}
+                            {invoice.category && <span className="ml-1">• {invoice.category}</span>}
                           </p>
                         </div>
                       </div>

@@ -224,6 +224,7 @@ export type Database = {
         Returns: {
           business_logo: string
           business_name: string
+          category: string
           client_address: string
           client_contact: string
           client_name: string
