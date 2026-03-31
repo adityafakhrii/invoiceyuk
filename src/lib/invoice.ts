@@ -48,6 +48,7 @@ export interface Invoice {
   status: 'paid' | 'unpaid';
   template: 'simple' | 'elegant' | 'corporate';
   currency: CurrencyCode;
+  downPayment?: number; // DP amount (absolute value, not percentage)
   createdAt: string;
 }
 
