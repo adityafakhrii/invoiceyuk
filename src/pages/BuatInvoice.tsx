@@ -48,6 +48,9 @@ const BuatInvoice = () => {
   const [businessLogo, setBusinessLogo] = useState<string>(dup?.businessLogo || '');
   const [savedNames, setSavedNames] = useState<string[]>([]);
   const [showSavedNames, setShowSavedNames] = useState(false);
+  const [category, setCategory] = useState(dup?.category || '');
+  const [savedCategories, setSavedCategories] = useState<string[]>([]);
+  const [showSavedCategories, setShowSavedCategories] = useState(false);
 
   // Client info
   const [clientName, setClientName] = useState(dup?.clientName || '');
