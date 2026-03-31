@@ -63,6 +63,8 @@ const BuatInvoice = () => {
   );
   const [tax, setTax] = useState<string>(dup?.tax ? String(dup.tax) : '');
   const [notes, setNotes] = useState(dup?.notes || '');
+  const [enableDP, setEnableDP] = useState(dup?.downPayment ? true : false);
+  const [downPayment, setDownPayment] = useState<number>(dup?.downPayment || 0);
 
   // Payment info
   const [paymentMethod, setPaymentMethod] = useState(dup?.paymentInfo?.method || '');
