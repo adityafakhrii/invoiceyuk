@@ -215,6 +215,7 @@ const EditInvoice = () => {
       } : undefined,
       template: selectedTemplate,
       currency,
+      downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
     };
 
     if (user) {
