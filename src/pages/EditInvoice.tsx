@@ -107,6 +107,8 @@ const EditInvoice = () => {
       setEmail(invoice.socialMedia?.email || '');
       setSelectedTemplate(invoice.template);
       setCurrency(invoice.currency || 'IDR');
+      setEnableDP(!!invoice.downPayment);
+      setDownPayment(invoice.downPayment || 0);
     }
   }, [invoice]);
 
