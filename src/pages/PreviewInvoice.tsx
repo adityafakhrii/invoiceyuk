@@ -372,7 +372,7 @@ const PreviewInvoice = () => {
                         {dpAmount > 0 && (
                           <>
                             <div className="flex justify-between text-muted-foreground">
-                              <span>DOWN PAYMENT (DP) :</span>
+                              <span>DOWN PAYMENT (DP){dpPercent > 0 ? ` — ${dpPercent}%` : ''} :</span>
                               <span>- {formatCurrency(dpAmount, invoice.currency)}</span>
                             </div>
                             <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3 mt-2">
