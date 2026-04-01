@@ -179,7 +179,7 @@ const EditInvoice = () => {
     setShowSavedCategories(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!id || !invoice) return;
@@ -247,7 +247,7 @@ const EditInvoice = () => {
     };
 
     if (user) {
-      updateInvoice(id, updatedInvoice, user.id);
+      await updateInvoice(id, updatedInvoice, user.id);
     }
     toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
     navigate(`/preview/${id}`);

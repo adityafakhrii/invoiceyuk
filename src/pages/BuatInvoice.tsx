@@ -156,7 +156,7 @@ const BuatInvoice = () => {
     setShowSavedCategories(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!businessName.trim()) {
@@ -225,7 +225,7 @@ const BuatInvoice = () => {
     };
 
     if (user) {
-      addInvoice(invoice, user.id);
+      await addInvoice(invoice, user.id);
       toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat dan disimpan' });
       navigate('/riwayat');
     }

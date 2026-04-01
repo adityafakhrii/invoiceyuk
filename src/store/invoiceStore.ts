@@ -52,6 +52,8 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         template: inv.template as Invoice['template'],
         currency: (inv.currency as Invoice['currency']) || 'IDR',
         downPayment: inv.down_payment ? Number(inv.down_payment) : undefined,
+        dpType: (inv.dp_type as 'amount' | 'percent') || undefined,
+        dpPercent: inv.dp_percent ? Number(inv.dp_percent) : undefined,
         category: inv.category || undefined,
         createdAt: inv.created_at,
       }));
@@ -88,6 +90,10 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _status: invoice.status,
         _template: invoice.template,
         _category: invoice.category || '',
+        _down_payment: invoice.downPayment || null,
+        _dp_type: invoice.dpType || null,
+        _dp_percent: invoice.dpPercent || null,
+        _currency: invoice.currency || 'IDR',
       });
 
       if (error) throw error;
@@ -129,6 +135,10 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         _status: merged.status,
         _template: merged.template,
         _category: merged.category || '',
+        _down_payment: merged.downPayment || null,
+        _dp_type: merged.dpType || null,
+        _dp_percent: merged.dpPercent || null,
+        _currency: merged.currency || 'IDR',
       });
 
       if (error) throw error;
