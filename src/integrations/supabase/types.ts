@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           business_logo: string | null
           business_name: string
+          category: string | null
           client_address: string | null
           client_contact: string | null
           client_name: string
@@ -42,6 +43,7 @@ export type Database = {
         Insert: {
           business_logo?: string | null
           business_name: string
+          category?: string | null
           client_address?: string | null
           client_contact?: string | null
           client_name: string
@@ -66,6 +68,7 @@ export type Database = {
         Update: {
           business_logo?: string | null
           business_name?: string
+          category?: string | null
           client_address?: string | null
           client_contact?: string | null
           client_name?: string
