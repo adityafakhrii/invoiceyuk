@@ -56,6 +56,7 @@ const PreviewInvoice = () => {
   const taxAmount = invoice.tax ? (subtotal * invoice.tax) / 100 : 0;
   const total = calculateTotal(invoice.items, invoice.tax);
   const dpAmount = invoice.downPayment || 0;
+  const dpPercent = invoice.dpPercent || (total > 0 && dpAmount > 0 ? Math.round((dpAmount / total) * 100 * 100) / 100 : 0);
   const remaining = total - dpAmount;
 
   const handleDownloadPDF = async () => {
@@ -122,7 +123,7 @@ const PreviewInvoice = () => {
       `\n\n` +
       (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
       `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n` +
-      (dpAmount > 0 ? `DP: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
+      (dpAmount > 0 ? `DP${dpPercent > 0 ? ` (${dpPercent}%)` : ''}: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
       `\n` +
       (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
       `Terima kasih! 🙏`
@@ -371,7 +372,7 @@ const PreviewInvoice = () => {
                         {dpAmount > 0 && (
                           <>
                             <div className="flex justify-between text-muted-foreground">
-                              <span>DOWN PAYMENT (DP) :</span>
+                              <span>DOWN PAYMENT (DP){dpPercent > 0 ? ` — ${dpPercent}%` : ''} :</span>
                               <span>- {formatCurrency(dpAmount, invoice.currency)}</span>
                             </div>
                             <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3 mt-2">

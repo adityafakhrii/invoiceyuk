@@ -66,7 +66,9 @@ const EditInvoice = () => {
   const [tax, setTax] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [enableDP, setEnableDP] = useState(false);
+  const [dpType, setDpType] = useState<'amount' | 'percent'>('amount');
   const [downPayment, setDownPayment] = useState<number>(0);
+  const [dpPercent, setDpPercent] = useState<number>(0);
 
   // Payment info
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -113,7 +115,9 @@ const EditInvoice = () => {
       setSelectedTemplate(invoice.template);
       setCurrency(invoice.currency || 'IDR');
       setEnableDP(!!invoice.downPayment);
+      setDpType(invoice.dpType || 'amount');
       setDownPayment(invoice.downPayment || 0);
+      setDpPercent(invoice.dpPercent || 0);
       setCategory(invoice.category || '');
     }
   }, [invoice]);
@@ -237,6 +241,8 @@ const EditInvoice = () => {
       template: selectedTemplate,
       currency,
       downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+      dpType: enableDP ? dpType : undefined,
+      dpPercent: enableDP && dpPercent > 0 ? dpPercent : undefined,
       category: category.trim() || undefined,
     };
 
@@ -591,7 +597,7 @@ const EditInvoice = () => {
                       type="button"
                       onClick={() => {
                         setEnableDP(!enableDP);
-                        if (enableDP) setDownPayment(0);
+                        if (enableDP) { setDownPayment(0); setDpPercent(0); }
                       }}
                       className={cn(
                         "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
@@ -609,15 +615,84 @@ const EditInvoice = () => {
                 </div>
                 
                 {enableDP && (
-                  <div className="space-y-2">
-                    <Label>Jumlah DP</Label>
-                    <CurrencyInput
-                      value={downPayment}
-                      onChange={setDownPayment}
-                      placeholder="Contoh: 5.000.000"
-                    />
+                  <div className="space-y-4">
+                    {/* DP Type Toggle */}
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={dpType === 'amount' ? 'default' : 'outline-light'}
+                        size="sm"
+                        onClick={() => {
+                          setDpType('amount');
+                          setDownPayment(0);
+                          setDpPercent(0);
+                        }}
+                      >
+                        Rupiah
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={dpType === 'percent' ? 'default' : 'outline-light'}
+                        size="sm"
+                        onClick={() => {
+                          setDpType('percent');
+                          setDownPayment(0);
+                          setDpPercent(0);
+                        }}
+                      >
+                        Persen (%)
+                      </Button>
+                    </div>
+
+                    {dpType === 'amount' ? (
+                      <div className="space-y-2">
+                        <Label>Jumlah DP (Rupiah)</Label>
+                        <CurrencyInput
+                          value={downPayment}
+                          onChange={(val) => {
+                            setDownPayment(val);
+                            const subtotal = items.reduce((s, item) => s + item.quantity * item.price, 0);
+                            const taxAmt = tax ? (subtotal * Number(tax)) / 100 : 0;
+                            const total = subtotal + taxAmt;
+                            setDpPercent(total > 0 ? Math.round((val / total) * 100 * 100) / 100 : 0);
+                          }}
+                          placeholder="Contoh: 5.000.000"
+                        />
+                        {dpPercent > 0 && (
+                          <p className="text-sm text-accent font-medium">
+                            ≈ {dpPercent}% dari total
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Label>Jumlah DP (%)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={dpPercent || ''}
+                          onChange={(e) => {
+                            const pct = Math.min(100, Math.max(0, Number(e.target.value)));
+                            setDpPercent(pct);
+                            const subtotal = items.reduce((s, item) => s + item.quantity * item.price, 0);
+                            const taxAmt = tax ? (subtotal * Number(tax)) / 100 : 0;
+                            const total = subtotal + taxAmt;
+                            setDownPayment(Math.round((total * pct) / 100));
+                          }}
+                          placeholder="Contoh: 50"
+                          className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        {downPayment > 0 && (
+                          <p className="text-sm text-accent font-medium">
+                            ≈ {new Intl.NumberFormat('id-ID').format(downPayment)} {currency}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     <p className="text-xs text-muted-foreground">
-                      Masukkan jumlah DP yang sudah dibayar klien. Sisa tagihan akan ditampilkan di invoice.
+                      Sisa tagihan akan otomatis ditampilkan di invoice.
                     </p>
                   </div>
                 )}
