@@ -91,8 +91,8 @@ export const generateInvoiceNumber = (): string => {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `INV-${year}${month}-${random}`;
+  const suffix = Date.now().toString(36).slice(-5).toUpperCase();
+  return `INV-${year}${month}-${suffix}`;
 };
 
 // Saved business names store

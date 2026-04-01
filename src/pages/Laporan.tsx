@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, FileText, Calendar, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart } from 'recharts';
@@ -17,21 +17,18 @@ const MONTH_NAMES = [
 ];
 
 const Laporan = () => {
-  const navigate = useNavigate();
   const { invoices, fetchInvoices } = useInvoiceStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
-    if (user) {
+    if (user && !hasFetched) {
       fetchInvoices(user.id);
+      setHasFetched(true);
     }
-  }, [isAuthenticated, user, navigate, fetchInvoices]);
+  }, [user, fetchInvoices, hasFetched]);
 
   const paidInvoices = useMemo(
     () => invoices.filter((inv) => inv.status === 'paid'),

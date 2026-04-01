@@ -9,20 +9,16 @@ import InvoiceReminderBanner from "@/components/InvoiceReminderBanner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { invoices, fetchInvoices, clearInvoices, isLoading } = useInvoiceStore();
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/pin-login");
-      return;
-    }
     if (user && !hasFetched) {
       fetchInvoices(user.id);
       setHasFetched(true);
     }
-  }, [isAuthenticated, user, navigate, fetchInvoices, hasFetched]);
+  }, [user, fetchInvoices, hasFetched]);
 
   const handleLogout = () => {
     clearInvoices();
@@ -73,8 +69,6 @@ const Dashboard = () => {
       color: "bg-cyan-500/10 text-cyan-500",
     });
   }
-
-  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen bg-background">

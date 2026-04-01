@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Plus, 
@@ -63,8 +63,7 @@ const userSchema = z.object({
 });
 
 const AdminUsers = () => {
-  const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const [users, setUsers] = useState<PinUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -79,21 +78,8 @@ const AdminUsers = () => {
   const [errors, setErrors] = useState<{ name?: string; username?: string; pin?: string }>({});
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
-    if (user?.role !== 'admin') {
-      navigate('/dashboard');
-      toast({ 
-        title: 'Akses Ditolak', 
-        description: 'Hanya admin yang bisa mengakses halaman ini', 
-        variant: 'destructive' 
-      });
-      return;
-    }
     fetchUsers();
-  }, [isAuthenticated, user, navigate]);
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -211,7 +197,7 @@ const AdminUsers = () => {
     }
   };
 
-  if (!isAuthenticated || user?.role !== 'admin') return null;
+
 
   return (
     <div className="min-h-screen bg-background">

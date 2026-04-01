@@ -182,6 +182,7 @@ export type Database = {
         Args: {
           _business_logo: string
           _business_name: string
+          _category?: string
           _client_address: string
           _client_contact: string
           _client_name: string
@@ -229,6 +230,8 @@ export type Database = {
           client_contact: string
           client_name: string
           created_at: string
+          currency: string
+          down_payment: number
           due_date: string
           id: string
           invoice_date: string
@@ -268,6 +271,7 @@ export type Database = {
         Args: {
           _business_logo: string
           _business_name: string
+          _category?: string
           _client_address: string
           _client_contact: string
           _client_name: string

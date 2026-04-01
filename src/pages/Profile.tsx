@@ -35,7 +35,7 @@ const pinSchema = z.object({
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, updateUser } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
 
   // Profile form
   const [name, setName] = useState('');
@@ -55,10 +55,6 @@ const Profile = () => {
   const [pinErrors, setPinErrors] = useState<{ oldPin?: string; newPin?: string; confirmPin?: string }>({});
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
     if (user) {
       setName(user.name);
       setUsername(user.username);
@@ -68,7 +64,7 @@ const Profile = () => {
         setDefaultCurrency(saved as CurrencyCode);
       }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [user]);
 
   const handleSaveProfile = async () => {
     setProfileErrors({});
@@ -172,7 +168,7 @@ const Profile = () => {
     }
   };
 
-  if (!isAuthenticated) return null;
+
 
   return (
     <div className="min-h-screen bg-background">

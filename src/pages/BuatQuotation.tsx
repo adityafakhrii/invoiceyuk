@@ -27,8 +27,8 @@ const generateQuotationNumber = () => {
   const date = new Date();
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `QUO-${year}${month}-${random}`;
+  const suffix = Date.now().toString(36).slice(-5).toUpperCase();
+  return `QUO-${year}${month}-${suffix}`;
 };
 
 const templates = [
@@ -40,7 +40,7 @@ const templates = [
 const BuatQuotation = () => {
   const navigate = useNavigate();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
 
   // Business info
   const [businessName, setBusinessName] = useState('');
@@ -79,12 +79,8 @@ const BuatQuotation = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<'simple' | 'elegant' | 'corporate'>('simple');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
     setSavedNames(getSavedBusinessNames());
-  }, [isAuthenticated, navigate]);
+  }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

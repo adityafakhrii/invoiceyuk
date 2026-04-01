@@ -50,9 +50,9 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         socialMedia: (inv.social_media as unknown) as Invoice['socialMedia'] || undefined,
         status: inv.status as 'paid' | 'unpaid',
         template: inv.template as Invoice['template'],
-        currency: ((inv as any).currency as Invoice['currency']) || 'IDR',
-        downPayment: (inv as any).down_payment ? Number((inv as any).down_payment) : undefined,
-        category: (inv as any).category || undefined,
+        currency: (inv.currency as Invoice['currency']) || 'IDR',
+        downPayment: inv.down_payment ? Number(inv.down_payment) : undefined,
+        category: inv.category || undefined,
         createdAt: inv.created_at,
       }));
 

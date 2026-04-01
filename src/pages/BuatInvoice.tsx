@@ -39,7 +39,7 @@ const BuatInvoice = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const addInvoice = useInvoiceStore((state) => state.addInvoice);
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
 
   const dup = (location.state as { duplicateFrom?: Invoice })?.duplicateFrom;
 
@@ -98,13 +98,9 @@ const BuatInvoice = () => {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
     setSavedNames(getSavedBusinessNames());
     setSavedCategories(getSavedCategories());
-  }, [isAuthenticated, navigate]);
+  }, []);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

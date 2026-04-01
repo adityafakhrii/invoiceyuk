@@ -30,21 +30,19 @@ import { toast } from '@/hooks/use-toast';
 const Riwayat = () => {
   const navigate = useNavigate();
   const { invoices, toggleStatus, deleteInvoice, fetchInvoices, isLoading } = useInvoiceStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/pin-login');
-      return;
-    }
-    if (user) {
+    if (user && !hasFetched) {
       fetchInvoices(user.id);
+      setHasFetched(true);
     }
-  }, [isAuthenticated, user, navigate, fetchInvoices]);
+  }, [user, fetchInvoices, hasFetched]);
 
   const filteredInvoices = invoices.filter((invoice) => {
     const matchesSearch =
