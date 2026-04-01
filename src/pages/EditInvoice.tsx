@@ -241,6 +241,8 @@ const EditInvoice = () => {
       template: selectedTemplate,
       currency,
       downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+      dpType: enableDP ? dpType : undefined,
+      dpPercent: enableDP && dpPercent > 0 ? dpPercent : undefined,
       category: category.trim() || undefined,
     };
 
