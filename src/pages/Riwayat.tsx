@@ -33,8 +33,11 @@ const Riwayat = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+
+  const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -182,6 +182,7 @@ export type Database = {
         Args: {
           _business_logo: string
           _business_name: string
+          _category?: string
           _client_address: string
           _client_contact: string
           _client_name: string
@@ -268,6 +269,7 @@ export type Database = {
         Args: {
           _business_logo: string
           _business_name: string
+          _category?: string
           _client_address: string
           _client_contact: string
           _client_name: string
