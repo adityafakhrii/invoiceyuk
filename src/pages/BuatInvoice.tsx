@@ -25,6 +25,7 @@ import {
   SignatureFont,
   CurrencyCode,
   CURRENCIES,
+  isValidCurrencyCode,
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -95,7 +96,7 @@ const BuatInvoice = () => {
     if (dup?.currency) return dup.currency;
     if (user) {
       const saved = localStorage.getItem(`default-currency-${user.id}`);
-      if (saved && ['IDR', 'USD', 'EUR'].includes(saved)) return saved as CurrencyCode;
+      if (saved && isValidCurrencyCode(saved)) return saved;
     }
     return 'IDR';
   });
@@ -399,7 +400,7 @@ const BuatInvoice = () => {
 
                   <div className="space-y-2">
                     <Label>Mata Uang</Label>
-                    <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+                    <Select value={currency} onValueChange={(v) => isValidCurrencyCode(v) && setCurrency(v)}>
                       <SelectTrigger className="w-full h-10">
                         <SelectValue placeholder="Pilih Mata Uang" />
                       </SelectTrigger>

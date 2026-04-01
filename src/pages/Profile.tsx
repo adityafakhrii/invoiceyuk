@@ -21,7 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
-import { CurrencyCode, CURRENCIES } from '@/lib/invoice';
+import { CurrencyCode, CURRENCIES, isValidCurrencyCode } from '@/lib/invoice';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
@@ -61,8 +61,8 @@ const Profile = () => {
       setUsername(user.username);
       // Load default currency from localStorage
       const saved = localStorage.getItem(`default-currency-${user.id}`);
-      if (saved && ['IDR', 'USD', 'EUR'].includes(saved)) {
-        setDefaultCurrency(saved as CurrencyCode);
+      if (saved && isValidCurrencyCode(saved)) {
+        setDefaultCurrency(saved);
       }
     }
   }, [user]);
@@ -253,12 +253,14 @@ const Profile = () => {
             <div className="flex items-center gap-3">
               <Select
                 value={defaultCurrency}
-                onValueChange={(val: CurrencyCode) => {
-                  setDefaultCurrency(val);
-                  if (user) {
-                    localStorage.setItem(`default-currency-${user.id}`, val);
+                onValueChange={(val) => {
+                  if (isValidCurrencyCode(val)) {
+                    setDefaultCurrency(val);
+                    if (user) {
+                      localStorage.setItem(`default-currency-${user.id}`, val);
+                    }
+                    toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
                   }
-                  toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
                 }}
               >
                 <SelectTrigger className="w-full max-w-xs h-10">

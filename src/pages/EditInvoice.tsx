@@ -20,6 +20,7 @@ import {
   SignatureFont,
   CurrencyCode,
   CURRENCIES,
+  isValidCurrencyCode,
   getSavedBusinessNames,
   saveBusinessName,
   getSavedCategories,
@@ -436,7 +437,7 @@ const EditInvoice = () => {
 
                   <div className="space-y-2">
                     <Label>Mata Uang</Label>
-                    <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+                    <Select value={currency} onValueChange={(v) => isValidCurrencyCode(v) && setCurrency(v)}>
                       <SelectTrigger className="w-full h-10">
                         <SelectValue placeholder="Pilih Mata Uang" />
                       </SelectTrigger>

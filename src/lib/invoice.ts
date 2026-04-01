@@ -27,6 +27,10 @@ export const CURRENCIES: { code: CurrencyCode; label: string; symbol: string; lo
   { code: 'EUR', label: 'Euro (EUR)', symbol: '€', locale: 'de-DE' },
 ];
 
+export const isValidCurrencyCode = (code: string): code is CurrencyCode => {
+  return CURRENCIES.some((c) => c.code === code);
+};
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
