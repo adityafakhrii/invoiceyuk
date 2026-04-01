@@ -58,11 +58,15 @@ const Riwayat = () => {
       statusFilter === 'all' ||
       invoice.status === statusFilter;
 
+    const matchesCategory =
+      categoryFilter === 'all' ||
+      (invoice.category || '') === categoryFilter;
+
     const invoiceDate = new Date(invoice.invoiceDate);
     const matchesDateFrom = !dateFrom || invoiceDate >= dateFrom;
     const matchesDateTo = !dateTo || invoiceDate <= dateTo;
 
-    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
+    return matchesSearch && matchesStatus && matchesCategory && matchesDateFrom && matchesDateTo;
   });
 
   const clearDateFilter = () => {
