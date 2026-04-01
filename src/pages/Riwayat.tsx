@@ -320,22 +320,25 @@ const Riwayat = () => {
                           )}
                           <Button 
                             variant="outline-light" 
-                            size="sm"
+                            size="icon"
+                            title="Duplikat"
                             onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
                           >
                             <Copy className="w-4 h-4" />
-                            <span className="hidden sm:inline">Duplikat</span>
                           </Button>
-                          <Link to={`/edit-invoice/${invoice.id}`}>
-                            <Button variant="outline-light" size="sm">
+                          <Link to={`/edit-invoice/${invoice.id}`} title="Edit">
+                            <Button variant="outline-light" size="icon">
                               <Pencil className="w-4 h-4" />
-                              <span className="hidden sm:inline">Edit</span>
                             </Button>
                           </Link>
-                          <Link to={`/preview/${invoice.id}`}>
-                            <Button variant="outline-light" size="sm">
+                          <Link to={`/preview/${invoice.id}`} title="Lihat">
+                            <Button variant="outline-light" size="icon">
                               <Eye className="w-4 h-4" />
-                              <span className="hidden sm:inline">Lihat</span>
+                            </Button>
+                          </Link>
+                          <Link to={`/preview/${invoice.id}`} title="Download PDF">
+                            <Button variant="default" size="icon" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all">
+                              <Download className="w-4 h-4" />
                             </Button>
                           </Link>
                           

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Printer, Phone, Instagram, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Download, Phone, Instagram, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -90,9 +90,6 @@ const PreviewInvoice = () => {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
 
   // WhatsApp
 
@@ -225,10 +222,7 @@ const PreviewInvoice = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <Button variant="outline-light" onClick={handlePrint}>
-                  <Printer className="w-4 h-4" />
-                  Print
-                </Button>
+
                 <Button variant="hero" onClick={handleDownloadPDF}>
                   <Download className="w-4 h-4" />
                   Download PDF
