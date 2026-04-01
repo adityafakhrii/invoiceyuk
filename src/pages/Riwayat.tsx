@@ -40,10 +40,6 @@ const Riwayat = () => {
 
   const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
 
-  const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
-
-  const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
-
   useEffect(() => {
     if (user && !hasFetched) {
       fetchInvoices(user.id);
