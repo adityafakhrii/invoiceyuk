@@ -66,7 +66,9 @@ const EditInvoice = () => {
   const [tax, setTax] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [enableDP, setEnableDP] = useState(false);
+  const [dpType, setDpType] = useState<'amount' | 'percent'>('amount');
   const [downPayment, setDownPayment] = useState<number>(0);
+  const [dpPercent, setDpPercent] = useState<number>(0);
 
   // Payment info
   const [paymentMethod, setPaymentMethod] = useState('');

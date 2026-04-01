@@ -49,6 +49,8 @@ export interface Invoice {
   template: 'simple' | 'elegant' | 'corporate';
   currency: CurrencyCode;
   downPayment?: number; // DP amount (absolute value, not percentage)
+  dpType?: 'amount' | 'percent'; // How DP was entered
+  dpPercent?: number; // DP percentage (stored for display)
   category?: string;
   createdAt: string;
 }
