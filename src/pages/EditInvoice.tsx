@@ -115,7 +115,9 @@ const EditInvoice = () => {
       setSelectedTemplate(invoice.template);
       setCurrency(invoice.currency || 'IDR');
       setEnableDP(!!invoice.downPayment);
+      setDpType(invoice.dpType || 'amount');
       setDownPayment(invoice.downPayment || 0);
+      setDpPercent(invoice.dpPercent || 0);
       setCategory(invoice.category || '');
     }
   }, [invoice]);
