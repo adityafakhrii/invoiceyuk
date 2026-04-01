@@ -53,7 +53,7 @@ const Riwayat = () => {
       invoice.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       invoice.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (invoice.category || '').toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesStatus =
       statusFilter === 'all' ||
       invoice.status === statusFilter;
@@ -117,7 +117,7 @@ const Riwayat = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-20 md:pt-28">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -151,7 +151,7 @@ const Riwayat = () => {
                   className="pl-10"
                 />
               </div>
-              
+
               <div className="flex gap-2">
                 <Button
                   variant={statusFilter === 'all' ? 'default' : 'outline-light'}
@@ -246,7 +246,7 @@ const Riwayat = () => {
                   {invoices.length === 0 ? 'Belum Ada Invoice' : 'Tidak Ditemukan'}
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  {invoices.length === 0 
+                  {invoices.length === 0
                     ? 'Yuk mulai bikin invoice pertama lo!'
                     : 'Coba kata kunci lain atau ubah filter'}
                 </p>
@@ -308,8 +308,8 @@ const Riwayat = () => {
 
                         <div className="flex items-center gap-2">
                           {invoice.status === 'unpaid' && (
-                            <Button 
-                              variant="default" 
+                            <Button
+                              variant="default"
                               size="sm"
                               onClick={() => handleToggleStatus(invoice.id)}
                               className="bg-accent hover:bg-accent/90"
@@ -318,8 +318,8 @@ const Riwayat = () => {
                               <span className="hidden sm:inline">Paid</span>
                             </Button>
                           )}
-                          <Button 
-                            variant="outline-light" 
+                          <Button
+                            variant="outline-light"
                             size="icon"
                             title="Duplikat"
                             onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
@@ -337,11 +337,11 @@ const Riwayat = () => {
                             </Button>
                           </Link>
                           <Link to={`/preview/${invoice.id}`} title="Download PDF">
-                            <Button variant="default" size="icon" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all">
+                            <Button variant="hero" size="icon">
                               <Download className="w-4 h-4" />
                             </Button>
                           </Link>
-                          
+
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
