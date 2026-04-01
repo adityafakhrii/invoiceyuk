@@ -123,7 +123,7 @@ const PreviewInvoice = () => {
       `\n\n` +
       (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
       `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n` +
-      (dpAmount > 0 ? `DP: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
+      (dpAmount > 0 ? `DP${dpPercent > 0 ? ` (${dpPercent}%)` : ''}: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
       `\n` +
       (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
       `Terima kasih! 🙏`
