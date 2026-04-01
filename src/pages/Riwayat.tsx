@@ -33,8 +33,11 @@ const Riwayat = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+
+  const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -57,11 +60,15 @@ const Riwayat = () => {
       statusFilter === 'all' ||
       invoice.status === statusFilter;
 
+    const matchesCategory =
+      categoryFilter === 'all' ||
+      (invoice.category || '') === categoryFilter;
+
     const invoiceDate = new Date(invoice.invoiceDate);
     const matchesDateFrom = !dateFrom || invoiceDate >= dateFrom;
     const matchesDateTo = !dateTo || invoiceDate <= dateTo;
 
-    return matchesSearch && matchesStatus && matchesDateFrom && matchesDateTo;
+    return matchesSearch && matchesStatus && matchesCategory && matchesDateFrom && matchesDateTo;
   });
 
   const clearDateFilter = () => {
@@ -174,6 +181,29 @@ const Riwayat = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Category Filter */}
+            {uniqueCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Button
+                  variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
+                  size="sm"
+                  onClick={() => setCategoryFilter('all')}
+                >
+                  Semua Kategori
+                </Button>
+                {uniqueCategories.map((cat) => (
+                  <Button
+                    key={cat}
+                    variant={categoryFilter === cat ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setCategoryFilter(cat)}
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </div>
+            )}
 
             {/* Date Range Filter */}
             <div className="flex flex-wrap items-center gap-3 mb-8">
