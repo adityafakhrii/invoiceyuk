@@ -56,6 +56,7 @@ const PreviewInvoice = () => {
   const taxAmount = invoice.tax ? (subtotal * invoice.tax) / 100 : 0;
   const total = calculateTotal(invoice.items, invoice.tax);
   const dpAmount = invoice.downPayment || 0;
+  const dpPercent = invoice.dpPercent || (total > 0 && dpAmount > 0 ? Math.round((dpAmount / total) * 100 * 100) / 100 : 0);
   const remaining = total - dpAmount;
 
   const handleDownloadPDF = async () => {
