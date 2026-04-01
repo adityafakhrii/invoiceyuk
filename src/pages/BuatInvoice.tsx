@@ -560,7 +560,7 @@ const BuatInvoice = () => {
                       type="button"
                       onClick={() => {
                         setEnableDP(!enableDP);
-                        if (enableDP) setDownPayment(0);
+                        if (enableDP) { setDownPayment(0); setDpPercent(0); }
                       }}
                       className={cn(
                         "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
