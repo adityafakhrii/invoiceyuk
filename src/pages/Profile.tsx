@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuthStore } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -250,22 +251,25 @@ const Profile = () => {
               Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
             </p>
             <div className="flex items-center gap-3">
-              <select
+              <Select
                 value={defaultCurrency}
-                onChange={(e) => {
-                  const val = e.target.value as CurrencyCode;
+                onValueChange={(val: CurrencyCode) => {
                   setDefaultCurrency(val);
                   if (user) {
                     localStorage.setItem(`default-currency-${user.id}`, val);
                   }
                   toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
                 }}
-                className="flex h-10 w-full max-w-xs rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code}>{c.label}</option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full max-w-xs h-10">
+                  <SelectValue placeholder="Pilih Mata Uang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </section>
 

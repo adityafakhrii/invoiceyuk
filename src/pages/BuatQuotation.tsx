@@ -12,8 +12,8 @@ import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { 
-  Invoice, 
+import {
+  Invoice,
   InvoiceItem,
   getSavedBusinessNames,
   saveBusinessName,
@@ -189,7 +189,7 @@ const BuatQuotation = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-20 md:pt-28">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -199,7 +199,7 @@ const BuatQuotation = () => {
                 Buat Quotation Baru
               </h1>
               <p className="text-muted-foreground">
-                Buat penawaran harga profesional untuk klien potensial 📋
+                Buat penawaran harga profesional untuk klien potensial
               </p>
             </div>
 
@@ -210,7 +210,7 @@ const BuatQuotation = () => {
                   <FileEdit className="w-5 h-5 text-accent" />
                   Info Bisnis Lo
                 </h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2 relative">
                     <Label htmlFor="businessName">Nama Bisnis / Brand *</Label>
@@ -239,7 +239,7 @@ const BuatQuotation = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Logo (Opsional)</Label>
                     <div className="flex items-center gap-4">
@@ -274,7 +274,7 @@ const BuatQuotation = () => {
               {/* Client Info */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Info Klien Potensial</h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="clientName">Nama Klien *</Label>
@@ -285,7 +285,7 @@ const BuatQuotation = () => {
                       onChange={(e) => setClientName(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="clientContact">Kontak (Opsional)</Label>
                     <Input
@@ -312,7 +312,7 @@ const BuatQuotation = () => {
               {/* Quotation Details */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Detail Quotation</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="quotationNumber">Nomor Quotation</Label>
@@ -322,7 +322,7 @@ const BuatQuotation = () => {
                       onChange={(e) => setQuotationNumber(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Tanggal Quotation</Label>
                     <Popover>
@@ -348,7 +348,7 @@ const BuatQuotation = () => {
                       </PopoverContent>
                     </Popover>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Berlaku Sampai *</Label>
                     <Popover>
@@ -380,7 +380,7 @@ const BuatQuotation = () => {
               {/* Items */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Item / Layanan yang Ditawarkan</h2>
-                
+
                 <div className="space-y-4">
                   {items.map((item, index) => (
                     <div key={item.id} className="grid grid-cols-12 gap-3 items-end">
@@ -425,7 +425,7 @@ const BuatQuotation = () => {
                       </div>
                     </div>
                   ))}
-                  
+
                   <Button
                     type="button"
                     variant="outline-light"
@@ -470,7 +470,7 @@ const BuatQuotation = () => {
               {/* Social Media */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Sosial Media (Footer Quotation)</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="flex items-center gap-2">
@@ -484,7 +484,7 @@ const BuatQuotation = () => {
                       onChange={(e) => setWhatsapp(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="instagram" className="flex items-center gap-2">
                       <Instagram className="w-4 h-4" />
@@ -497,7 +497,7 @@ const BuatQuotation = () => {
                       onChange={(e) => setInstagram(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="w-4 h-4" />
@@ -528,7 +528,7 @@ const BuatQuotation = () => {
               {/* Template Selection */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Pilih Template</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   {templates.map((template) => (
                     <button
