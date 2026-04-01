@@ -182,6 +182,29 @@ const Riwayat = () => {
               </div>
             </div>
 
+            {/* Category Filter */}
+            {uniqueCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Button
+                  variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
+                  size="sm"
+                  onClick={() => setCategoryFilter('all')}
+                >
+                  Semua Kategori
+                </Button>
+                {uniqueCategories.map((cat) => (
+                  <Button
+                    key={cat}
+                    variant={categoryFilter === cat ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setCategoryFilter(cat)}
+                  >
+                    {cat}
+                  </Button>
+                ))}
+              </div>
+            )}
+
             {/* Date Range Filter */}
             <div className="flex flex-wrap items-center gap-3 mb-8">
               <Popover>
