@@ -103,7 +103,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Selamat datang, {user?.name}! 👋</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Selamat datang, {user?.name}!</h1>
           <p className="text-muted-foreground">Kelola semua invoice bisnis kamu dari sini</p>
         </div>
 

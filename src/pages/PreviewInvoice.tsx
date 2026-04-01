@@ -128,7 +128,7 @@ const PreviewInvoice = () => {
 
     window.open(`https://wa.me/${formattedNum}?text=${message}`, '_blank');
     setWaDialogOpen(false);
-    toast({ title: 'WhatsApp dibuka! 📱', description: 'Pesan invoice siap dikirim ke klien' });
+    toast({ title: 'WhatsApp dibuka!', description: 'Pesan invoice siap dikirim ke klien' });
   };
 
   const getTemplateStyles = () => {
@@ -401,7 +401,7 @@ const PreviewInvoice = () => {
                             className="h-16 mx-auto object-contain"
                           />
                         ) : invoice.signatureName ? (
-                          <p 
+                          <p
                             className="text-3xl h-16 flex items-end justify-center"
                             style={getSignatureFontStyle()}
                           >
@@ -415,7 +415,7 @@ const PreviewInvoice = () => {
                   <p className="text-center text-sm font-semibold text-foreground mb-4 uppercase">
                     Terimakasih Atas Kerja Sama Anda
                   </p>
-                  
+
                   {/* Social Media */}
                   {invoice.socialMedia && (invoice.socialMedia.whatsapp || invoice.socialMedia.instagram || invoice.socialMedia.email) && (
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '24px', fontSize: '14px', color: '#64748b' }}>

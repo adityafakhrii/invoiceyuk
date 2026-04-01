@@ -127,7 +127,7 @@ const Riwayat = () => {
                 Riwayat Invoice
               </h1>
               <p className="text-muted-foreground">
-                Semua invoice yang pernah lo buat ada di sini 📋
+                Semua invoice yang pernah lo buat ada di sini
               </p>
               {invoices.length > 0 && (
                 <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportCSV}>

@@ -13,9 +13,9 @@ import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { 
-  Invoice, 
-  InvoiceItem, 
+import {
+  Invoice,
+  InvoiceItem,
   generateInvoiceNumber,
   getSavedBusinessNames,
   saveBusinessName,
@@ -234,7 +234,7 @@ const BuatInvoice = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="pt-24 pb-20 md:pt-28">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -244,7 +244,7 @@ const BuatInvoice = () => {
                 Buat Invoice Baru
               </h1>
               <p className="text-muted-foreground">
-                Isi form di bawah, nanti invoice kece siap dikirim ke klien 🚀
+                Isi form di bawah, nanti invoice kece siap dikirim ke klien
               </p>
             </div>
 
@@ -255,7 +255,7 @@ const BuatInvoice = () => {
                   <FileText className="w-5 h-5 text-accent" />
                   Info Bisnis Lo
                 </h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2 relative">
                     <Label htmlFor="businessName">Nama Bisnis / Brand *</Label>
@@ -284,7 +284,7 @@ const BuatInvoice = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Logo (Opsional)</Label>
                     <div className="flex items-center gap-4">
@@ -347,7 +347,7 @@ const BuatInvoice = () => {
               {/* Client Info */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Info Klien</h2>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="clientName">Nama Klien *</Label>
@@ -358,7 +358,7 @@ const BuatInvoice = () => {
                       onChange={(e) => setClientName(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="clientContact">Kontak (Opsional)</Label>
                     <Input
@@ -385,7 +385,7 @@ const BuatInvoice = () => {
               {/* Invoice Details */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Detail Invoice</h2>
-                
+
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="invoiceNumber">Nomor Invoice</Label>
@@ -408,7 +408,7 @@ const BuatInvoice = () => {
                       ))}
                     </select>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Tanggal Invoice</Label>
                     <Popover>
@@ -434,7 +434,7 @@ const BuatInvoice = () => {
                       </PopoverContent>
                     </Popover>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Due Date *</Label>
                     <Popover>
@@ -466,7 +466,7 @@ const BuatInvoice = () => {
               {/* Items */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Item / Layanan</h2>
-                
+
                 <div className="space-y-4">
                   {items.map((item, index) => (
                     <div key={item.id} className="grid grid-cols-12 gap-3 items-end">
@@ -513,7 +513,7 @@ const BuatInvoice = () => {
                       </div>
                     </div>
                   ))}
-                  
+
                   <Button
                     type="button"
                     variant="outline-light"
@@ -576,7 +576,7 @@ const BuatInvoice = () => {
                     </button>
                   </label>
                 </div>
-                
+
                 {enableDP && (
                   <div className="space-y-4">
                     {/* DP Type Toggle */}
@@ -664,7 +664,7 @@ const BuatInvoice = () => {
               {/* Payment Info */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Informasi Pembayaran</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="paymentMethod">Metode Pembayaran</Label>
@@ -675,7 +675,7 @@ const BuatInvoice = () => {
                       onChange={(e) => setPaymentMethod(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="accountName">Nama Pemilik Rekening</Label>
                     <Input
@@ -685,7 +685,7 @@ const BuatInvoice = () => {
                       onChange={(e) => setAccountName(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="accountNumber">Nomor Rekening / Akun</Label>
                     <Input
@@ -714,7 +714,7 @@ const BuatInvoice = () => {
               {/* Social Media */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Sosial Media (Footer Invoice)</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp" className="flex items-center gap-2">
@@ -728,7 +728,7 @@ const BuatInvoice = () => {
                       onChange={(e) => setWhatsapp(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="instagram" className="flex items-center gap-2">
                       <Instagram className="w-4 h-4" />
@@ -741,7 +741,7 @@ const BuatInvoice = () => {
                       onChange={(e) => setInstagram(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="w-4 h-4" />
@@ -772,7 +772,7 @@ const BuatInvoice = () => {
               {/* Template Selection */}
               <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
                 <h2 className="text-lg font-bold text-foreground mb-6">Pilih Template</h2>
-                
+
                 <div className="grid md:grid-cols-3 gap-6">
                   {templates.map((template) => (
                     <button
