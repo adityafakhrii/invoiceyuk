@@ -160,8 +160,8 @@ const BuatQuotation = () => {
       clientName,
       clientContact: clientContact || undefined,
       clientAddress: clientAddress || undefined,
-      invoiceDate: quotationDate.toISOString().split('T')[0],
-      dueDate: validUntil.toISOString().split('T')[0], // Using dueDate for validUntil
+      invoiceDate: format(quotationDate, 'yyyy-MM-dd'),
+      dueDate: format(validUntil, 'yyyy-MM-dd'), // Using dueDate for validUntil
       items: validItems,
       tax: tax ? parseFloat(tax) : undefined,
       notes: notes || undefined,
