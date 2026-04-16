@@ -174,6 +174,11 @@ const BuatQuotation = () => {
       items: validItems,
       tax: tax ? parseFloat(tax) : undefined,
       notes: notes || undefined,
+      paymentInfo: paymentMethod ? {
+        method: paymentMethod,
+        accountName: accountName,
+        accountNumber: accountNumber,
+      } : undefined,
       signatureName: signatureName || undefined,
       signatureImage: signatureImage || undefined,
       signatureFont: signatureFont,
@@ -458,6 +463,47 @@ const BuatQuotation = () => {
                       placeholder="Contoh: 11"
                       value={tax}
                       onChange={(e) => setTax(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              {/* Payment Info (Optional) */}
+              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+                <h2 className="text-lg font-bold text-foreground mb-2 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-accent" />
+                  Informasi Pembayaran (Opsional)
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">Kosongkan jika tidak perlu ditampilkan di quotation</p>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentMethod">Metode Pembayaran</Label>
+                    <Input
+                      id="paymentMethod"
+                      placeholder="Contoh: GoPay, BCA, Mandiri"
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accountName">Nama Pemilik Rekening</Label>
+                    <Input
+                      id="accountName"
+                      placeholder="Contoh: Aditya Fakhri"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accountNumber">Nomor Rekening / Akun</Label>
+                    <Input
+                      id="accountNumber"
+                      placeholder="Contoh: 0895 3241 05731"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
                     />
                   </div>
                 </div>
