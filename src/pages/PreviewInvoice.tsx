@@ -353,7 +353,7 @@ const PreviewInvoice = () => {
                     )}
 
                     {/* Totals */}
-                    <div className={cn(!invoice.paymentInfo && 'md:col-start-2')}>
+                    <div className={cn(!(invoice.paymentInfo && invoice.paymentInfo.accountNumber) && 'md:col-start-2')}>
                       <div className="space-y-2">
                         <div className="flex justify-between text-muted-foreground">
                           <span>SUB TOTAL :</span>
