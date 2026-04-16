@@ -259,7 +259,7 @@ const PreviewInvoice = () => {
 
                     <div className="text-right">
                       <p className={cn('text-xs font-medium opacity-80', styles.headerText)}>
-                        INVOICE
+                        {invoice.invoiceNumber.startsWith('QUO-') ? 'QUOTATION' : 'INVOICE'}
                       </p>
                       <p className={cn('text-base font-semibold', styles.headerText)}>
                         {invoice.invoiceNumber}
@@ -343,11 +343,11 @@ const PreviewInvoice = () => {
                   {/* Payment Info + Totals */}
                   <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Payment Info */}
-                    {invoice.paymentInfo && (
+                    {invoice.paymentInfo && invoice.paymentInfo.accountNumber && (
                       <div>
                         <p className="text-sm font-bold text-foreground mb-3 uppercase">Pembayaran:</p>
-                        <p className="font-medium text-foreground">{invoice.paymentInfo.method}</p>
-                        <p className="text-muted-foreground">{invoice.paymentInfo.accountName}</p>
+                        {invoice.paymentInfo.method && <p className="font-medium text-foreground">{invoice.paymentInfo.method}</p>}
+                        {invoice.paymentInfo.accountName && <p className="text-muted-foreground">{invoice.paymentInfo.accountName}</p>}
                         <p className="text-muted-foreground">{invoice.paymentInfo.accountNumber}</p>
                       </div>
                     )}
