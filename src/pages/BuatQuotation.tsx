@@ -70,6 +70,11 @@ const BuatQuotation = () => {
   const [signatureImage, setSignatureImage] = useState<string>('');
   const [signatureFont, setSignatureFont] = useState<SignatureFont>('dancing');
 
+  // Payment info (optional)
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+
   // Social media
   const [whatsapp, setWhatsapp] = useState('');
   const [instagram, setInstagram] = useState('');
