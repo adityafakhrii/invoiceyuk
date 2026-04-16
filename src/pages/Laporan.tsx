@@ -2,16 +2,21 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, FileText, Calendar, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, calculateTotal } from '@/lib/invoice';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type ViewMode = 'monthly' | 'yearly';
 
 const MONTH_NAMES = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+];
+const MONTH_SHORT = [
   'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
   'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
 ];
@@ -21,6 +26,7 @@ const Laporan = () => {
   const { invoices, fetchInvoices } = useInvoiceStore();
   const { user, isAuthenticated } = useAuthStore();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
 
   useEffect(() => {
@@ -45,7 +51,7 @@ const Laporan = () => {
   }, [paidInvoices]);
 
   const monthlyData = useMemo(() => {
-    return MONTH_NAMES.map((name, idx) => {
+    return MONTH_SHORT.map((name, idx) => {
       const monthInvoices = paidInvoices.filter((inv) => {
         const d = new Date(inv.invoiceDate);
         return d.getFullYear() === selectedYear && d.getMonth() === idx;
@@ -77,18 +83,19 @@ const Laporan = () => {
     );
     const yearRevenue = thisYearInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
 
-    const currentMonth = new Date().getMonth();
-    const thisMonthRevenue = monthlyData[currentMonth]?.revenue || 0;
-    const lastMonthRevenue = currentMonth > 0 ? (monthlyData[currentMonth - 1]?.revenue || 0) : 0;
+    const selectedMonthRevenue = monthlyData[selectedMonth]?.revenue || 0;
+    const prevMonthRevenue = selectedMonth > 0 ? (monthlyData[selectedMonth - 1]?.revenue || 0) : 0;
 
-    const growth = lastMonthRevenue > 0
-      ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
-      : thisMonthRevenue > 0 ? 100 : 0;
+    const growth = prevMonthRevenue > 0
+      ? ((selectedMonthRevenue - prevMonthRevenue) / prevMonthRevenue) * 100
+      : selectedMonthRevenue > 0 ? 100 : 0;
 
-    const avgMonthly = yearRevenue / (currentMonth + 1);
+    const selectedMonthCount = monthlyData[selectedMonth]?.count || 0;
 
-    return { totalRevenue, yearRevenue, thisMonthRevenue, growth, avgMonthly, paidCount: paidInvoices.length };
-  }, [paidInvoices, monthlyData, selectedYear]);
+    return { totalRevenue, yearRevenue, selectedMonthRevenue, growth, paidCount: paidInvoices.length, selectedMonthCount };
+  }, [paidInvoices, monthlyData, selectedYear, selectedMonth]);
+
+  const selectedMonthLabel = `${MONTH_NAMES[selectedMonth]} ${selectedYear}`;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
@@ -105,26 +112,25 @@ const Laporan = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const data = viewMode === 'monthly' ? monthlyData : yearlyData;
-    const title = viewMode === 'monthly' ? `Laporan Keuangan - ${selectedYear}` : 'Laporan Keuangan Tahunan';
+    const title = viewMode === 'monthly'
+      ? `Laporan Pendapatan - ${selectedMonthLabel}`
+      : 'Laporan Keuangan Tahunan';
 
-    // Title
     doc.setFontSize(18);
     doc.text(title, pageWidth / 2, 20, { align: 'center' });
     doc.setFontSize(10);
     doc.setTextColor(120);
     doc.text(`Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth / 2, 28, { align: 'center' });
 
-    // Summary
     doc.setTextColor(0);
     doc.setFontSize(12);
     doc.text('Ringkasan', 14, 42);
     doc.setFontSize(10);
-    doc.text(`Total Pendapatan: ${formatCurrency(stats.totalRevenue)}`, 14, 50);
-    doc.text(`Pendapatan ${selectedYear}: ${formatCurrency(stats.yearRevenue)}`, 14, 57);
-    doc.text(`Invoice Dibayar: ${stats.paidCount}`, 14, 64);
-    doc.text(`Pertumbuhan Bulan Ini: ${stats.growth >= 0 ? '+' : ''}${stats.growth.toFixed(1)}%`, 14, 71);
+    doc.text(`Total Pendapatan (Semua): ${formatCurrency(stats.totalRevenue)}`, 14, 50);
+    doc.text(`Pendapatan ${selectedMonthLabel}: ${formatCurrency(stats.selectedMonthRevenue)}`, 14, 57);
+    doc.text(`Invoice Dibayar (${selectedMonthLabel}): ${stats.selectedMonthCount}`, 14, 64);
+    doc.text(`Pertumbuhan dari Bulan Sebelumnya: ${stats.growth >= 0 ? '+' : ''}${stats.growth.toFixed(1)}%`, 14, 71);
 
-    // Table header
     let y = 85;
     doc.setFillColor(240, 240, 245);
     doc.rect(14, y - 5, pageWidth - 28, 8, 'F');
@@ -134,7 +140,6 @@ const Laporan = () => {
     doc.text('Jumlah Invoice', pageWidth / 2, y, { align: 'center' });
     doc.text('Pendapatan', pageWidth - 16, y, { align: 'right' });
 
-    // Table rows
     doc.setFont(undefined!, 'normal');
     y += 10;
     let totalRev = 0;
@@ -152,7 +157,6 @@ const Laporan = () => {
       y += 8;
     });
 
-    // Total row
     y += 2;
     doc.setDrawColor(200);
     doc.line(14, y - 5, pageWidth - 14, y - 5);
@@ -161,7 +165,7 @@ const Laporan = () => {
     doc.text(String(totalCount), pageWidth / 2, y, { align: 'center' });
     doc.text(formatCurrency(totalRev), pageWidth - 16, y, { align: 'right' });
 
-    doc.save(`laporan-keuangan-${selectedYear}.pdf`);
+    doc.save(`laporan-${MONTH_SHORT[selectedMonth].toLowerCase()}-${selectedYear}.pdf`);
   };
 
   return (
@@ -197,8 +201,8 @@ const Laporan = () => {
               />
               <StatCard
                 icon={<BarChart3 className="w-5 h-5 text-primary" />}
-                label={`Pendapatan ${selectedYear}`}
-                value={formatCurrency(stats.yearRevenue)}
+                label={`Pendapatan ${selectedMonthLabel}`}
+                value={formatCurrency(stats.selectedMonthRevenue)}
                 bgClass="bg-primary/10"
               />
               <StatCard
@@ -229,38 +233,55 @@ const Laporan = () => {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex bg-secondary rounded-lg p-0.5">
-                    <Button
-                      variant={viewMode === 'monthly' ? 'default' : 'ghost'}
-                      size="sm"
+                <div className="flex items-center gap-3 flex-wrap">
+                  {/* View mode toggle */}
+                  <div className="flex bg-muted rounded-full p-1">
+                    <button
                       onClick={() => setViewMode('monthly')}
-                      className="text-xs"
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                        viewMode === 'monthly'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
                     >
                       Bulanan
-                    </Button>
-                    <Button
-                      variant={viewMode === 'yearly' ? 'default' : 'ghost'}
-                      size="sm"
+                    </button>
+                    <button
                       onClick={() => setViewMode('yearly')}
-                      className="text-xs"
+                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                        viewMode === 'yearly'
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
                     >
                       Tahunan
-                    </Button>
+                    </button>
                   </div>
 
                   {viewMode === 'monthly' && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(Number(e.target.value))}
-                        className="bg-secondary text-foreground text-sm rounded-lg px-2 py-1.5 border-0 focus:ring-2 focus:ring-primary"
-                      >
-                        {availableYears.map((y) => (
-                          <option key={y} value={y}>{y}</option>
-                        ))}
-                      </select>
+                    <div className="flex items-center gap-2">
+                      <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
+                        <SelectTrigger className="w-[130px] h-9 rounded-full text-xs font-medium">
+                          <Calendar className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {MONTH_NAMES.map((m, i) => (
+                            <SelectItem key={i} value={String(i)}>{m}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
+                        <SelectTrigger className="w-[90px] h-9 rounded-full text-xs font-medium">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableYears.map((y) => (
+                            <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
                 </div>
@@ -318,9 +339,14 @@ const Laporan = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {monthlyData.map((row) => (
-                        <tr key={row.name} className="border-b border-border/50 hover:bg-secondary/50 transition-colors">
-                          <td className="py-3 px-2 font-medium text-foreground">{row.name}</td>
+                      {monthlyData.map((row, idx) => (
+                        <tr
+                          key={row.name}
+                          className={`border-b border-border/50 transition-colors ${
+                            idx === selectedMonth ? 'bg-accent/5 font-semibold' : 'hover:bg-secondary/50'
+                          }`}
+                        >
+                          <td className="py-3 px-2 font-medium text-foreground">{MONTH_NAMES[idx]}</td>
                           <td className="py-3 px-2 text-right text-muted-foreground">{row.count}</td>
                           <td className="py-3 px-2 text-right font-semibold text-foreground">
                             {row.revenue > 0 ? formatCurrency(row.revenue) : '-'}

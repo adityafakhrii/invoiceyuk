@@ -23,6 +23,10 @@ export type Database = {
           client_contact: string | null
           client_name: string
           created_at: string
+          currency: string | null
+          down_payment: number | null
+          dp_percent: number | null
+          dp_type: string | null
           due_date: string
           id: string
           invoice_date: string
@@ -48,6 +52,10 @@ export type Database = {
           client_contact?: string | null
           client_name: string
           created_at?: string
+          currency?: string | null
+          down_payment?: number | null
+          dp_percent?: number | null
+          dp_type?: string | null
           due_date: string
           id?: string
           invoice_date: string
@@ -73,6 +81,10 @@ export type Database = {
           client_contact?: string | null
           client_name?: string
           created_at?: string
+          currency?: string | null
+          down_payment?: number | null
+          dp_percent?: number | null
+          dp_type?: string | null
           due_date?: string
           id?: string
           invoice_date?: string
@@ -189,6 +201,10 @@ export type Database = {
           _client_address: string
           _client_contact: string
           _client_name: string
+          _currency?: string
+          _down_payment?: number
+          _dp_percent?: number
+          _dp_type?: string
           _due_date: string
           _invoice_date: string
           _invoice_number: string
@@ -233,6 +249,10 @@ export type Database = {
           client_contact: string
           client_name: string
           created_at: string
+          currency: string
+          down_payment: number
+          dp_percent: number
+          dp_type: string
           due_date: string
           id: string
           invoice_date: string
@@ -276,6 +296,10 @@ export type Database = {
           _client_address: string
           _client_contact: string
           _client_name: string
+          _currency?: string
+          _down_payment?: number
+          _dp_percent?: number
+          _dp_type?: string
           _due_date: string
           _invoice_date: string
           _invoice_id: string
