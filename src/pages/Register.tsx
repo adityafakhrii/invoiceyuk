@@ -160,10 +160,12 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="p-4">
-        <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Kembali ke Home
+      <header className="p-6">
+        <Link to="/">
+          <Button variant="outline" size="sm" className="bg-white gap-2 shadow-neo-sm uppercase tracking-wider text-xs">
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Home
+          </Button>
         </Link>
       </header>
 

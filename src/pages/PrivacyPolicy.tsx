@@ -9,16 +9,23 @@ const PrivacyPolicy = () => {
       <div className="max-w-3xl mx-auto">
         {/* Back Link */}
         <div className="mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-bold text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Home
+          <Link to="/">
+            <Button variant="outline" size="sm" className="bg-white gap-2 shadow-neo-sm uppercase tracking-wider text-xs">
+              <ArrowLeft className="w-4 h-4" />
+              Kembali ke Home
+            </Button>
           </Link>
         </div>
 
         {/* Branding */}
-        <div className="flex items-center gap-3 mb-8 justify-center">
-          <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 border-2 border-primary rounded-none" />
-          <span className="font-black text-2xl text-primary uppercase tracking-tight">InvoiceYuk</span>
+        <div className="flex flex-col items-center mb-8 justify-center">
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-12 w-12 border-2 border-primary rounded-none" />
+            <div className="text-left leading-tight">
+              <span className="font-black text-2xl text-primary uppercase tracking-tight group-hover:text-accent transition-colors">InvoiceYuk</span>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Bikin Invoice, Gampang Banget!</p>
+            </div>
+          </Link>
         </div>
 
         {/* Policy Content Card */}
