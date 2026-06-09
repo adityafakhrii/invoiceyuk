@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Download, Phone, Instagram, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Download, Phone, Instagram, Mail, MessageCircle, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -285,6 +285,11 @@ const PreviewInvoice = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
+
+                <Button variant="outline" onClick={() => navigate(`/edit-invoice/${invoice.id}`)}>
+                  <Pencil className="w-4 h-4" />
+                  Edit Invoice
+                </Button>
 
                 <Button variant="hero" onClick={handleDownloadPDF}>
                   <Download className="w-4 h-4" />
