@@ -125,10 +125,8 @@ const Index = () => {
             {/* Preview Card */}
             <div className="relative">
               <div className="relative bg-card rounded-none border-2 border-primary shadow-neo p-3 xs:p-4 md:p-10">
-                <div className="flex justify-center md:block mb-6 md:mb-0">
-                  <div className="md:absolute md:top-4 md:right-4 bg-accent text-accent-foreground border-2 border-primary px-3 py-1 rounded-none text-xs font-black uppercase tracking-wider shadow-neo-sm">
-                    Preview Template
-                  </div>
+                <div className="absolute top-0 right-4 sm:right-6 md:right-10 transform -translate-y-1/2 bg-accent text-accent-foreground border-2 border-primary px-3 py-1 rounded-none text-xs font-black uppercase tracking-wider shadow-neo-sm z-10">
+                  Preview Template
                 </div>
                 {/* Mini Invoice Preview */}
                 <div className="bg-background rounded-none p-3 xs:p-4 md:p-8 border-2 border-primary shadow-neo-sm mt-4">
