@@ -240,8 +240,63 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-secondary border-b-2 border-primary">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-primary uppercase tracking-tight mb-4">
+              Harga Paket Terbaik
+            </h2>
+            <p className="text-navy-800 font-bold max-w-xl mx-auto">
+              Akses seluruh fitur premium tanpa biaya bulanan tersembunyi.
+            </p>
+          </div>
+
+          <div className="max-w-md mx-auto bg-card border-2 border-primary p-8 shadow-neo rounded-xl relative">
+            {/* Gimmick Badge */}
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground border-2 border-primary px-3 py-1 rounded text-xs font-black uppercase tracking-wider shadow-neo-sm whitespace-nowrap">
+              Promo Terbatas
+            </div>
+
+            <div className="text-center mb-8 pb-6 border-b-2 border-primary/10">
+              <h3 className="text-2xl font-black text-primary uppercase mb-2">Paket Lifetime</h3>
+              <p className="text-muted-foreground text-sm font-semibold mb-6">Cocok untuk freelancer & pemilik UMKM</p>
+              <div className="flex justify-center items-baseline gap-2">
+                <span className="text-sm font-extrabold text-muted-foreground line-through">Rp 199.000</span>
+                <span className="text-5xl font-black text-accent">Rp 0</span>
+                <span className="text-sm font-bold text-navy-800">/ Selamanya</span>
+              </div>
+            </div>
+
+            <ul className="space-y-4 mb-8">
+              {[
+                "Unlimited Pembuatan Invoice",
+                "Unlimited Pembuatan Quotation (Penawaran)",
+                "Ekspor PDF Cepat Satu Klik",
+                "Kustomisasi Logo Bisnis Sendiri",
+                "Dasbor Statistik & Bagan Keuangan",
+                "Pelacakan Status Bayar (Paid/Unpaid)",
+                "Penyimpanan Riwayat Aman di Cloud",
+                "Akses Gratis Semua Fitur Baru"
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm font-bold text-navy-800">
+                  <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <Link to={user ? "/dashboard" : "/login"}>
+              <Button variant="default" size="xl" className="w-full shadow-neo bg-primary text-primary-foreground border-2 border-primary hover:bg-primary/95">
+                {user ? 'Ke Dashboard' : 'Mulai Sekarang - 100% Gratis'}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-secondary/10 border-b-2 border-primary">
+      <section id="faq" className="py-20 bg-background border-b-2 border-primary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-black text-primary uppercase tracking-tight mb-4">
@@ -342,9 +397,11 @@ const Index = () => {
               <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-8 rounded-lg border-2 border-primary" />
               <span className="font-black text-lg text-primary uppercase tracking-tight">InvoiceYuk</span>
             </div>
-            <div className="flex items-center gap-8 text-sm font-bold text-navy-600">
-              <a href="#features" className="hover:text-primary transition-colors">Fitur</a>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-bold text-navy-600">
               <a href="#how-it-works" className="hover:text-primary transition-colors">Cara Kerja</a>
+              <a href="#features" className="hover:text-primary transition-colors">Fitur</a>
+              <a href="#pricing" className="hover:text-primary transition-colors">Harga</a>
+              <a href="#faq" className="hover:text-primary transition-colors">FAQ</a>
               <Link to={user ? "/dashboard" : "/login"} className="hover:text-primary transition-colors">Dashboard</Link>
             </div>
             <div className="flex flex-col items-center md:items-end gap-2">

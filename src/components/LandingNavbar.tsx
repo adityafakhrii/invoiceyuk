@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LogIn, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -7,18 +7,38 @@ import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const LandingNavbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuthStore();
 
   const navLinks = [
     { path: '/', label: 'Home' },
-    { path: '/#features', label: 'Fitur' },
     { path: '/#how-it-works', label: 'Cara Kerja' },
+    { path: '/#features', label: 'Fitur' },
+    { path: '/#pricing', label: 'Harga' },
+    { path: '/#faq', label: 'FAQ' },
   ];
 
   const scrollToSection = (hash: string) => {
     const element = document.querySelector(hash);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleNavClick = (path: string) => {
+    if (path.includes('#')) {
+      const hash = path.substring(path.indexOf('#'));
+      if (location.pathname !== '/') {
+        navigate(path);
+      } else {
+        scrollToSection(hash);
+      }
+    } else {
+      if (location.pathname !== '/') {
+        navigate(path);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   };
 
@@ -34,17 +54,13 @@ const LandingNavbar = () => {
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Bikin Invoice, Gampang Banget!</p>
             </div>
           </Link>
-
+ 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <button
                 key={link.path}
-                onClick={() => {
-                  if (link.path.includes('#')) {
-                    scrollToSection(link.path.replace('/', ''));
-                  }
-                }}
+                onClick={() => handleNavClick(link.path)}
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-bold transition-all duration-150 border-2",
                   location.pathname === link.path && !link.path.includes('#')
