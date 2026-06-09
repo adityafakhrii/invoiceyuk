@@ -227,6 +227,17 @@ const Profile = () => {
                 )}
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-primary font-bold uppercase tracking-wider text-xs">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={user?.email || ''}
+                  disabled
+                  className="bg-secondary text-muted-foreground border-2 border-primary cursor-not-allowed opacity-60"
+                />
+              </div>
+
               <Button onClick={handleSaveProfile} disabled={isSavingProfile} className="w-full sm:w-auto">
                 {isSavingProfile ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -238,42 +249,8 @@ const Profile = () => {
             </div>
           </section>
 
-          {/* Default Currency Section */}
-          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo mb-8">
-            <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
-              <Globe className="w-5 h-5 text-accent" />
-              Mata Uang Default
-            </h2>
-            <p className="text-sm font-semibold text-muted-foreground mb-4">
-              Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
-            </p>
-            <div className="flex items-center gap-3">
-              <Select
-                value={defaultCurrency}
-                onValueChange={(val) => {
-                  if (isValidCurrencyCode(val)) {
-                    setDefaultCurrency(val);
-                    if (user) {
-                      localStorage.setItem(`default-currency-${user.id}`, val);
-                    }
-                    toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full max-w-xs h-10">
-                  <SelectValue placeholder="Pilih Mata Uang" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CURRENCIES.map((c) => (
-                    <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-
           {/* Change Password Section */}
-          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo mb-8">
             <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
               <KeyRound className="w-5 h-5 text-accent" />
               Ganti Password
@@ -368,6 +345,40 @@ const Profile = () => {
                 )}
                 Ganti Password
               </Button>
+            </div>
+          </section>
+
+          {/* Default Currency Section */}
+          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+            <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
+              <Globe className="w-5 h-5 text-accent" />
+              Mata Uang Default
+            </h2>
+            <p className="text-sm font-semibold text-muted-foreground mb-4">
+              Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
+            </p>
+            <div className="flex items-center gap-3">
+              <Select
+                value={defaultCurrency}
+                onValueChange={(val) => {
+                  if (isValidCurrencyCode(val)) {
+                    setDefaultCurrency(val);
+                    if (user) {
+                      localStorage.setItem(`default-currency-${user.id}`, val);
+                    }
+                    toast({ title: 'Berhasil!', description: `Mata uang default diubah ke ${val}` });
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full max-w-xs h-10 border-2 border-primary bg-background shadow-neo-sm rounded-none font-bold">
+                  <SelectValue placeholder="Pilih Mata Uang" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>{c.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </section>
         </div>

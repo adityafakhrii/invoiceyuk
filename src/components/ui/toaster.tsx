@@ -6,12 +6,22 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
+      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+        let resolvedVariant = variant;
+        if (!resolvedVariant || resolvedVariant === 'default') {
+          const isSuccess = 
+            (title && /berhasil|sukses|mantap|selamat/i.test(title.toString())) ||
+            (description && /berhasil|sukses|mantap|selamat/i.test(description.toString()));
+          if (isSuccess) {
+            resolvedVariant = 'success';
+          }
+        }
+
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id} variant={resolvedVariant} {...props}>
             <div className="grid gap-1">
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && <ToastDescription>{description}</ToastDescription>}
+              {title && <ToastTitle className="text-sm font-black uppercase tracking-wider">{title}</ToastTitle>}
+              {description && <ToastDescription className="text-xs font-semibold opacity-90">{description}</ToastDescription>}
             </div>
             {action}
             <ToastClose />
