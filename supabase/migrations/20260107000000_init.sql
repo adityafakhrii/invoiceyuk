@@ -274,3 +274,6 @@ CREATE POLICY "Users can update their own invoices" ON public.invoices
 DROP POLICY IF EXISTS "Users can delete their own invoices" ON public.invoices;
 CREATE POLICY "Users can delete their own invoices" ON public.invoices
   FOR DELETE TO authenticated USING (auth.uid() = user_id);
+
+-- 11. Database Index for Performance Optimization
+CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);

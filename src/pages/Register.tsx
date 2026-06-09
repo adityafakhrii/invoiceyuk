@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { translateError } from '@/lib/utils';
+import { translateError, cn } from '@/lib/utils';
 import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const Register = () => {
@@ -35,6 +35,30 @@ const Register = () => {
   const [tujuanPenggunaan, setTujuanPenggunaan] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const getPasswordStrength = (pwd: string) => {
+    if (!pwd) return { score: 0, label: '', color: 'bg-transparent' };
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+    switch (score) {
+      case 0:
+      case 1:
+        return { score, label: 'Lemah 🔴', color: 'bg-red-500' };
+      case 2:
+        return { score, label: 'Sedang 🟡', color: 'bg-amber-500' };
+      case 3:
+        return { score, label: 'Kuat 🟢', color: 'bg-green-500' };
+      case 4:
+      default:
+        return { score, label: 'Sangat Kuat 🔥', color: 'bg-emerald-500' };
+    }
+  };
+
+  const strength = getPasswordStrength(password);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -235,6 +259,32 @@ const Register = () => {
                   </button>
                 </div>
                 {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+                
+                {password && (
+                  <div className="space-y-1 mt-1.5">
+                    <div className="flex gap-1 h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                      <div className={cn("h-full transition-all duration-300", 
+                        strength.score >= 1 ? strength.color : "bg-transparent", 
+                        strength.score >= 1 ? "w-1/4" : "w-0"
+                      )} />
+                      <div className={cn("h-full transition-all duration-300", 
+                        strength.score >= 2 ? strength.color : "bg-transparent",
+                        strength.score >= 2 ? "w-1/4" : "w-0"
+                      )} />
+                      <div className={cn("h-full transition-all duration-300", 
+                        strength.score >= 3 ? strength.color : "bg-transparent",
+                        strength.score >= 3 ? "w-1/4" : "w-0"
+                      )} />
+                      <div className={cn("h-full transition-all duration-300", 
+                        strength.score >= 4 ? strength.color : "bg-transparent",
+                        strength.score >= 4 ? "w-1/4" : "w-0"
+                      )} />
+                    </div>
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block text-right">
+                      Kekuatan: {strength.label}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">
