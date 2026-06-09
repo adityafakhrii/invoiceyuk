@@ -21,21 +21,46 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "InvoiceYuk",
-      "operatingSystem": "All",
-      "applicationCategory": "BusinessApplication",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "IDR"
-      },
-      "description": "Platform bikin invoice dan quotation profesional yang super gampang. Cocok buat freelancer, UMKM, dan pebisnis online!",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "150"
-      }
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://invoiceyuk.com/#software",
+          "name": "InvoiceYuk",
+          "url": "https://invoiceyuk.com",
+          "operatingSystem": "All",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "IDR"
+          },
+          "description": "Platform bikin invoice dan quotation profesional yang super gampang. Cocok buat freelancer, UMKM, dan pebisnis online!",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "150"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://invoiceyuk.com/#organization",
+          "name": "InvoiceYuk",
+          "url": "https://invoiceyuk.com",
+          "logo": "https://invoiceyuk.com/favicon.png",
+          "sameAs": [
+            "https://www.instagram.com/adityafakhrii"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://invoiceyuk.com/#website",
+          "name": "InvoiceYuk",
+          "url": "https://invoiceyuk.com",
+          "publisher": {
+            "@id": "https://invoiceyuk.com/#organization"
+          }
+        }
+      ]
     }
     </script>
     

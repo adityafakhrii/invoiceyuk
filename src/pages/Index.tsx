@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import LandingNavbar from '@/components/LandingNavbar';
 import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 import { useAuthStore } from '@/store/authStore';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 const Index = () => {
   const { user } = useAuthStore();
@@ -235,6 +236,78 @@ const Index = () => {
                 <p className="text-muted-foreground text-sm font-semibold leading-relaxed">{feature.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-20 bg-secondary/10 border-b-2 border-primary">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-primary uppercase tracking-tight mb-4">
+              Pertanyaan yang Sering Diajukan (FAQ)
+            </h2>
+            <p className="text-navy-800 font-bold max-w-xl mx-auto">
+              Punya pertanyaan seputar InvoiceYuk? Temukan jawabannya di sini
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto bg-card border-2 border-primary p-6 md:p-10 shadow-neo rounded-xl">
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              <AccordionItem value="faq-1" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Apakah InvoiceYuk benar-benar gratis?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Ya, 100% gratis! Anda bisa membuat invoice dan quotation sebanyak apa pun yang Anda butuhkan tanpa biaya tersembunyi, tanpa batas jumlah dokumen, dan tanpa perlu mendaftarkan kartu kredit.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="faq-2" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Bagaimana keamanan data bisnis dan invoice saya dijamin?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Data Anda disimpan dengan aman di server cloud database Supabase. Keamanan data dilindungi menggunakan sistem otentikasi Supabase Auth dan pembatasan Row Level Security (RLS) PostgreSQL dinamis, sehingga data Anda terisolasi secara penuh dan hanya bisa diakses oleh akun Anda sendiri.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="faq-3" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Apakah saya bisa menambahkan logo bisnis sendiri?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Tentu saja! Anda dapat mengunggah logo bisnis Anda sendiri (dalam format gambar PNG/JPG) ketika mengisi formulir pembuatan invoice atau quotation. Logo tersebut akan tersemat secara otomatis pada template dokumen Anda.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="faq-4" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Bagaimana cara mengunduh invoice menjadi file PDF?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Setelah selesai mengisi formulir dan menyimpannya, Anda akan diarahkan langsung ke halaman pratinjau invoice. Di halaman tersebut, Anda tinggal mengeklik tombol "Download PDF" dengan ikon unduhan untuk menyimpannya ke perangkat Anda dalam hitungan detik.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="faq-5" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Apakah saya bisa melacak status pembayaran invoice?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Bisa. Melalui dashboard utama dan riwayat, Anda dapat melacak invoice mana saja yang sudah dibayar ("Paid"), belum dibayar ("Unpaid"), atau dibatalkan ("Canceled"). Anda juga bisa menandai status pembayaran tersebut secara instan.
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="faq-6" className="border-2 border-primary p-4 bg-background shadow-neo-sm">
+                <AccordionTrigger className="text-left font-black text-primary hover:no-underline hover:text-accent text-base md:text-lg">
+                  Apa perbedaan antara Invoice dan Quotation di InvoiceYuk?
+                </AccordionTrigger>
+                <AccordionContent className="text-navy-800 font-medium leading-relaxed mt-2 text-sm">
+                  Invoice diterbitkan sebagai bukti penagihan pembayaran resmi setelah barang atau jasa diselesaikan. Sementara Quotation (penawaran harga) dikirimkan terlebih dahulu ke calon klien sebagai estimasi harga penawaran resmi yang memiliki batasan masa berlaku tertentu sebelum kesepakatan dicapai.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
