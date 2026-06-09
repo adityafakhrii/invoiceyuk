@@ -200,24 +200,8 @@ const AdminUsers = () => {
 
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b-2 border-primary sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <Link 
-              to="/dashboard" 
-              className="flex items-center gap-2 text-primary hover:text-accent font-bold transition-colors uppercase tracking-wider text-xs"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Kembali ke Dashboard
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+    <div className="w-full">
+      <div className="pb-10">
         <div className="max-w-3xl mx-auto">
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -385,7 +369,7 @@ const AdminUsers = () => {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

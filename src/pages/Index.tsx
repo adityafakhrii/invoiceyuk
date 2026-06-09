@@ -64,7 +64,6 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 border-primary bg-secondary text-primary text-sm font-bold mb-8 shadow-neo-sm">
-              <Sparkles className="w-4 h-4 text-accent" />
               Invoice & Quotation Generator untuk Bisnis Modern
             </div>
 
@@ -72,7 +71,7 @@ const Index = () => {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-primary leading-none tracking-tighter mb-8 uppercase">
               Bikin Invoice
               <br />
-              <span className="text-accent underline decoration-primary decoration-4 underline-offset-8">Gampang Banget.</span> 👋
+              <span className="text-accent underline decoration-primary decoration-4 underline-offset-8">Gampang Banget</span>
             </h1>
 
             {/* Subheadline */}
@@ -86,7 +85,7 @@ const Index = () => {
               <Link to="/pin-login">
                 <Button variant="default" size="xl" className="w-full sm:w-auto text-base">
                   <LogIn className="w-5 h-5" />
-                  Masuk Dashboard
+                  Coba Sekarang
                 </Button>
               </Link>
               <a href="#features">
@@ -251,7 +250,7 @@ const Index = () => {
               <Link to="/pin-login">
                 <Button variant="default" size="xl" className="shadow-neo bg-primary text-primary-foreground border-2 border-primary hover:bg-primary/90">
                   <LogIn className="w-5 h-5" />
-                  Masuk Dashboard
+                  Coba Sekarang
                 </Button>
               </Link>
             </div>

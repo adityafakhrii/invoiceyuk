@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import {
   formatCurrency,
@@ -39,9 +38,8 @@ const PreviewInvoice = () => {
 
   if (!invoice) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="pt-32 text-center">
+      <div className="w-full">
+        <main className="pt-16 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Invoice Tidak Ditemukan</h1>
           <p className="text-muted-foreground mb-6">Invoice yang lo cari gak ada nih</p>
           <Link to="/riwayat">
@@ -167,11 +165,9 @@ const PreviewInvoice = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="pt-24 pb-20 md:pt-28">
-        <div className="container mx-auto px-4">
+    <div className="w-full">
+      <div className="pb-10">
+        <div className="w-full">
           <div className="max-w-4xl mx-auto">
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 print:hidden">
@@ -444,7 +440,7 @@ const PreviewInvoice = () => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

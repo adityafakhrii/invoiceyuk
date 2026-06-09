@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { BarChart3, TrendingUp, TrendingDown, DollarSign, FileText, Calendar, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, calculateTotal } from '@/lib/invoice';
@@ -206,11 +205,9 @@ const Laporan = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="pt-24 pb-20 md:pt-28">
-        <div className="container mx-auto px-4">
+    <div className="w-full">
+      <div className="pb-10">
+        <div className="w-full">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
@@ -218,7 +215,7 @@ const Laporan = () => {
                 Laporan Keuangan
               </h1>
               <p className="text-navy-700 font-semibold text-sm">
-                Pantau pendapatan bisnis lo dari invoice yang sudah dibayar 📊
+                Pantau pendapatan bisnis lo dari invoice yang sudah dibayar
               </p>
               {paidInvoices.length > 0 && (
                 <Button variant="outline" size="sm" className="mt-4" onClick={handleExportPDF}>
@@ -402,7 +399,7 @@ const Laporan = () => {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

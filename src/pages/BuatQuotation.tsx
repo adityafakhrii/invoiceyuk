@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import Navbar from '@/components/Navbar';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
@@ -187,11 +186,9 @@ const BuatQuotation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="pt-24 pb-20 md:pt-28">
-        <div className="container mx-auto px-4">
+    <div className="w-full">
+      <div className="pb-10">
+        <div className="w-full">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
@@ -560,7 +557,7 @@ const BuatQuotation = () => {
             </form>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

@@ -60,7 +60,7 @@ const LandingNavbar = () => {
             <Link to="/pin-login">
               <Button variant="default" size="default">
                 <LogIn className="w-4 h-4" />
-                Masuk Dashboard
+                Coba Sekarang
               </Button>
             </Link>
           </div>

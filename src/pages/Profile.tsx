@@ -172,24 +172,8 @@ const Profile = () => {
 
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card border-b-2 border-primary sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <Link 
-              to="/dashboard" 
-              className="flex items-center gap-2 text-primary hover:text-accent font-bold transition-colors uppercase tracking-wider text-xs"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Kembali ke Dashboard
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+    <div className="w-full">
+      <div className="pb-10">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-black text-primary uppercase tracking-tight mb-8 flex items-center gap-3">
             <User className="w-7 h-7 text-accent" />
@@ -377,7 +361,7 @@ const Profile = () => {
             </div>
           </section>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Navbar from '@/components/Navbar';
 import CurrencyInput from '@/components/CurrencyInput';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
@@ -257,9 +256,8 @@ const EditInvoice = () => {
 
   if (!invoice) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <main className="pt-32 text-center">
+      <div className="w-full">
+        <main className="pt-16 text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Invoice Tidak Ditemukan</h1>
           <p className="text-muted-foreground mb-6">Invoice yang lo cari gak ada nih</p>
           <Link to="/riwayat">
@@ -271,11 +269,9 @@ const EditInvoice = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <main className="pt-24 pb-20 md:pt-28">
-        <div className="container mx-auto px-4">
+    <div className="w-full">
+      <div className="pb-10">
+        <div className="w-full">
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
@@ -844,7 +840,7 @@ const EditInvoice = () => {
             </form>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

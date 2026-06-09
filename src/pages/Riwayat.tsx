@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import Navbar from '@/components/Navbar';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, formatDate, calculateTotal, calculateSubtotal } from '@/lib/invoice';
@@ -115,11 +114,9 @@ const Riwayat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="pt-24 pb-20 md:pt-28">
-        <div className="container mx-auto px-4">
+    <div className="w-full">
+      <div className="pb-10">
+        <div className="w-full">
           <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
@@ -405,7 +402,7 @@ const Riwayat = () => {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
