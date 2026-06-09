@@ -277,3 +277,7 @@ CREATE POLICY "Users can delete their own invoices" ON public.invoices
 
 -- 11. Database Index for Performance Optimization
 CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);
+
+-- Drop legacy status check constraints if they exist to allow 'cancelled' status
+ALTER TABLE public.invoices DROP CONSTRAINT IF EXISTS invoices_status_check;
+ALTER TABLE public.invoices DROP CONSTRAINT IF EXISTS check_status;

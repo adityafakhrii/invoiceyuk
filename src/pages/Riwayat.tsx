@@ -79,17 +79,33 @@ const Riwayat = () => {
     setDateTo(undefined);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (user) {
-      deleteInvoice(id, user.id);
-      toast({ title: 'Invoice dihapus', description: 'Invoice berhasil dihapus dari riwayat' });
+      try {
+        await deleteInvoice(id, user.id);
+        toast({ title: 'Invoice dihapus', description: 'Invoice berhasil dihapus dari riwayat' });
+      } catch (err) {
+        toast({
+          title: 'Gagal menghapus invoice',
+          description: (err as Error).message || 'Terjadi kesalahan.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
-  const handleCancel = (id: string) => {
+  const handleCancel = async (id: string) => {
     if (user) {
-      cancelInvoice(id, user.id);
-      toast({ title: 'Invoice dibatalkan', description: 'Status invoice berhasil diubah menjadi dibatalkan (canceled)' });
+      try {
+        await cancelInvoice(id, user.id);
+        toast({ title: 'Invoice dibatalkan', description: 'Status invoice berhasil diubah menjadi dibatalkan (canceled)' });
+      } catch (err) {
+        toast({
+          title: 'Gagal membatalkan invoice',
+          description: (err as Error).message || 'Terjadi kesalahan.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -119,10 +135,18 @@ const Riwayat = () => {
     toast({ title: 'Export berhasil! 📥', description: `${dataToExport.length} invoice berhasil di-export ke CSV` });
   };
 
-  const handleToggleStatus = (id: string) => {
+  const handleToggleStatus = async (id: string) => {
     if (user) {
-      toggleStatus(id, user.id);
-      toast({ title: 'Status diperbarui' });
+      try {
+        await toggleStatus(id, user.id);
+        toast({ title: 'Status diperbarui' });
+      } catch (err) {
+        toast({
+          title: 'Gagal memperbarui status',
+          description: (err as Error).message || 'Terjadi kesalahan.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
