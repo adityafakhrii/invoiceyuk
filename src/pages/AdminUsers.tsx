@@ -63,7 +63,7 @@ const userSchema = z.object({
 });
 
 const AdminUsers = () => {
-  const { user } = useAuthStore();
+  const { user, sessionToken } = useAuthStore();
   const [users, setUsers] = useState<PinUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -85,8 +85,8 @@ const AdminUsers = () => {
     try {
       // Use SECURITY DEFINER RPC function for server-side admin authorization
       const { data, error } = await supabase.rpc('list_all_users', {
-        _caller_id: user?.id
-      });
+        _session_token: sessionToken
+      }) as unknown as { data: { user_id: string; user_name: string; username: string; user_role: AppRole; created_at: string }[] | null; error: { message: string } | null };
 
       if (error) throw error;
 
@@ -139,8 +139,8 @@ const AdminUsers = () => {
         _username: newUsername.trim().toLowerCase(),
         _pin: newPin,
         _role: newRole,
-        _caller_id: user?.id,
-      });
+        _session_token: sessionToken,
+      }) as unknown as { data: string | null; error: { message: string } | null };
 
       if (error) {
         if (isDuplicateError(error) && isFieldError(error, 'username')) {
@@ -181,7 +181,7 @@ const AdminUsers = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('delete_pin_user', { _user_id: userId, _caller_id: user?.id });
+      const { error } = await supabase.rpc('delete_pin_user', { _user_id: userId, _session_token: sessionToken }) as unknown as { error: { message: string } | null };
 
       if (error) throw error;
 

@@ -16,7 +16,8 @@ interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   expiresAt: number | null;
-  login: (user: AuthUser) => void;
+  sessionToken: string | null;
+  login: (user: AuthUser, sessionToken: string) => void;
   logout: () => void;
   updateUser: (updates: Partial<AuthUser>) => void;
   checkSession: () => void;
@@ -28,19 +29,21 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       expiresAt: null,
-      login: (user) => set({ 
+      sessionToken: null,
+      login: (user, sessionToken) => set({ 
         user, 
         isAuthenticated: true, 
+        sessionToken,
         expiresAt: Date.now() + SESSION_TTL_MS 
       }),
-      logout: () => set({ user: null, isAuthenticated: false, expiresAt: null }),
+      logout: () => set({ user: null, isAuthenticated: false, expiresAt: null, sessionToken: null }),
       updateUser: (updates) => set((state) => ({
         user: state.user ? { ...state.user, ...updates } : null
       })),
       checkSession: () => {
         const { expiresAt, isAuthenticated } = get();
         if (isAuthenticated && expiresAt && Date.now() > expiresAt) {
-          set({ user: null, isAuthenticated: false, expiresAt: null });
+          set({ user: null, isAuthenticated: false, expiresAt: null, sessionToken: null });
         }
       },
     }),

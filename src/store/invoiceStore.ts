@@ -3,6 +3,7 @@ import { Invoice, InvoiceItem } from '@/lib/invoice';
 import { supabase } from '@/integrations/supabase/client';
 import { logErrorSecurely } from '@/lib/errors';
 import type { Json } from '@/integrations/supabase/types';
+import { useAuthStore } from './authStore';
 
 interface InvoiceStore {
   invoices: Invoice[];
@@ -23,10 +24,39 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
   fetchInvoices: async (userId: string) => {
     set({ isLoading: true });
     try {
+      const sessionToken = useAuthStore.getState().sessionToken;
       // Use SECURITY DEFINER RPC function for server-side user_id enforcement
       const { data, error } = await supabase.rpc('fetch_user_invoices', {
-        _user_id: userId
-      });
+        _session_token: sessionToken
+      }) as unknown as { data: {
+        id: string;
+        user_id: string;
+        invoice_number: string;
+        business_name: string;
+        business_logo: string | null;
+        client_name: string;
+        client_contact: string | null;
+        client_address: string | null;
+        invoice_date: string;
+        due_date: string;
+        items: unknown;
+        tax: number | null;
+        notes: string | null;
+        payment_info: unknown;
+        signature_name: string | null;
+        signature_image: string | null;
+        signature_font: string | null;
+        social_media: unknown;
+        status: string;
+        template: string;
+        created_at: string;
+        updated_at: string;
+        category: string | null;
+        down_payment: number | null;
+        dp_type: string | null;
+        dp_percent: number | null;
+        currency: string;
+      }[] | null; error: { message: string } | null };
 
       if (error) throw error;
 
@@ -67,10 +97,11 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
   addInvoice: async (invoice: Invoice, userId: string) => {
     try {
+      const sessionToken = useAuthStore.getState().sessionToken;
       // Items, payment_info, and social_media should be passed as objects, not JSON strings
       // The Supabase client will handle JSON serialization for jsonb columns
       const { data, error } = await supabase.rpc('create_invoice', {
-        _user_id: userId,
+        _session_token: sessionToken,
         _invoice_number: invoice.invoiceNumber,
         _business_name: invoice.businessName,
         _business_logo: invoice.businessLogo || '',
@@ -112,10 +143,11 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
       if (!currentInvoice) return;
 
       const merged = { ...currentInvoice, ...updatedInvoice };
+      const sessionToken = useAuthStore.getState().sessionToken;
 
       const { error } = await supabase.rpc('update_invoice', {
         _invoice_id: id,
-        _user_id: userId,
+        _session_token: sessionToken,
         _invoice_number: merged.invoiceNumber,
         _business_name: merged.businessName,
         _business_logo: merged.businessLogo || '',
@@ -156,9 +188,10 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
   deleteInvoice: async (id: string, userId: string) => {
     try {
+      const sessionToken = useAuthStore.getState().sessionToken;
       const { error } = await supabase.rpc('delete_invoice', {
         _invoice_id: id,
-        _user_id: userId,
+        _session_token: sessionToken,
       });
 
       if (error) throw error;

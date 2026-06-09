@@ -127,7 +127,7 @@ const Laporan = () => {
     return { totalRevenue, dynamicLabel, dynamicRevenue, growth, paidCount: paidInvoices.length };
   }, [paidInvoices, monthlyData, selectedYear, selectedMonth, viewMode]);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { value: number; payload: { count: number } }[]; label?: string }) => {
     if (!active || !payload?.length) return null;
     return (
       <div className="bg-card border border-border rounded-lg p-3 shadow-elegant">

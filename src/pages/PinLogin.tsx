@@ -36,7 +36,7 @@ const PinLogin = () => {
       const { data, error } = await supabase.rpc('verify_pin', { 
         _username: username.trim().toLowerCase(),
         _pin: pin 
-      });
+      }) as unknown as { data: { session_token: string; user_id: string; user_name: string; user_role: string }[] | null; error: { message: string } | null };
       
       if (error) throw error;
       
@@ -47,7 +47,7 @@ const PinLogin = () => {
           name: userData.user_name,
           username: username.trim().toLowerCase(),
           role: userData.user_role || 'user',
-        });
+        }, userData.session_token);
         toast({ title: 'Login berhasil!', description: `Selamat datang, ${userData.user_name}` });
         navigate('/dashboard');
       } else {
