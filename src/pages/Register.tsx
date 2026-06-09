@@ -171,8 +171,14 @@ const Register = () => {
       <div className="flex-1 flex items-center justify-center p-4 py-8">
         <div className="w-full max-w-lg">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-primary mb-4">
-              <User className="w-7 h-7 text-primary-foreground" />
+            <div className="flex flex-col items-center mb-6">
+              <Link to="/" className="flex items-center gap-3 group">
+                <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-12 w-12 border-2 border-primary rounded-none" />
+                <div className="text-left leading-tight">
+                  <span className="font-black text-2xl text-primary uppercase tracking-tight group-hover:text-accent transition-colors">InvoiceYuk</span>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Bikin Invoice, Gampang Banget!</p>
+                </div>
+              </Link>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Daftar Akun Baru
@@ -383,17 +389,27 @@ const Register = () => {
               </Link>
             </p>
           </form>
-
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <Link to="/" className="flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-8 w-8 rounded-lg" />
-              <span className="font-semibold text-foreground">InvoiceYuk</span>
-            </Link>
-            <p className="text-xs text-muted-foreground mt-2">Bikin Invoice, Gampang Banget!</p>
-          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="py-6 border-t-2 border-primary/10 bg-card text-center text-xs font-bold text-muted-foreground mt-auto animate-fade-in">
+        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 InvoiceYuk. Bikin invoice gak pake ribet.</p>
+          <div className="flex items-center gap-4">
+            <Link to="/privacy" className="hover:text-primary transition-colors underline decoration-dotted">Kebijakan Privasi</Link>
+            <span className="text-gray-300 hidden sm:inline">|</span>
+            <a 
+              href="https://www.instagram.com/adityafakhrii" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1 hover:text-accent transition-colors text-primary font-bold"
+            >
+              Made with <span className="text-red-500 animate-pulse">❤️</span> by @adityafakhrii
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
