@@ -49,7 +49,7 @@ const Index = () => {
   ];
 
   const steps = [
-    { number: "01", title: "Login Dashboard", description: "Masuk pakai username dan PIN" },
+    { number: "01", title: "Login Dashboard", description: "Masuk pakai email dan password" },
     { number: "02", title: "Isi Data Dokumen", description: "Masukin info bisnis, klien, dan item" },
     { number: "03", title: "Download PDF", description: "Export PDF & kirim ke klien" },
   ];
@@ -82,7 +82,7 @@ const Index = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/pin-login">
+              <Link to="/login">
                 <Button variant="default" size="xl" className="w-full sm:w-auto text-base">
                   <LogIn className="w-5 h-5" />
                   Coba Sekarang
@@ -103,7 +103,7 @@ const Index = () => {
               </div>
               <div className="flex items-center gap-2 border-2 border-primary px-3 py-1.5 rounded-md bg-white shadow-neo-sm">
                 <CheckCircle2 className="w-4 h-4 text-accent" />
-                Akses dengan PIN
+                Akses Email & Password
               </div>
               <div className="flex items-center gap-2 border-2 border-primary px-3 py-1.5 rounded-md bg-white shadow-neo-sm">
                 <CheckCircle2 className="w-4 h-4 text-accent" />
@@ -247,7 +247,7 @@ const Index = () => {
               <p className="text-primary-foreground/90 font-bold mb-8 max-w-lg mx-auto text-base">
                 Invoice & quotation elegan = pembayaran makin niat. Mulai sekarang, gratis!
               </p>
-              <Link to="/pin-login">
+              <Link to="/login">
                 <Button variant="default" size="xl" className="shadow-neo bg-primary text-primary-foreground border-2 border-primary hover:bg-primary/90">
                   <LogIn className="w-5 h-5" />
                   Coba Sekarang
@@ -269,7 +269,7 @@ const Index = () => {
             <div className="flex items-center gap-8 text-sm font-bold text-navy-600">
               <a href="#features" className="hover:text-primary transition-colors">Fitur</a>
               <a href="#how-it-works" className="hover:text-primary transition-colors">Cara Kerja</a>
-              <Link to="/pin-login" className="hover:text-primary transition-colors">Dashboard</Link>
+              <Link to="/login" className="hover:text-primary transition-colors">Dashboard</Link>
             </div>
             <p className="text-sm font-semibold text-muted-foreground">
               © 2026 InvoiceYuk. Bikin invoice gak pake ribet.

@@ -57,7 +57,7 @@ const LandingNavbar = () => {
 
           {/* CTA Button */}
           <div className="flex items-center gap-3">
-            <Link to="/pin-login">
+            <Link to="/login">
               <Button variant="default" size="default">
                 <LogIn className="w-4 h-4" />
                 Coba Sekarang

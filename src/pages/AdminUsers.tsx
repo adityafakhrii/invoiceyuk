@@ -8,19 +8,8 @@ import {
   Shield, 
   User,
   Loader2,
-  Eye,
-  EyeOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -44,38 +33,24 @@ import {
 import { useAuthStore, AppRole } from '@/store/authStore';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { z } from 'zod';
-import { mapDatabaseError, isDuplicateError, isFieldError, logErrorSecurely } from '@/lib/errors';
+import { mapDatabaseError, logErrorSecurely } from '@/lib/errors';
 
 interface PinUser {
   id: string;
   name: string;
   username: string;
+  email: string | null;
   role: AppRole;
+  pekerjaan?: string | null;
+  tujuan_penggunaan?: string | null;
   created_at: string;
 }
 
-const userSchema = z.object({
-  name: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama terlalu panjang'),
-  username: z.string().min(3, 'Username minimal 3 karakter').max(50, 'Username terlalu panjang').regex(/^[a-z0-9_]+$/, 'Username hanya boleh huruf kecil, angka, dan underscore'),
-  pin: z.string().length(6, 'PIN harus 6 digit').regex(/^\d+$/, 'PIN harus angka'),
-  role: z.enum(['admin', 'user']),
-});
-
 const AdminUsers = () => {
-  const { user, sessionToken } = useAuthStore();
+  const { user } = useAuthStore();
   const [users, setUsers] = useState<PinUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPin, setShowPin] = useState(false);
-
-  // Form state
-  const [newName, setNewName] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [newPin, setNewPin] = useState('');
-  const [newRole, setNewRole] = useState<AppRole>('user');
-  const [errors, setErrors] = useState<{ name?: string; username?: string; pin?: string }>({});
 
   useEffect(() => {
     fetchUsers();
@@ -83,20 +58,48 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      // Use SECURITY DEFINER RPC function for server-side admin authorization
-      const { data, error } = await supabase.rpc('list_all_users', {
-        _session_token: sessionToken
-      }) as unknown as { data: { user_id: string; user_name: string; username: string; user_role: AppRole; created_at: string }[] | null; error: { message: string } | null };
+      const { data, error } = await supabase
+        .from('pin_users')
+        .select(`
+          id,
+          name,
+          username,
+          email,
+          pekerjaan,
+          tujuan_penggunaan,
+          created_at,
+          user_roles (
+            role
+          )
+        `) as unknown as { data: {
+          id: string;
+          name: string;
+          username: string;
+          email: string | null;
+          pekerjaan: string | null;
+          tujuan_penggunaan: string | null;
+          created_at: string;
+          user_roles: { role: AppRole }[] | null | { role: AppRole };
+        }[] | null; error: unknown };
 
       if (error) throw error;
 
-      const usersWithRoles: PinUser[] = (data || []).map((u: { user_id: string; user_name: string; username: string; user_role: AppRole; created_at: string }) => ({
-        id: u.user_id,
-        name: u.user_name,
-        username: u.username,
-        role: u.user_role,
-        created_at: u.created_at,
-      }));
+      const usersWithRoles: PinUser[] = (data || []).map((u) => {
+        const roles = u.user_roles;
+        const role = Array.isArray(roles) 
+          ? (roles[0]?.role || 'user') 
+          : ((roles as { role: AppRole })?.role || 'user');
+        return {
+          id: u.id,
+          name: u.name,
+          username: u.username,
+          email: u.email,
+          pekerjaan: u.pekerjaan,
+          tujuan_penggunaan: u.tujuan_penggunaan,
+          role: role as AppRole,
+          created_at: u.created_at,
+        };
+      });
 
       setUsers(usersWithRoles);
     } catch (error) {
@@ -111,65 +114,6 @@ const AdminUsers = () => {
     }
   };
 
-  const handleAddUser = async () => {
-    setErrors({});
-    
-    const validation = userSchema.safeParse({
-      name: newName,
-      username: newUsername.toLowerCase(),
-      pin: newPin,
-      role: newRole,
-    });
-
-    if (!validation.success) {
-      const fieldErrors: { name?: string; username?: string; pin?: string } = {};
-      validation.error.errors.forEach(err => {
-        if (err.path[0] === 'name') fieldErrors.name = err.message;
-        if (err.path[0] === 'username') fieldErrors.username = err.message;
-        if (err.path[0] === 'pin') fieldErrors.pin = err.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { data, error } = await supabase.rpc('create_pin_user', {
-        _name: newName.trim(),
-        _username: newUsername.trim().toLowerCase(),
-        _pin: newPin,
-        _role: newRole,
-        _session_token: sessionToken,
-      }) as unknown as { data: string | null; error: { message: string } | null };
-
-      if (error) {
-        if (isDuplicateError(error) && isFieldError(error, 'username')) {
-          setErrors({ username: 'Username sudah digunakan' });
-          return;
-        }
-        throw error;
-      }
-
-      toast({ title: 'Berhasil!', description: `User ${newName} berhasil ditambahkan` });
-      setNewName('');
-      setNewUsername('');
-      setNewPin('');
-      setNewRole('user');
-      setShowPin(false);
-      setIsDialogOpen(false);
-      fetchUsers();
-    } catch (error) {
-      logErrorSecurely('handleAddUser', error);
-      toast({ 
-        title: 'Error', 
-        description: mapDatabaseError(error), 
-        variant: 'destructive' 
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDeleteUser = async (userId: string, userName: string) => {
     if (userId === user?.id) {
       toast({ 
@@ -181,7 +125,10 @@ const AdminUsers = () => {
     }
 
     try {
-      const { error } = await supabase.rpc('delete_pin_user', { _user_id: userId, _session_token: sessionToken }) as unknown as { error: { message: string } | null };
+      const { error } = await supabase
+        .from('pin_users')
+        .delete()
+        .eq('id', userId);
 
       if (error) throw error;
 
@@ -197,8 +144,6 @@ const AdminUsers = () => {
     }
   };
 
-
-
   return (
     <div className="w-full">
       <div className="pb-10">
@@ -211,7 +156,7 @@ const AdminUsers = () => {
                 Kelola User
               </h1>
               <p className="text-sm font-semibold text-navy-700">
-                Tambah dan kelola user yang bisa mengakses dashboard
+                Lihat dan kelola pengguna terdaftar di InvoiceYuk
               </p>
             </div>
 
@@ -222,82 +167,28 @@ const AdminUsers = () => {
                   Tambah User
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="border-2 border-primary shadow-neo max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Tambah User Baru</DialogTitle>
-                  <DialogDescription>
-                    Masukkan data untuk user baru
+                  <DialogTitle className="text-primary font-black uppercase tracking-tight text-xl">Tambah User Baru</DialogTitle>
+                  <DialogDescription className="font-semibold text-muted-foreground pt-1">
+                    Bagaimana cara menambahkan pengguna baru dengan Supabase Auth?
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nama Lengkap</Label>
-                    <Input
-                      id="name"
-                      placeholder="Contoh: John Doe"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                    />
-                    {errors.name && (
-                      <p className="text-xs text-destructive">{errors.name}</p>
-                    )}
+                <div className="py-4 space-y-3 font-semibold text-navy-800 text-sm leading-relaxed">
+                  <p>
+                    Saat ini aplikasi menggunakan **Supabase Auth (Email & Password)** yang aman. 
+                    Pengguna baru harus didaftarkan secara mandiri melalui halaman registrasi publik.
+                  </p>
+                  <div className="bg-secondary p-3 rounded-lg border-2 border-primary/50 text-xs text-primary font-mono select-all text-center">
+                    {window.location.origin}/register
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      placeholder="Contoh: johndoe"
-                      value={newUsername}
-                      onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                    />
-                    {errors.username && (
-                      <p className="text-xs text-destructive">{errors.username}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="pin">PIN (6 digit)</Label>
-                    <div className="relative">
-                      <Input
-                        id="pin"
-                        type={showPin ? 'text' : 'password'}
-                        maxLength={6}
-                        placeholder="******"
-                        value={newPin}
-                        onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
-                        className="pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                    {errors.pin && (
-                      <p className="text-xs text-destructive">{errors.pin}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Role</Label>
-                    <Select value={newRole} onValueChange={(v) => setNewRole(v as AppRole)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <p>
+                    Silakan bagikan tautan di atas kepada rekan atau pengguna baru yang ingin didaftarkan.
+                  </p>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Batal
-                  </Button>
-                  <Button onClick={handleAddUser} disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-                    Tambah User
+                  <Button variant="default" onClick={() => setIsDialogOpen(false)}>
+                    Mengerti
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -313,50 +204,63 @@ const AdminUsers = () => {
             <div className="text-center py-20">
               <Users className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-foreground mb-2">Belum ada user</h3>
-              <p className="text-muted-foreground">Klik tombol "Tambah User" untuk menambahkan user baru</p>
+              <p className="text-muted-foreground">Silakan bagikan tautan registrasi untuk mendaftarkan user baru</p>
             </div>
           ) : (
             <div className="space-y-4">
               {users.map((u) => (
                 <div 
                   key={u.id} 
-                  className="bg-card rounded-xl border-2 border-primary p-4 shadow-neo flex items-center justify-between hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150"
+                  className="bg-card rounded-xl border-2 border-primary p-4 shadow-neo flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg border-2 border-primary flex items-center justify-center shadow-neo-sm ${
-                      u.role === 'admin' ? 'bg-accent/20' : 'bg-secondary'
+                  <div className="flex items-start gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 border-primary shadow-neo-sm ${
+                      u.role === 'admin' ? 'bg-accent/10' : 'bg-primary/10'
                     }`}>
                       {u.role === 'admin' ? (
-                        <Shield className="w-5 h-5 text-primary" />
+                        <Shield className="w-5 h-5 text-accent" />
                       ) : (
                         <User className="w-5 h-5 text-primary" />
                       )}
                     </div>
-                    <div>
-                      <p className="font-extrabold text-primary">{u.name}</p>
-                      <p className="text-xs font-bold text-muted-foreground">@{u.username} • <span className="uppercase text-[10px] text-accent font-black tracking-wider">{u.role}</span></p>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-extrabold text-primary text-base">{u.name}</p>
+                        <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border border-primary ${
+                          u.role === 'admin' ? 'bg-accent text-accent-foreground' : 'bg-secondary text-primary'
+                        }`}>
+                          {u.role}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-muted-foreground">@{u.username} • {u.email || 'Tidak ada email'}</p>
+                      {(u.pekerjaan || u.tujuan_penggunaan) && (
+                        <div className="text-xs bg-secondary/50 p-2 rounded border border-primary/20 space-y-1 font-semibold text-navy-800 mt-2 max-w-md">
+                          {u.pekerjaan && <p><span className="text-muted-foreground">Pekerjaan:</span> {u.pekerjaan}</p>}
+                          {u.tujuan_penggunaan && <p><span className="text-muted-foreground">Tujuan:</span> {u.tujuan_penggunaan}</p>}
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   {u.id !== user?.id && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="w-9 h-9 border-2 border-transparent hover:border-destructive hover:bg-red-50 text-muted-foreground hover:text-destructive transition-all">
+                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive self-end sm:self-center border-2 border-transparent hover:border-destructive">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
+                      <AlertDialogContent className="border-2 border-primary shadow-neo">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Hapus User?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Apakah kamu yakin ingin menghapus user "{u.name}"? Semua invoice milik user ini juga akan dihapus.
+                          <AlertDialogTitle className="text-primary font-black uppercase tracking-tight text-xl">Hapus User?</AlertDialogTitle>
+                          <AlertDialogDescription className="font-semibold text-muted-foreground">
+                            Apakah kamu yakin ingin menghapus user "{u.name}"? Semua invoice milik user ini juga akan dihapus dari sistem.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Batal</AlertDialogCancel>
+                          <AlertDialogCancel className="border-2 border-primary">Batal</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={() => handleDeleteUser(u.id, u.name)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 border-2 border-primary shadow-neo-sm"
                           >
                             Hapus
                           </AlertDialogAction>

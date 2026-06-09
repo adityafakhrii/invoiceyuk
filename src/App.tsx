@@ -10,7 +10,8 @@ import BuatQuotation from "./pages/BuatQuotation";
 import EditInvoice from "./pages/EditInvoice";
 import Riwayat from "./pages/Riwayat";
 import PreviewInvoice from "./pages/PreviewInvoice";
-import PinLogin from "./pages/PinLogin";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import AdminUsers from "./pages/AdminUsers";
@@ -37,7 +38,8 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/pin-login" element={<PinLogin />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             
             {/* Authenticated routes wrapped in SidebarLayout */}
             <Route element={<ProtectedRoute><SidebarLayout /></ProtectedRoute>}>
