@@ -150,17 +150,52 @@ const Riwayat = () => {
             {/* Overdue Reminders */}
             <InvoiceReminderBanner invoices={invoices} />
             
-            {/* Filters Panel */}
             <div className="space-y-4 mb-8">
-              {/* Search input */}
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari nama klien atau nomor invoice..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-11"
-                />
+              {/* Row 1: Search input & Desktop Date Range Filter */}
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                {/* Search input */}
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Cari nama klien atau nomor invoice..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 h-11"
+                  />
+                </div>
+
+                {/* Desktop Date Range Filter (rata kanan sejajar kolom cari) */}
+                <div className="hidden md:flex items-center gap-2 flex-shrink-0">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                        <CalendarIcon className="w-4 h-4 mr-1" />
+                        {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  <span className="text-muted-foreground text-sm">—</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                        <CalendarIcon className="w-4 h-4 mr-1" />
+                        {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                    </PopoverContent>
+                  </Popover>
+                  {(dateFrom || dateTo) && (
+                    <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                      <X className="w-4 h-4 mr-1" />
+                      Reset
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {/* Mobile Filter Buttons (Dropdowns triggered by three-dots / compact menus) */}
@@ -224,77 +259,74 @@ const Riwayat = () => {
                 )}
               </div>
 
-              {/* Desktop Filters (visible on md and up) */}
-              <div className="hidden md:flex flex-col md:flex-row gap-4">
+              {/* Row 2: Desktop Status & Category Filters */}
+              {/* Desktop view */}
+              <div className="hidden md:flex flex-row items-center justify-between gap-4 pt-1">
                 {/* Status Filter */}
-                <div className="flex-1">
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant={statusFilter === 'all' ? 'default' : 'outline-light'}
-                      size="sm"
-                      onClick={() => setStatusFilter('all')}
-                    >
-                      <Filter className="w-4 h-4 mr-1" />
-                      Semua
-                    </Button>
-                    <Button
-                      variant={statusFilter === 'paid' ? 'default' : 'outline-light'}
-                      size="sm"
-                      onClick={() => setStatusFilter('paid')}
-                    >
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Paid
-                    </Button>
-                    <Button
-                      variant={statusFilter === 'unpaid' ? 'default' : 'outline-light'}
-                      size="sm"
-                      onClick={() => setStatusFilter('unpaid')}
-                    >
-                      <Clock className="w-4 h-4 mr-1" />
-                      Unpaid
-                    </Button>
-                    <Button
-                      variant={statusFilter === 'cancelled' ? 'default' : 'outline-light'}
-                      size="sm"
-                      onClick={() => setStatusFilter('cancelled')}
-                    >
-                      <XCircle className="w-4 h-4 mr-1" />
-                      Dibatalkan
-                    </Button>
-                  </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={statusFilter === 'all' ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setStatusFilter('all')}
+                  >
+                    <Filter className="w-4 h-4 mr-1" />
+                    Semua
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'paid' ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setStatusFilter('paid')}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Paid
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'unpaid' ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setStatusFilter('unpaid')}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Unpaid
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'cancelled' ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setStatusFilter('cancelled')}
+                  >
+                    <XCircle className="w-4 h-4 mr-1" />
+                    Dibatalkan
+                  </Button>
                 </div>
 
-                {/* Category Filter */}
+                {/* Desktop Category Filter (rata kanan) */}
                 {uniqueCategories.length > 0 && (
-                  <div className="flex-1">
-                    <div className="flex flex-wrap gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
+                      size="sm"
+                      onClick={() => setCategoryFilter('all')}
+                    >
+                      Semua Kategori
+                    </Button>
+                    {uniqueCategories.map((cat) => (
                       <Button
-                        variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
+                        key={cat}
+                        variant={categoryFilter === cat ? 'default' : 'outline-light'}
                         size="sm"
-                        onClick={() => setCategoryFilter('all')}
+                        onClick={() => setCategoryFilter(cat)}
                       >
-                        Semua Kategori
+                        {cat}
                       </Button>
-                      {uniqueCategories.map((cat) => (
-                        <Button
-                          key={cat}
-                          variant={categoryFilter === cat ? 'default' : 'outline-light'}
-                          size="sm"
-                          onClick={() => setCategoryFilter(cat)}
-                        >
-                          {cat}
-                        </Button>
-                      ))}
-                    </div>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {/* Date Range Filter */}
-              <div className="flex flex-wrap items-center gap-2 w-full pt-1">
+              {/* Mobile View Date Range Filter */}
+              <div className="flex md:hidden flex-wrap items-center gap-2 w-full pt-1">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                    <Button variant="outline-light" size="sm" className={cn("flex-1", !dateFrom && "text-muted-foreground")}>
                       <CalendarIcon className="w-4 h-4 mr-1" />
                       {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
                     </Button>
@@ -306,7 +338,7 @@ const Riwayat = () => {
                 <span className="text-muted-foreground text-sm">—</span>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                    <Button variant="outline-light" size="sm" className={cn("flex-1", !dateTo && "text-muted-foreground")}>
                       <CalendarIcon className="w-4 h-4 mr-1" />
                       {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
                     </Button>
@@ -316,7 +348,7 @@ const Riwayat = () => {
                   </PopoverContent>
                 </Popover>
                 {(dateFrom || dateTo) && (
-                  <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                  <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive w-full justify-center">
                     <X className="w-4 h-4 mr-1" />
                     Reset
                   </Button>
