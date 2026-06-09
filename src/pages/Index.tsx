@@ -271,9 +271,23 @@ const Index = () => {
               <a href="#how-it-works" className="hover:text-primary transition-colors">Cara Kerja</a>
               <Link to="/login" className="hover:text-primary transition-colors">Dashboard</Link>
             </div>
-            <p className="text-sm font-semibold text-muted-foreground">
-              © 2026 InvoiceYuk. Bikin invoice gak pake ribet.
-            </p>
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <p className="text-sm font-semibold text-muted-foreground">
+                © 2026 InvoiceYuk. Bikin invoice gak pake ribet.
+              </p>
+              <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs font-bold text-muted-foreground">
+                <Link to="/privacy" className="hover:text-primary transition-colors underline decoration-dotted">Kebijakan Privasi</Link>
+                <span className="text-gray-300 hidden sm:inline">|</span>
+                <a 
+                  href="https://www.instagram.com/adityafakhrii" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-1 hover:text-accent transition-colors text-primary font-bold"
+                >
+                  Made with <span className="text-red-500 animate-pulse">❤️</span> by @adityafakhrii
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

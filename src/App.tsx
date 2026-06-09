@@ -22,6 +22,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminUsers = lazy(() => import("./pages/AdminUsers"));
 const Laporan = lazy(() => import("./pages/Laporan"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Custom Neo-Brutalist loader for lazy loading fallback
@@ -50,6 +51,7 @@ const App = () => {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
               <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
               

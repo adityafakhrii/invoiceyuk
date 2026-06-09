@@ -119,6 +119,19 @@ const SidebarLayout = () => {
             Keluar (Logout)
           </span>
         </button>
+
+        {/* Sidebar Footer Attribution */}
+        <div className="mt-4 flex flex-col items-center gap-1 text-[10px] font-bold text-muted-foreground border-t border-primary/10 pt-3">
+          <Link to="/privacy" className="hover:text-primary transition-colors underline decoration-dotted">Kebijakan Privasi</Link>
+          <a 
+            href="https://www.instagram.com/adityafakhrii" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-1 hover:text-accent transition-colors text-primary font-bold"
+          >
+            Made with <span className="text-red-500 animate-pulse">❤️</span> by @adityafakhrii
+          </a>
+        </div>
       </aside>
 
       {/* Mobile Drawer Navigation Menu */}
@@ -147,6 +160,19 @@ const SidebarLayout = () => {
                 Keluar (Logout)
               </span>
             </button>
+
+            {/* Mobile Sidebar Footer Attribution */}
+            <div className="mt-4 flex flex-col items-center gap-1 text-[10px] font-bold text-muted-foreground border-t border-primary/10 pt-3">
+              <Link to="/privacy" className="hover:text-primary transition-colors underline decoration-dotted">Kebijakan Privasi</Link>
+              <a 
+                href="https://www.instagram.com/adityafakhrii" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="inline-flex items-center gap-1 hover:text-accent transition-colors text-primary font-bold"
+              >
+                Made with <span className="text-red-500 animate-pulse">❤️</span> by @adityafakhrii
+              </a>
+            </div>
           </div>
         </div>
       )}
