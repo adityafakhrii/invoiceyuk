@@ -126,75 +126,75 @@ const Dashboard = () => {
       </div>
 
       {/* Financial metrics stats grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         {/* Total revenue */}
-        <div className="bg-card border-2 border-primary p-6 shadow-neo rounded-none relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
+        <div className="bg-card border-2 border-primary p-4 sm:p-6 shadow-neo rounded-none relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 hidden sm:block">
             <DollarSign className="w-16 h-16 text-primary" />
           </div>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Pendapatan (Lunas)</p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Pendapatan (Lunas)</p>
           {isLoading ? (
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mt-3" />
           ) : (
-            <p className="text-2xl font-black text-primary mt-2 truncate">
+            <p className="text-[15px] xs:text-lg sm:text-2xl font-black text-primary mt-2 truncate">
               {formatCurrency(totalRevenue)}
             </p>
           )}
-          <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Dari {paidInvoices.length} invoice terbayar</span>
+          <div className="flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold text-green-600">
+            <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="truncate">Dari {paidInvoices.length} invoice</span>
           </div>
         </div>
 
         {/* Outstanding revenue */}
-        <div className="bg-card border-2 border-primary p-6 shadow-neo rounded-none relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
+        <div className="bg-card border-2 border-primary p-4 sm:p-6 shadow-neo rounded-none relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 hidden sm:block">
             <Clock className="w-16 h-16 text-primary" />
           </div>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Piutang Berjalan (Unpaid)</p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Piutang Berjalan (Unpaid)</p>
           {isLoading ? (
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mt-3" />
           ) : (
-            <p className="text-2xl font-black text-accent mt-2 truncate">
+            <p className="text-[15px] xs:text-lg sm:text-2xl font-black text-accent mt-2 truncate">
               {formatCurrency(outstandingRevenue)}
             </p>
           )}
-          <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-navy-500">
-            <Clock className="w-3.5 h-3.5" />
-            <span>Menunggu {unpaidInvoices.length} invoice terbayar</span>
+          <div className="flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold text-navy-500">
+            <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="truncate">Menunggu {unpaidInvoices.length} invoice</span>
           </div>
         </div>
 
         {/* Overdue revenue */}
-        <div className="bg-card border-2 border-primary p-6 shadow-neo rounded-none relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
+        <div className="bg-card border-2 border-primary p-4 sm:p-6 shadow-neo rounded-none relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10 hidden sm:block">
             <AlertCircle className="w-16 h-16 text-primary" />
           </div>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Tagihan Overdue</p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Tagihan Overdue</p>
           {isLoading ? (
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mt-3" />
           ) : (
-            <p className="text-2xl font-black text-destructive mt-2 truncate">
+            <p className="text-[15px] xs:text-lg sm:text-2xl font-black text-destructive mt-2 truncate">
               {formatCurrency(overdueRevenue)}
             </p>
           )}
-          <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-destructive">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>Ada {overdueInvoices.length} invoice melewati batas tempo</span>
+          <div className="flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold text-destructive">
+            <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="truncate">Ada {overdueInvoices.length} invoice</span>
           </div>
         </div>
 
         {/* Summary counts */}
-        <div className="bg-card border-2 border-primary p-6 shadow-neo rounded-none flex flex-col justify-between">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Statistik Dokumen</p>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <div className="border-r border-primary/10">
-              <span className="text-sm font-bold text-muted-foreground">Lunas</span>
-              <p className="text-2xl font-black text-primary mt-1">{paidInvoices.length}</p>
+        <div className="bg-card border-2 border-primary p-4 sm:p-6 shadow-neo rounded-none flex flex-col justify-between">
+          <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Statistik Dokumen</p>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="border-r border-primary/10 pr-1">
+              <span className="text-xs font-bold text-muted-foreground">Lunas</span>
+              <p className="text-lg sm:text-2xl font-black text-primary mt-1">{paidInvoices.length}</p>
             </div>
-            <div>
-              <span className="text-sm font-bold text-muted-foreground">Pending</span>
-              <p className="text-2xl font-black text-accent mt-1">{unpaidInvoices.length}</p>
+            <div className="pl-1">
+              <span className="text-xs font-bold text-muted-foreground">Pending</span>
+              <p className="text-lg sm:text-2xl font-black text-accent mt-1">{unpaidInvoices.length}</p>
             </div>
           </div>
         </div>
