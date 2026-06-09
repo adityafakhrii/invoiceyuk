@@ -174,12 +174,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <header className="bg-card border-b-2 border-primary sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link 
               to="/dashboard" 
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-primary hover:text-accent font-bold transition-colors uppercase tracking-wider text-xs"
             >
               <ArrowLeft className="w-4 h-4" />
               Kembali ke Dashboard
@@ -191,21 +191,21 @@ const Profile = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-8 flex items-center gap-3">
+          <h1 className="text-3xl font-black text-primary uppercase tracking-tight mb-8 flex items-center gap-3">
             <User className="w-7 h-7 text-accent" />
             Pengaturan Profil
           </h1>
 
           {/* Profile Section */}
-          <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card mb-6">
-            <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-              <User className="w-5 h-5 text-primary" />
+          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo mb-8">
+            <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
+              <User className="w-5 h-5 text-accent" />
               Informasi Akun
             </h2>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nama Lengkap</Label>
+                <Label htmlFor="name" className="text-primary font-bold uppercase tracking-wider text-xs">Nama Lengkap</Label>
                 <Input
                   id="name"
                   placeholder="Nama lengkap"
@@ -218,7 +218,7 @@ const Profile = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-primary font-bold uppercase tracking-wider text-xs">Username</Label>
                 <Input
                   id="username"
                   placeholder="username"
@@ -242,12 +242,12 @@ const Profile = () => {
           </section>
 
           {/* Default Currency Section */}
-          <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card mb-6">
-            <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
+          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo mb-8">
+            <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
+              <Globe className="w-5 h-5 text-accent" />
               Mata Uang Default
             </h2>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm font-semibold text-muted-foreground mb-4">
               Pilih mata uang default untuk invoice baru. Kamu tetap bisa mengubahnya per invoice.
             </p>
             <div className="flex items-center gap-3">
@@ -276,15 +276,15 @@ const Profile = () => {
           </section>
 
           {/* Change PIN Section */}
-          <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-            <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+          <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+            <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
               <KeyRound className="w-5 h-5 text-accent" />
               Ganti PIN
             </h2>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="oldPin">PIN Lama</Label>
+                <Label htmlFor="oldPin" className="text-primary font-bold uppercase tracking-wider text-xs">PIN Lama</Label>
                 <div className="relative">
                   <Input
                     id="oldPin"
@@ -311,7 +311,7 @@ const Profile = () => {
               <Separator />
 
               <div className="space-y-2">
-                <Label htmlFor="newPin">PIN Baru</Label>
+                <Label htmlFor="newPin" className="text-primary font-bold uppercase tracking-wider text-xs">PIN Baru</Label>
                 <div className="relative">
                   <Input
                     id="newPin"
@@ -336,7 +336,7 @@ const Profile = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPin">Konfirmasi PIN Baru</Label>
+                <Label htmlFor="confirmPin" className="text-primary font-bold uppercase tracking-wider text-xs">Konfirmasi PIN Baru</Label>
                 <div className="relative">
                   <Input
                     id="confirmPin"

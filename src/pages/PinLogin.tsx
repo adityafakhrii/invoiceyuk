@@ -85,38 +85,38 @@ const PinLogin = () => {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-primary mb-6">
-              <Lock className="w-8 h-8 text-primary-foreground" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary border-2 border-primary text-primary-foreground mb-6 shadow-neo-sm">
+              <Lock className="w-8 h-8 text-accent" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Masuk ke Dashboard
+            <h1 className="text-3xl font-black text-primary uppercase tracking-tight mb-2">
+              Masuk Dashboard
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-navy-700 font-semibold text-sm">
               Masukkan username dan PIN untuk mengakses dashboard
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="bg-card rounded-2xl border border-border p-8 shadow-card">
+          <form onSubmit={handleLogin} className="bg-card rounded-xl border-2 border-primary p-8 shadow-neo">
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-primary font-bold uppercase tracking-wider text-xs">Username</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                   <Input
                     id="username"
                     placeholder="Masukkan username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10"
+                    className="pl-11"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="pin">PIN (6 digit)</Label>
+                <Label htmlFor="pin" className="text-primary font-bold uppercase tracking-wider text-xs">PIN (6 digit)</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
                   <Input
                     id="pin"
                     type={showPin ? 'text' : 'password'}
@@ -124,24 +124,24 @@ const PinLogin = () => {
                     placeholder="******"
                     value={pin}
                     onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                    className="pl-10 pr-10"
+                    className="pl-11 pr-10"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPin(!showPin)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors animate-fade-in"
                   >
                     {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full text-base" disabled={isLoading}>
                 {isLoading ? 'Memverifikasi...' : 'Masuk'}
               </Button>
 
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-xs font-bold text-muted-foreground text-center">
                 Hubungi admin jika kamu belum memiliki akun
               </p>
             </div>

@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-bold ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-card hover:shadow-elegant",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent/10 hover:text-accent",
+        default: "bg-primary text-primary-foreground border-2 border-primary shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--accent))] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--accent))]",
+        destructive: "bg-destructive text-destructive-foreground border-2 border-primary shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--primary))] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--primary))]",
+        outline: "border-2 border-primary bg-transparent text-primary shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--primary))] hover:bg-secondary active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--primary))]",
+        secondary: "bg-secondary text-secondary-foreground border-2 border-primary shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--primary))] hover:bg-secondary/80 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--primary))]",
+        ghost: "hover:bg-accent/10 hover:text-accent border-2 border-transparent",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-gradient-primary text-primary-foreground shadow-elegant hover:shadow-glow hover:scale-[1.02] active:scale-[0.98]",
-        accent: "bg-accent text-accent-foreground shadow-card hover:bg-accent/90 hover:shadow-glow",
-        "outline-light": "border-2 border-navy-200 bg-transparent text-navy-700 hover:bg-navy-50 hover:border-navy-300",
+        hero: "bg-primary text-primary-foreground border-2 border-primary shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_hsl(var(--accent))] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_hsl(var(--accent))]",
+        accent: "bg-accent text-accent-foreground border-2 border-primary shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--primary))] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--primary))]",
+        "outline-light": "border-2 border-primary bg-transparent text-primary shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_hsl(var(--accent))] hover:bg-navy-50/50 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_hsl(var(--accent))]",
       },
       size: {
         default: "h-11 px-5 py-2",

@@ -231,7 +231,7 @@ const PreviewInvoice = () => {
             </div>
 
             {/* Invoice Preview */}
-            <div className="bg-card rounded-2xl shadow-elegant overflow-hidden print:shadow-none print:rounded-none">
+            <div className="bg-card rounded-xl border-2 border-primary shadow-neo overflow-hidden print:border-none print:shadow-none print:rounded-none">
               <div ref={invoiceRef} className="bg-white">
                 {/* Header */}
                 <div className={cn('p-8 md:p-10', styles.headerBg)}>

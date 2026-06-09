@@ -214,14 +214,14 @@ const Laporan = () => {
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-4xl font-black text-primary uppercase tracking-tight mb-3">
                 Laporan Keuangan
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-navy-700 font-semibold text-sm">
                 Pantau pendapatan bisnis lo dari invoice yang sudah dibayar 📊
               </p>
               {paidInvoices.length > 0 && (
-                <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportPDF}>
+                <Button variant="outline" size="sm" className="mt-4" onClick={handleExportPDF}>
                   <Download className="w-4 h-4 mr-1" />
                   Download PDF
                 </Button>
@@ -261,7 +261,7 @@ const Laporan = () => {
             </div>
 
             {/* Chart Section */}
-            <div className="bg-card rounded-2xl border border-border p-6 shadow-card mb-8">
+            <div className="bg-card rounded-xl border-2 border-primary p-6 shadow-neo mb-8">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-lg font-bold text-foreground">Grafik Pendapatan</h2>
@@ -361,37 +361,37 @@ const Laporan = () => {
 
             {/* Breakdown Table */}
             {viewMode === 'monthly' && (
-              <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-4">
+              <div className="bg-card rounded-xl border-2 border-primary p-6 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
                   Detail {selectedMonth === 'all' ? `Bulanan ${selectedYear}` : `Harian ${MONTH_NAMES[selectedMonth as number]} ${selectedYear}`}
                 </h2>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-3 px-2 text-muted-foreground font-medium">Periode</th>
-                        <th className="text-right py-3 px-2 text-muted-foreground font-medium">Invoice</th>
-                        <th className="text-right py-3 px-2 text-muted-foreground font-medium">Pendapatan</th>
+                      <tr className="border-b-2 border-primary bg-secondary/50">
+                        <th className="text-left py-3 px-4 text-primary font-bold uppercase tracking-wider text-xs">Periode</th>
+                        <th className="text-right py-3 px-4 text-primary font-bold uppercase tracking-wider text-xs">Invoice</th>
+                        <th className="text-right py-3 px-4 text-primary font-bold uppercase tracking-wider text-xs">Pendapatan</th>
                       </tr>
                     </thead>
                     <tbody>
                       {chartData.map((row) => (
-                        <tr key={row.name} className="border-b border-border/50 hover:bg-secondary/50 transition-colors">
-                          <td className="py-3 px-2 font-medium text-foreground">
+                        <tr key={row.name} className="border-b-2 border-navy-100 hover:bg-secondary/40 transition-colors">
+                          <td className="py-3 px-4 font-bold text-primary">
                             {selectedMonth === 'all' ? row.name : `Tanggal ${row.name}`}
                           </td>
-                          <td className="py-3 px-2 text-right text-muted-foreground">{row.count}</td>
-                          <td className="py-3 px-2 text-right font-semibold text-foreground">
+                          <td className="py-3 px-4 text-right font-bold text-muted-foreground">{row.count}</td>
+                          <td className="py-3 px-4 text-right font-extrabold text-primary">
                             {row.revenue > 0 ? formatCurrency(row.revenue) : '-'}
                           </td>
                         </tr>
                       ))}
-                      <tr className="bg-primary/5">
-                        <td className="py-3 px-2 font-bold text-foreground">Total</td>
-                        <td className="py-3 px-2 text-right font-bold text-foreground">
+                      <tr className="bg-secondary/70 border-t-2 border-primary font-bold">
+                        <td className="py-3 px-4 font-black text-primary uppercase">Total</td>
+                        <td className="py-3 px-4 text-right font-black text-primary">
                           {chartData.reduce((s, r) => s + r.count, 0)}
                         </td>
-                        <td className="py-3 px-2 text-right font-bold text-accent">
+                        <td className="py-3 px-4 text-right font-black text-accent">
                           {formatCurrency(chartData.reduce((s, r) => s + r.revenue, 0))}
                         </td>
                       </tr>
@@ -418,14 +418,14 @@ const StatCard = ({
   value: string;
   bgClass: string;
 }) => (
-  <div className="bg-card rounded-xl border border-border p-4 shadow-card">
+  <div className="bg-card rounded-xl border-2 border-primary p-4 shadow-neo">
     <div className="flex items-center gap-3">
-      <div className={`w-10 h-10 rounded-lg ${bgClass} flex items-center justify-center flex-shrink-0`}>
+      <div className={`w-10 h-10 rounded-lg border-2 border-primary ${bgClass} flex items-center justify-center flex-shrink-0 shadow-neo-sm`}>
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-lg font-bold text-foreground truncate">{value}</p>
-        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-xl font-black text-primary truncate leading-tight mb-0.5">{value}</p>
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{label}</p>
       </div>
     </div>
   </div>

@@ -123,14 +123,14 @@ const Riwayat = () => {
           <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-4xl font-black text-primary uppercase tracking-tight mb-3">
                 Riwayat Invoice
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-navy-700 font-semibold text-sm">
                 Semua invoice yang pernah lo buat ada di sini
               </p>
               {invoices.length > 0 && (
-                <Button variant="outline-light" size="sm" className="mt-4" onClick={handleExportCSV}>
+                <Button variant="outline" size="sm" className="mt-4" onClick={handleExportCSV}>
                   <Download className="w-4 h-4 mr-1" />
                   Export CSV
                 </Button>
@@ -238,58 +238,58 @@ const Riwayat = () => {
 
             {/* Invoice List */}
             {filteredInvoices.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-10 h-10 text-muted-foreground" />
+              <div className="text-center py-20 border-2 border-dashed border-primary/40 rounded-xl bg-card">
+                <div className="w-20 h-20 rounded-xl border-2 border-primary bg-secondary flex items-center justify-center mx-auto mb-4 shadow-neo-sm">
+                  <FileText className="w-10 h-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-black text-primary uppercase tracking-tight mb-2">
                   {invoices.length === 0 ? 'Belum Ada Invoice' : 'Tidak Ditemukan'}
                 </h3>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-sm font-semibold text-muted-foreground mb-6">
                   {invoices.length === 0
                     ? 'Yuk mulai bikin invoice pertama lo!'
                     : 'Coba kata kunci lain atau ubah filter'}
                 </p>
                 {invoices.length === 0 && (
                   <Link to="/buat-invoice">
-                    <Button variant="hero">Buat Invoice Pertama</Button>
+                    <Button variant="default">Buat Invoice Pertama</Button>
                   </Link>
                 )}
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {filteredInvoices.map((invoice) => (
                   <div
                     key={invoice.id}
-                    className="bg-card rounded-xl border border-border p-4 md:p-6 shadow-card hover:shadow-elegant transition-shadow duration-300"
+                    className="bg-card rounded-xl border-2 border-primary p-4 md:p-6 shadow-neo hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150"
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0">
-                          <FileText className="w-6 h-6 text-primary-foreground" />
+                        <div className="w-12 h-12 rounded-lg border-2 border-primary bg-secondary flex items-center justify-center flex-shrink-0 shadow-neo-sm">
+                          <FileText className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-foreground">{invoice.clientName}</h3>
-                          <p className="text-sm text-muted-foreground">{invoice.invoiceNumber}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <h3 className="font-extrabold text-lg text-primary">{invoice.clientName}</h3>
+                          <p className="text-sm font-bold text-muted-foreground">{invoice.invoiceNumber}</p>
+                          <p className="text-xs font-bold text-navy-600 mt-1">
                             {invoice.businessName} • {formatDate(invoice.invoiceDate)}
-                            {invoice.category && <span className="ml-1">• {invoice.category}</span>}
+                            {invoice.category && <span className="ml-1 font-bold">• {invoice.category}</span>}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
-                        <div className="text-right">
-                          <p className="font-bold text-lg text-foreground">
+                        <div className="text-left md:text-right">
+                          <p className="font-black text-lg text-primary">
                             {formatCurrency(calculateTotal(invoice.items, invoice.tax), invoice.currency)}
                           </p>
                           <button
                             onClick={() => handleToggleStatus(invoice.id)}
                             className={cn(
-                              "inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full transition-colors cursor-pointer",
+                              "inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1",
                               invoice.status === 'paid'
-                                ? "bg-accent/10 text-accent"
-                                : "bg-amber-500/10 text-amber-600"
+                                ? "bg-accent/15 border-primary text-primary"
+                                : "bg-yellow-100 border-primary text-yellow-800"
                             )}
                           >
                             {invoice.status === 'paid' ? (
@@ -309,42 +309,43 @@ const Riwayat = () => {
                         <div className="flex items-center gap-2">
                           {invoice.status === 'unpaid' && (
                             <Button
-                              variant="default"
+                              variant="accent"
                               size="sm"
                               onClick={() => handleToggleStatus(invoice.id)}
-                              className="bg-accent hover:bg-accent/90"
+                              className="text-xs py-1.5 h-9"
                             >
                               <CheckCircle className="w-4 h-4" />
-                              <span className="hidden sm:inline">Paid</span>
+                              <span className="hidden sm:inline">Set Paid</span>
                             </Button>
                           )}
                           <Button
-                            variant="outline-light"
+                            variant="outline"
                             size="icon"
                             title="Duplikat"
                             onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
+                            className="w-9 h-9"
                           >
                             <Copy className="w-4 h-4" />
                           </Button>
                           <Link to={`/edit-invoice/${invoice.id}`} title="Edit">
-                            <Button variant="outline-light" size="icon">
+                            <Button variant="outline" size="icon" className="w-9 h-9">
                               <Pencil className="w-4 h-4" />
                             </Button>
                           </Link>
                           <Link to={`/preview/${invoice.id}`} title="Lihat">
-                            <Button variant="outline-light" size="icon">
+                            <Button variant="outline" size="icon" className="w-9 h-9">
                               <Eye className="w-4 h-4" />
                             </Button>
                           </Link>
                           <Link to={`/preview/${invoice.id}`} title="Download PDF">
-                            <Button variant="hero" size="icon">
+                            <Button variant="default" size="icon" className="w-9 h-9">
                               <Download className="w-4 h-4" />
                             </Button>
                           </Link>
 
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
+                              <Button variant="ghost" size="icon" className="w-9 h-9 border-2 border-transparent hover:border-destructive hover:bg-red-50 text-muted-foreground hover:text-destructive transition-all">
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </AlertDialogTrigger>
@@ -373,32 +374,32 @@ const Riwayat = () => {
 
             {/* Stats */}
             {invoices.length > 0 && (
-              <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <p className="text-2xl font-bold text-foreground">{invoices.length}</p>
-                  <p className="text-sm text-muted-foreground">Total Invoice</p>
+              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-6 rounded-xl border-2 border-primary shadow-neo">
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
+                  <p className="text-3xl font-black text-primary leading-none mb-1">{invoices.length}</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Invoice</p>
                 </div>
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <p className="text-2xl font-bold text-accent">
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-accent/10 shadow-neo-sm">
+                  <p className="text-3xl font-black text-accent leading-none mb-1">
                     {invoices.filter((i) => i.status === 'paid').length}
                   </p>
-                  <p className="text-sm text-muted-foreground">Sudah Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sudah Dibayar</p>
                 </div>
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <p className="text-2xl font-bold text-amber-600">
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-yellow-50 shadow-neo-sm">
+                  <p className="text-3xl font-black text-yellow-800 leading-none mb-1">
                     {invoices.filter((i) => i.status === 'unpaid').length}
                   </p>
-                  <p className="text-sm text-muted-foreground">Belum Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Belum Dibayar</p>
                 </div>
-                <div className="bg-card rounded-xl border border-border p-4 text-center">
-                  <p className="text-2xl font-bold text-foreground">
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
+                  <p className="text-xl font-black text-primary truncate leading-none mb-2 mt-1">
                     {formatCurrency(
                       invoices
                         .filter((i) => i.status === 'paid')
                         .reduce((sum, i) => sum + calculateTotal(i.items, i.tax), 0)
                     )}
                   </p>
-                  <p className="text-sm text-muted-foreground">Total Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Dibayar</p>
                 </div>
               </div>
             )}

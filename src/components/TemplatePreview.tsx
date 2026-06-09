@@ -33,8 +33,8 @@ const TemplatePreview = ({ template, isSelected }: TemplatePreviewProps) => {
 
   return (
     <div className={cn(
-      "w-full aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all",
-      isSelected ? "border-accent shadow-glow" : "border-border"
+      "w-full aspect-[3/4] rounded-xl overflow-hidden border-2 border-primary transition-all duration-150",
+      isSelected ? "shadow-neo-accent -translate-y-0.5" : "shadow-neo hover:shadow-neo-accent hover:-translate-y-0.5 active:translate-y-0"
     )}>
       <div className="w-full h-full bg-white flex flex-col">
         {/* Header */}

@@ -195,18 +195,18 @@ const BuatQuotation = () => {
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-4xl font-black text-primary uppercase tracking-tight mb-3">
                 Buat Quotation Baru
               </h1>
-              <p className="text-muted-foreground">
-                Buat penawaran harga profesional untuk klien potensial
+              <p className="text-navy-700 font-semibold text-sm">
+                Isi form di bawah untuk membuat penawaran harga resmi
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Business Info */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
                   <FileEdit className="w-5 h-5 text-accent" />
                   Info Bisnis Lo
                 </h2>
@@ -272,8 +272,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Client Info */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Info Klien Potensial</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Info Klien Potensial</h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -310,8 +310,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Quotation Details */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Detail Quotation</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Detail Quotation</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
@@ -378,8 +378,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Items */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Item / Layanan yang Ditawarkan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Item / Layanan yang Ditawarkan</h2>
 
                 <div className="space-y-4">
                   {items.map((item, index) => (
@@ -455,8 +455,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Signature */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Tanda Tangan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Tanda Tangan</h2>
                 <SignatureInput
                   signatureName={signatureName}
                   onSignatureNameChange={setSignatureName}
@@ -468,8 +468,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Social Media */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Sosial Media (Footer Quotation)</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Sosial Media (Footer Quotation)</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
@@ -515,8 +515,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Notes */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Syarat & Ketentuan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Syarat & Ketentuan</h2>
                 <Textarea
                   placeholder="Contoh: Penawaran harga ini berlaku sampai..."
                   value={notes}
@@ -526,8 +526,8 @@ const BuatQuotation = () => {
               </section>
 
               {/* Template Selection */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Pilih Template</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Pilih Template</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   {templates.map((template) => (

@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -92,6 +92,10 @@ export default {
         'elegant': 'var(--shadow-lg)',
         'glow': 'var(--shadow-glow)',
         'card': 'var(--shadow-md)',
+        'neo': '4px 4px 0px 0px hsl(var(--primary))',
+        'neo-accent': '4px 4px 0px 0px hsl(var(--accent))',
+        'neo-sm': '2px 2px 0px 0px hsl(var(--primary))',
+        'neo-lg': '6px 6px 0px 0px hsl(var(--primary))',
       },
       keyframes: {
         "accordion-down": {

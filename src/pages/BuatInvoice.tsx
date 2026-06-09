@@ -242,18 +242,18 @@ const BuatInvoice = () => {
           <div className="max-w-4xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+              <h1 className="text-4xl font-black text-primary uppercase tracking-tight mb-3">
                 Buat Invoice Baru
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-navy-700 font-semibold text-sm">
                 Isi form di bawah, nanti invoice kece siap dikirim ke klien
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Business Info */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
                   <FileText className="w-5 h-5 text-accent" />
                   Info Bisnis Lo
                 </h2>
@@ -347,8 +347,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Client Info */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Info Klien</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Info Klien</h2>
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -385,8 +385,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Invoice Details */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Detail Invoice</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Detail Invoice</h2>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="space-y-2">
@@ -467,8 +467,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Items */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Item / Layanan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Item / Layanan</h2>
 
                 <div className="space-y-4">
                   {items.map((item, index) => (
@@ -551,7 +551,7 @@ const BuatInvoice = () => {
               </section>
 
               {/* Down Payment (DP) */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                     <Percent className="w-5 h-5 text-accent" />
@@ -665,8 +665,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Payment Info */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Informasi Pembayaran</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Informasi Pembayaran</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
@@ -702,8 +702,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Signature */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Tanda Tangan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Tanda Tangan</h2>
                 <SignatureInput
                   signatureName={signatureName}
                   onSignatureNameChange={setSignatureName}
@@ -715,8 +715,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Social Media */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Sosial Media (Footer Invoice)</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Sosial Media (Footer Invoice)</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
@@ -762,8 +762,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Notes */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Catatan Tambahan</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Catatan Tambahan</h2>
                 <Textarea
                   placeholder="Contoh: Harap transfer sebelum due date..."
                   value={notes}
@@ -773,8 +773,8 @@ const BuatInvoice = () => {
               </section>
 
               {/* Template Selection */}
-              <section className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card">
-                <h2 className="text-lg font-bold text-foreground mb-6">Pilih Template</h2>
+              <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
+                <h2 className="text-xl font-black text-primary mb-6 uppercase tracking-tight">Pilih Template</h2>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   {templates.map((template) => (
@@ -797,9 +797,8 @@ const BuatInvoice = () => {
                 </div>
               </section>
 
-              {/* Submit Button */}
               <div className="flex justify-center pt-4">
-                <Button type="submit" variant="hero" size="xl">
+                <Button type="submit" variant="default" size="xl">
                   Buat Invoice
                   <ArrowRight className="w-5 h-5" />
                 </Button>

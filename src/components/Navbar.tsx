@@ -24,29 +24,29 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card border-b-2 border-primary">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center gap-3 group">
-            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 rounded-lg" />
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 rounded-lg border-2 border-primary" />
             <div className="flex flex-col leading-tight">
-              <span className="font-bold text-xl tracking-tight" style={{ color: 'hsl(var(--primary))' }}>InvoiceYuk</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">Bikin Invoice, Gampang Banget!</span>
+              <span className="font-extrabold text-xl tracking-tight text-primary">InvoiceYuk</span>
+              <span className="text-[10px] font-bold text-muted-foreground hidden sm:block uppercase tracking-wider">Bikin Invoice, Gampang Banget!</span>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "px-4 py-2 rounded-lg text-sm font-bold transition-all duration-150 border-2",
                   location.pathname === link.path
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? "bg-primary text-primary-foreground border-primary shadow-neo-sm"
+                    : "text-navy-500 border-transparent hover:text-primary hover:bg-secondary hover:border-primary/40"
                 )}
               >
                 <span className="flex items-center gap-2">
@@ -62,11 +62,11 @@ const Navbar = () => {
             {isAuthenticated && user && (
               <>
                 <div className="hidden sm:block text-right">
-                  <p className="text-sm font-medium text-foreground">{user.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                  <p className="text-sm font-bold text-foreground">{user.name}</p>
+                  <p className="text-xs font-semibold text-muted-foreground capitalize">{user.role}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleLogout}>
-                  <LogOut className="w-4 h-4" />
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="border-2 border-transparent hover:border-primary hover:bg-secondary transition-all">
+                  <LogOut className="w-4 h-4 text-primary" />
                 </Button>
               </>
             )}
@@ -75,20 +75,20 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-border bg-card">
-        <div className="flex justify-around py-2">
+      <div className="md:hidden border-t-2 border-primary bg-card">
+        <div className="flex justify-around py-1">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               className={cn(
-                "flex flex-col items-center gap-1 px-4 py-2 rounded-lg text-xs font-medium transition-all",
+                "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md text-[11px] font-bold transition-all",
                 location.pathname === link.path
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                  ? "text-primary scale-105"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <link.icon className="w-5 h-5" />
+              <link.icon className="w-4.5 h-4.5" />
               {link.label}
             </Link>
           ))}

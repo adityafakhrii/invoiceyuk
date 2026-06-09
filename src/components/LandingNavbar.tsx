@@ -21,20 +21,20 @@ const LandingNavbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-card border-b-2 border-primary">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-9 rounded-lg" />
-            <div className="hidden sm:block">
-              <span className="font-bold text-lg text-foreground">InvoiceYuk</span>
-              <p className="text-xs text-muted-foreground">Bikin Invoice, Gampang Banget!</p>
+            <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-10 w-10 rounded-lg border-2 border-primary" />
+            <div className="hidden sm:block leading-tight">
+              <span className="font-extrabold text-xl text-primary">InvoiceYuk</span>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Bikin Invoice, Gampang Banget!</p>
             </div>
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-2">
             {navLinks.map((link) => (
               <button
                 key={link.path}
@@ -44,10 +44,10 @@ const LandingNavbar = () => {
                   }
                 }}
                 className={cn(
-                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                  "px-4 py-2 rounded-lg text-sm font-bold transition-all duration-150 border-2",
                   location.pathname === link.path && !link.path.includes('#')
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? "bg-primary text-primary-foreground border-primary shadow-neo-sm"
+                    : "text-navy-500 border-transparent hover:text-primary hover:bg-secondary hover:border-primary/40"
                 )}
               >
                 {link.label}
@@ -58,7 +58,7 @@ const LandingNavbar = () => {
           {/* CTA Button */}
           <div className="flex items-center gap-3">
             <Link to="/pin-login">
-              <Button variant="hero" size="default">
+              <Button variant="default" size="default">
                 <LogIn className="w-4 h-4" />
                 Masuk Dashboard
               </Button>

@@ -202,12 +202,12 @@ const AdminUsers = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-50">
+      <header className="bg-card border-b-2 border-primary sticky top-0 z-50">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link 
               to="/dashboard" 
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 text-primary hover:text-accent font-bold transition-colors uppercase tracking-wider text-xs"
             >
               <ArrowLeft className="w-4 h-4" />
               Kembali ke Dashboard
@@ -222,11 +222,11 @@ const AdminUsers = () => {
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
+              <h1 className="text-3xl font-black text-primary mb-2 flex items-center gap-3 uppercase tracking-tight">
                 <Users className="w-7 h-7 text-accent" />
                 Kelola User
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm font-semibold text-navy-700">
                 Tambah dan kelola user yang bisa mengakses dashboard
               </p>
             </div>
@@ -332,32 +332,32 @@ const AdminUsers = () => {
               <p className="text-muted-foreground">Klik tombol "Tambah User" untuk menambahkan user baru</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {users.map((u) => (
                 <div 
                   key={u.id} 
-                  className="bg-card rounded-xl border border-border p-4 shadow-card flex items-center justify-between"
+                  className="bg-card rounded-xl border-2 border-primary p-4 shadow-neo flex items-center justify-between hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150"
                 >
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      u.role === 'admin' ? 'bg-accent/10' : 'bg-primary/10'
+                    <div className={`w-10 h-10 rounded-lg border-2 border-primary flex items-center justify-center shadow-neo-sm ${
+                      u.role === 'admin' ? 'bg-accent/20' : 'bg-secondary'
                     }`}>
                       {u.role === 'admin' ? (
-                        <Shield className="w-5 h-5 text-accent" />
+                        <Shield className="w-5 h-5 text-primary" />
                       ) : (
                         <User className="w-5 h-5 text-primary" />
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">{u.name}</p>
-                      <p className="text-xs text-muted-foreground">@{u.username} • {u.role}</p>
+                      <p className="font-extrabold text-primary">{u.name}</p>
+                      <p className="text-xs font-bold text-muted-foreground">@{u.username} • <span className="uppercase text-[10px] text-accent font-black tracking-wider">{u.role}</span></p>
                     </div>
                   </div>
 
                   {u.id !== user?.id && (
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                        <Button variant="ghost" size="icon" className="w-9 h-9 border-2 border-transparent hover:border-destructive hover:bg-red-50 text-muted-foreground hover:text-destructive transition-all">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </AlertDialogTrigger>
