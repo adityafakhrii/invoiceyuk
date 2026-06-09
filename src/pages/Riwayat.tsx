@@ -42,6 +42,7 @@ const Riwayat = () => {
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
   const [hasFetched, setHasFetched] = useState(false);
+  const [invoiceToCancel, setInvoiceToCancel] = useState<any>(null);
 
   const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
 
@@ -486,7 +487,7 @@ const Riwayat = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
+                                onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(invoice); }}
                                 className="text-xs py-1.5 h-9 border-destructive hover:bg-destructive/10 text-destructive font-bold"
                               >
                                 <XCircle className="w-4 h-4 mr-1" />
@@ -553,7 +554,7 @@ const Riwayat = () => {
                                 )}
                                 {invoice.status !== 'cancelled' && (
                                   <DropdownMenuItem 
-                                    onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
+                                    onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(invoice); }}
                                     className="flex items-center gap-2 font-bold focus:bg-red-50 focus:text-destructive text-destructive cursor-pointer"
                                   >
                                     <XCircle className="w-4 h-4" />
@@ -662,6 +663,32 @@ const Riwayat = () => {
                 </div>
               </div>
             )}
+            {/* Cancel Confirmation Dialog */}
+            <AlertDialog open={invoiceToCancel !== null} onOpenChange={(open) => !open && setInvoiceToCancel(null)}>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Batalkan Invoice?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Status invoice {invoiceToCancel?.invoiceNumber} akan diubah menjadi dibatalkan (canceled). Tindakan ini tidak menghapus data invoice, tapi mengubah statusnya.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(null); }}>Kembali</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      if (invoiceToCancel) {
+                        handleCancel(invoiceToCancel.id);
+                        setInvoiceToCancel(null);
+                      }
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Ya, Batalkan
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>
