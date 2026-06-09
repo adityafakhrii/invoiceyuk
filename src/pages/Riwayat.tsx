@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle, MoreVertical } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle, MoreVertical, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -149,109 +149,179 @@ const Riwayat = () => {
 
             {/* Overdue Reminders */}
             <InvoiceReminderBanner invoices={invoices} />
-
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <div className="relative flex-1">
+            
+            {/* Filters Panel */}
+            <div className="space-y-4 mb-8">
+              {/* Search input */}
+              <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Cari nama klien atau nomor invoice..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-11"
                 />
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={statusFilter === 'all' ? 'default' : 'outline-light'}
-                  size="sm"
-                  onClick={() => setStatusFilter('all')}
-                >
-                  <Filter className="w-4 h-4 mr-1" />
-                  Semua
-                </Button>
-                <Button
-                  variant={statusFilter === 'paid' ? 'default' : 'outline-light'}
-                  size="sm"
-                  onClick={() => setStatusFilter('paid')}
-                >
-                  <CheckCircle className="w-4 h-4 mr-1" />
-                  Paid
-                </Button>
-                <Button
-                  variant={statusFilter === 'unpaid' ? 'default' : 'outline-light'}
-                  size="sm"
-                  onClick={() => setStatusFilter('unpaid')}
-                >
-                  <Clock className="w-4 h-4 mr-1" />
-                  Unpaid
-                </Button>
-                <Button
-                  variant={statusFilter === 'cancelled' ? 'default' : 'outline-light'}
-                  size="sm"
-                  onClick={() => setStatusFilter('cancelled')}
-                >
-                  <XCircle className="w-4 h-4 mr-1" />
-                  Dibatalkan
-                </Button>
-              </div>
-            </div>
+              {/* Mobile Filter Buttons (Dropdowns triggered by three-dots / compact menus) */}
+              <div className="flex md:hidden gap-2 w-full">
+                {/* Status Filter Trigger */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline-light" className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm">
+                      <span className="flex items-center gap-2">
+                        <Filter className="w-4 h-4" />
+                        <span>Filter</span>
+                      </span>
+                      <MoreVertical className="w-4 h-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
+                    <DropdownMenuItem onClick={() => setStatusFilter('all')} className="font-bold cursor-pointer flex items-center justify-between">
+                      <span>Semua Status</span>
+                      {statusFilter === 'all' && <Check className="w-4 h-4 text-primary" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('paid')} className="font-bold cursor-pointer flex items-center justify-between">
+                      <span>Paid</span>
+                      {statusFilter === 'paid' && <Check className="w-4 h-4 text-primary" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('unpaid')} className="font-bold cursor-pointer flex items-center justify-between">
+                      <span>Unpaid</span>
+                      {statusFilter === 'unpaid' && <Check className="w-4 h-4 text-primary" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatusFilter('cancelled')} className="font-bold cursor-pointer flex items-center justify-between">
+                      <span>Dibatalkan</span>
+                      {statusFilter === 'cancelled' && <Check className="w-4 h-4 text-primary" />}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-            {/* Category Filter */}
-            {uniqueCategories.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Button
-                  variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
-                  size="sm"
-                  onClick={() => setCategoryFilter('all')}
-                >
-                  Semua Kategori
-                </Button>
-                {uniqueCategories.map((cat) => (
-                  <Button
-                    key={cat}
-                    variant={categoryFilter === cat ? 'default' : 'outline-light'}
-                    size="sm"
-                    onClick={() => setCategoryFilter(cat)}
-                  >
-                    {cat}
-                  </Button>
-                ))}
+                {/* Category Filter Trigger */}
+                {uniqueCategories.length > 0 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline-light" className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm">
+                        <span className="flex items-center gap-2">
+                          <FileText className="w-4 h-4" />
+                          <span>Kategori</span>
+                        </span>
+                        <MoreVertical className="w-4 h-4 ml-2" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
+                      <DropdownMenuItem onClick={() => setCategoryFilter('all')} className="font-bold cursor-pointer flex items-center justify-between">
+                        <span>Semua Kategori</span>
+                        {categoryFilter === 'all' && <Check className="w-4 h-4 text-primary" />}
+                      </DropdownMenuItem>
+                      {uniqueCategories.map((cat) => (
+                        <DropdownMenuItem key={cat} onClick={() => setCategoryFilter(cat)} className="font-bold cursor-pointer flex items-center justify-between">
+                          <span>{cat}</span>
+                          {categoryFilter === cat && <Check className="w-4 h-4 text-primary" />}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
-            )}
 
-            {/* Date Range Filter */}
-            <div className="flex flex-wrap items-center gap-3 mb-8">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
-                    <CalendarIcon className="w-4 h-4 mr-1" />
-                    {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+              {/* Desktop Filters (visible on md and up) */}
+              <div className="hidden md:flex flex-col md:flex-row gap-4">
+                {/* Status Filter */}
+                <div className="flex-1">
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant={statusFilter === 'all' ? 'default' : 'outline-light'}
+                      size="sm"
+                      onClick={() => setStatusFilter('all')}
+                    >
+                      <Filter className="w-4 h-4 mr-1" />
+                      Semua
+                    </Button>
+                    <Button
+                      variant={statusFilter === 'paid' ? 'default' : 'outline-light'}
+                      size="sm"
+                      onClick={() => setStatusFilter('paid')}
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Paid
+                    </Button>
+                    <Button
+                      variant={statusFilter === 'unpaid' ? 'default' : 'outline-light'}
+                      size="sm"
+                      onClick={() => setStatusFilter('unpaid')}
+                    >
+                      <Clock className="w-4 h-4 mr-1" />
+                      Unpaid
+                    </Button>
+                    <Button
+                      variant={statusFilter === 'cancelled' ? 'default' : 'outline-light'}
+                      size="sm"
+                      onClick={() => setStatusFilter('cancelled')}
+                    >
+                      <XCircle className="w-4 h-4 mr-1" />
+                      Dibatalkan
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Category Filter */}
+                {uniqueCategories.length > 0 && (
+                  <div className="flex-1">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={categoryFilter === 'all' ? 'default' : 'outline-light'}
+                        size="sm"
+                        onClick={() => setCategoryFilter('all')}
+                      >
+                        Semua Kategori
+                      </Button>
+                      {uniqueCategories.map((cat) => (
+                        <Button
+                          key={cat}
+                          variant={categoryFilter === cat ? 'default' : 'outline-light'}
+                          size="sm"
+                          onClick={() => setCategoryFilter(cat)}
+                        >
+                          {cat}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Date Range Filter */}
+              <div className="flex flex-wrap items-center gap-2 w-full pt-1">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="w-4 h-4 mr-1" />
+                      {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                  </PopoverContent>
+                </Popover>
+                <span className="text-muted-foreground text-sm">—</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="w-4 h-4 mr-1" />
+                      {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                  </PopoverContent>
+                </Popover>
+                {(dateFrom || dateTo) && (
+                  <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                    <X className="w-4 h-4 mr-1" />
+                    Reset
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
-                </PopoverContent>
-              </Popover>
-              <span className="text-muted-foreground text-sm">—</span>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
-                    <CalendarIcon className="w-4 h-4 mr-1" />
-                    {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
-                </PopoverContent>
-              </Popover>
-              {(dateFrom || dateTo) && (
-                <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
-                  <X className="w-4 h-4 mr-1" />
-                  Reset
-                </Button>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Invoice List */}
