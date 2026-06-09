@@ -123,7 +123,7 @@ const BuatQuotation = () => {
     setShowSavedNames(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!businessName.trim()) {
@@ -136,10 +136,7 @@ const BuatQuotation = () => {
       return;
     }
 
-    if (!validUntil) {
-      toast({ title: 'Oops!', description: 'Tanggal berlaku wajib diisi ya', variant: 'destructive' });
-      return;
-    }
+    // validUntil is optional
 
     const validItems = items.filter((item) => item.name.trim() && item.price > 0);
     if (validItems.length === 0) {
@@ -160,7 +157,7 @@ const BuatQuotation = () => {
       clientContact: clientContact || undefined,
       clientAddress: clientAddress || undefined,
       invoiceDate: format(quotationDate, 'yyyy-MM-dd'),
-      dueDate: format(validUntil, 'yyyy-MM-dd'), // Using dueDate for validUntil
+      dueDate: validUntil ? format(validUntil, 'yyyy-MM-dd') : undefined, // Using dueDate for validUntil
       items: validItems,
       tax: tax ? parseFloat(tax) : undefined,
       notes: notes || undefined,
@@ -179,10 +176,18 @@ const BuatQuotation = () => {
     };
 
     if (user) {
-      addInvoice(quotation, user.id);
+      try {
+        const newId = await addInvoice(quotation, user.id);
+        toast({ title: 'Mantap!', description: 'Quotation berhasil dibuat' });
+        if (newId) {
+          navigate(`/preview/${newId}`);
+        } else {
+          navigate(`/preview/${quotation.id}`);
+        }
+      } catch (err) {
+        toast({ title: 'Gagal membuat quotation', description: (err as Error).message || 'Terjadi kesalahan.', variant: 'destructive' });
+      }
     }
-    toast({ title: 'Mantap!', description: 'Quotation berhasil dibuat' });
-    navigate(`/preview/${quotation.id}`);
   };
 
   return (
@@ -347,7 +352,7 @@ const BuatQuotation = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Berlaku Sampai *</Label>
+                    <Label>Berlaku Sampai (Opsional)</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button

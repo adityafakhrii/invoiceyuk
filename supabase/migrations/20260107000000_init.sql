@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.invoices (
     client_contact TEXT,
     client_address TEXT,
     invoice_date DATE NOT NULL,
-    due_date DATE NOT NULL,
+    due_date DATE,
     items JSONB NOT NULL,
     tax NUMERIC,
     notes TEXT,
@@ -281,3 +281,6 @@ CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);
 -- Drop legacy status check constraints if they exist to allow 'cancelled' status
 ALTER TABLE public.invoices DROP CONSTRAINT IF EXISTS invoices_status_check;
 ALTER TABLE public.invoices DROP CONSTRAINT IF EXISTS check_status;
+
+-- Migration to make due_date optional (nullable)
+ALTER TABLE public.invoices ALTER COLUMN due_date DROP NOT NULL;

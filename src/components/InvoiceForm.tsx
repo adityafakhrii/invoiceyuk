@@ -209,9 +209,7 @@ const InvoiceForm = ({
       newErrors.clientName = 'Nama klien wajib diisi';
     }
 
-    if (!dueDate) {
-      newErrors.dueDate = 'Tanggal jatuh tempo (due date) wajib diisi';
-    }
+
 
     const validItems = items.filter((item) => item.name.trim() && item.price > 0);
     if (validItems.length === 0) {
@@ -246,7 +244,7 @@ const InvoiceForm = ({
         clientContact: clientContact || undefined,
         clientAddress: clientAddress || undefined,
         invoiceDate: format(invoiceDate, 'yyyy-MM-dd'),
-        dueDate: format(dueDate, 'yyyy-MM-dd'),
+        dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : undefined,
         items: validItems,
         tax: tax ? parseFloat(tax) : undefined,
         notes: notes || undefined,
@@ -489,7 +487,7 @@ const InvoiceForm = ({
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Due Date *</Label>
+                    <Label>Due Date (Opsional)</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <button

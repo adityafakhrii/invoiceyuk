@@ -8,7 +8,7 @@ interface InvoiceStore {
   invoices: Invoice[];
   isLoading: boolean;
   fetchInvoices: (userId: string) => Promise<void>;
-  addInvoice: (invoice: Invoice, userId: string) => Promise<void>;
+  addInvoice: (invoice: Invoice, userId: string) => Promise<string | undefined>;
   updateInvoice: (id: string, invoice: Partial<Invoice>, userId: string) => Promise<void>;
   deleteInvoice: (id: string, userId: string) => Promise<void>;
   toggleStatus: (id: string, userId: string) => Promise<void>;
@@ -79,7 +79,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
           client_contact: invoice.clientContact || '',
           client_address: invoice.clientAddress || '',
           invoice_date: invoice.invoiceDate,
-          due_date: invoice.dueDate,
+          due_date: invoice.dueDate || null,
           items: invoice.items as unknown as Json,
           tax: invoice.tax || 0,
           notes: invoice.notes || '',
@@ -103,6 +103,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
       const newInvoice = { ...invoice, id: data.id };
       set((state) => ({ invoices: [newInvoice, ...state.invoices] }));
+      return data.id;
     } catch (error) {
       logErrorSecurely('addInvoice', error);
       throw error;
@@ -126,7 +127,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
           client_contact: merged.clientContact || '',
           client_address: merged.clientAddress || '',
           invoice_date: merged.invoiceDate,
-          due_date: merged.dueDate,
+          due_date: merged.dueDate || null,
           items: merged.items as unknown as Json,
           tax: merged.tax || 0,
           notes: merged.notes || '',

@@ -40,7 +40,7 @@ export interface Invoice {
   clientContact?: string;
   clientAddress?: string;
   invoiceDate: string;
-  dueDate: string;
+  dueDate?: string;
   items: InvoiceItem[];
   tax?: number;
   notes?: string;
@@ -85,8 +85,11 @@ export const formatCurrency = (amount: number, currency: CurrencyCode = 'IDR'): 
   }).format(amount);
 };
 
-export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('id-ID', {
+export const formatDate = (dateString?: string | null): string => {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '-';
+  return date.toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',

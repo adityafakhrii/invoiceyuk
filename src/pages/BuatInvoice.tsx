@@ -30,9 +30,13 @@ const BuatInvoice = () => {
       createdAt: new Date().toISOString(),
     };
 
-    await addInvoice(invoice, user.id);
+    const newId = await addInvoice(invoice, user.id);
     toast({ title: 'Mantap!', description: 'Invoice berhasil dibuat dan disimpan' });
-    navigate('/riwayat');
+    if (newId) {
+      navigate(`/preview/${newId}`);
+    } else {
+      navigate('/riwayat');
+    }
   };
 
   return (
