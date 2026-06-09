@@ -9,6 +9,7 @@ import { formatCurrency, calculateTotal } from '@/lib/invoice';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 type ViewMode = 'monthly' | 'yearly';
 
@@ -140,68 +141,188 @@ const Laporan = () => {
   };
 
   const handleExportPDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
     const data = chartData;
-    const title = viewMode === 'yearly' ? 'Laporan Keuangan Tahunan' 
-      : (selectedMonth === 'all' ? `Laporan Keuangan - Tahun ${selectedYear}` : `Laporan Keuangan - ${MONTH_NAMES[selectedMonth as number]} ${selectedYear}`);
+    const title = viewMode === 'yearly' ? 'LAPORAN TAHUNAN' 
+      : (selectedMonth === 'all' ? 'LAPORAN TAHUNAN' : 'LAPORAN BULANAN');
+    const subtitle = viewMode === 'yearly' ? 'Ringkasan Pendapatan Tahunan'
+      : (selectedMonth === 'all' ? `Tahun ${selectedYear}` : `${MONTH_NAMES[selectedMonth as number]} ${selectedYear}`);
 
-    // Title
-    doc.setFontSize(18);
-    doc.text(title, pageWidth / 2, 20, { align: 'center' });
-    doc.setFontSize(10);
-    doc.setTextColor(120);
-    doc.text(`Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth / 2, 28, { align: 'center' });
+    const generatePdf = (logoImg?: HTMLImageElement) => {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const leftMargin = 14;
+      const rightMargin = 14;
+      const contentWidth = pageWidth - leftMargin - rightMargin;
 
-    // Summary
-    doc.setTextColor(0);
-    doc.setFontSize(12);
-    doc.text('Ringkasan', 14, 42);
-    doc.setFontSize(10);
-    doc.text(`Total Pendapatan: ${formatCurrency(stats.totalRevenue)}`, 14, 50);
-    doc.text(`${stats.dynamicLabel}: ${formatCurrency(stats.dynamicRevenue)}`, 14, 57);
-    doc.text(`Invoice Dibayar: ${stats.paidCount}`, 14, 64);
-    doc.text(`Pertumbuhan Bulan Ini: ${stats.growth >= 0 ? '+' : ''}${stats.growth.toFixed(1)}%`, 14, 71);
-
-    // Table header
-    let y = 85;
-    doc.setFillColor(240, 240, 245);
-    doc.rect(14, y - 5, pageWidth - 28, 8, 'F');
-    doc.setFontSize(10);
-    doc.setFont(undefined!, 'bold');
-    doc.text('Periode', 16, y);
-    doc.text('Jumlah Invoice', pageWidth / 2, y, { align: 'center' });
-    doc.text('Pendapatan', pageWidth - 16, y, { align: 'right' });
-
-    // Table rows
-    doc.setFont(undefined!, 'normal');
-    y += 10;
-    let totalRev = 0;
-    let totalCount = 0;
-    data.forEach((row) => {
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
+      // 1. Branding Header (Logo + Brand Name)
+      if (logoImg) {
+        // Draw black border around logo
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.4);
+        doc.rect(leftMargin, 15, 11, 11, 'D');
+        // Add logo image
+        doc.addImage(logoImg, 'PNG', leftMargin + 0.5, 15.5, 10, 10);
+        
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(27, 41, 75); // Dark Navy
+        doc.text('INVOICEYUK', leftMargin + 14, 22.5);
+      } else {
+        // Fallback text logo
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(27, 41, 75);
+        doc.text('INVOICEYUK', leftMargin, 22.5);
       }
-      const labelText = viewMode === 'monthly' && selectedMonth !== 'all' ? `Tanggal ${row.name}` : row.name;
-      doc.text(labelText, 16, y);
-      doc.text(String(row.count), pageWidth / 2, y, { align: 'center' });
-      doc.text(row.revenue > 0 ? formatCurrency(row.revenue) : '-', pageWidth - 16, y, { align: 'right' });
-      totalRev += row.revenue;
-      totalCount += row.count;
-      y += 8;
-    });
 
-    // Total row
-    y += 2;
-    doc.setDrawColor(200);
-    doc.line(14, y - 5, pageWidth - 14, y - 5);
-    doc.setFont(undefined!, 'bold');
-    doc.text('Total', 16, y);
-    doc.text(String(totalCount), pageWidth / 2, y, { align: 'center' });
-    doc.text(formatCurrency(totalRev), pageWidth - 16, y, { align: 'right' });
+      // 2. Report Metadata (Right Aligned)
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text(title, pageWidth - rightMargin, 20, { align: 'right' });
 
-    doc.save(`laporan-keuangan${viewMode === 'yearly' ? '' : `-${selectedYear}`}.pdf`);
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(100, 100, 100);
+      doc.text(subtitle, pageWidth - rightMargin, 25.5, { align: 'right' });
+
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(140, 140, 140);
+      const printedDate = `Dicetak: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+      doc.text(printedDate, pageWidth - rightMargin, 30, { align: 'right' });
+
+      // 3. Thick Neo-Brutalist Separator Line
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(1.0);
+      doc.line(leftMargin, 34, pageWidth - rightMargin, 34);
+
+      // 4. Stats Summary Cards (Ringkasan)
+      const cardY = 40;
+      const cardH = 15;
+      const cardW = (contentWidth - 9) / 4; // 4 cards with 3 gaps of 3mm
+
+      const drawStatsCard = (x: number, y: number, w: number, h: number, cardTitle: string, cardValue: string, isAccent = false) => {
+        // Draw solid black shadow
+        doc.setFillColor(0, 0, 0);
+        doc.rect(x + 0.8, y + 0.8, w, h, 'F');
+
+        // Draw main card
+        if (isAccent) {
+          doc.setFillColor(240, 244, 248);
+        } else {
+          doc.setFillColor(255, 255, 255);
+        }
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.4);
+        doc.rect(x, y, w, h, 'FD');
+
+        // Draw card value
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(0, 0, 0);
+        doc.text(cardValue, x + 3, y + 6, { maxWidth: w - 6 });
+
+        // Draw card label
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(6.0);
+        doc.setTextColor(120, 120, 120);
+        doc.text(cardTitle.toUpperCase(), x + 3, y + 11.5);
+      };
+
+      drawStatsCard(leftMargin, cardY, cardW, cardH, 'Total Pendapatan', formatCurrency(stats.totalRevenue), true);
+      drawStatsCard(leftMargin + cardW + 3, cardY, cardW, cardH, stats.dynamicLabel, formatCurrency(stats.dynamicRevenue));
+      drawStatsCard(leftMargin + 2 * (cardW + 3), cardY, cardW, cardH, 'Pertumbuhan', `${stats.growth >= 0 ? '+' : ''}${stats.growth.toFixed(1)}%`);
+      drawStatsCard(leftMargin + 3 * (cardW + 3), cardY, cardW, cardH, 'Invoice Dibayar', String(stats.paidCount));
+
+      // 5. Data Table
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(27, 41, 75);
+      doc.text('RINCIAN PENDAPATAN', leftMargin, 63);
+
+      let tableY = 68;
+      const colWidths = [65, 47, 70]; // Total 182mm (leftMargin=14, rightMargin=14 -> contentWidth=182)
+
+      // Draw table header
+      doc.setFillColor(27, 41, 75); // Dark Navy
+      doc.rect(leftMargin, tableY, contentWidth, 7.5, 'F');
+      
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(255, 255, 255);
+      doc.text('PERIODE', leftMargin + 4, tableY + 5);
+      doc.text('INVOICE DIBAYAR', leftMargin + colWidths[0] + colWidths[1] / 2, tableY + 5, { align: 'center' });
+      doc.text('PENDAPATAN', leftMargin + colWidths[0] + colWidths[1] + colWidths[2] - 4, tableY + 5, { align: 'right' });
+
+      // Draw table rows
+      tableY += 7.5;
+      doc.setTextColor(0, 0, 0);
+
+      let totalRev = 0;
+      let totalCount = 0;
+
+      data.forEach((row, idx) => {
+        if (tableY > 275) {
+          doc.addPage();
+          tableY = 20;
+        }
+
+        // Zebra striping background
+        if (idx % 2 === 1) {
+          doc.setFillColor(245, 247, 251); // Very light grey/blue
+          doc.rect(leftMargin, tableY, contentWidth, 6.5, 'F');
+        }
+
+        doc.setFont('Helvetica', 'bold');
+        doc.setFontSize(8);
+        const labelText = viewMode === 'monthly' && selectedMonth !== 'all' ? `Tanggal ${row.name}` : row.name;
+        doc.text(labelText, leftMargin + 4, tableY + 4.5);
+
+        doc.setFont('Helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.text(String(row.count), leftMargin + colWidths[0] + colWidths[1] / 2, tableY + 4.5, { align: 'center' });
+        doc.text(row.revenue > 0 ? formatCurrency(row.revenue) : '-', leftMargin + colWidths[0] + colWidths[1] + colWidths[2] - 4, tableY + 4.5, { align: 'right' });
+
+        // Row bottom border line
+        doc.setDrawColor(230, 235, 243);
+        doc.setLineWidth(0.25);
+        doc.line(leftMargin, tableY + 6.5, pageWidth - rightMargin, tableY + 6.5);
+
+        totalRev += row.revenue;
+        totalCount += row.count;
+        tableY += 6.5;
+      });
+
+      // Draw double border / total row
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.4);
+      doc.line(leftMargin, tableY, pageWidth - rightMargin, tableY);
+
+      doc.setFillColor(235, 239, 247);
+      doc.rect(leftMargin, tableY, contentWidth, 7.5, 'F');
+
+      doc.setLineWidth(0.4);
+      doc.line(leftMargin, tableY + 7.5, pageWidth - rightMargin, tableY + 7.5);
+
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(27, 41, 75);
+      doc.text('TOTAL', leftMargin + 4, tableY + 5);
+      doc.text(String(totalCount), leftMargin + colWidths[0] + colWidths[1] / 2, tableY + 5, { align: 'center' });
+      doc.text(formatCurrency(totalRev), leftMargin + colWidths[0] + colWidths[1] + colWidths[2] - 4, tableY + 5, { align: 'right' });
+
+      // Save PDF
+      const filename = viewMode === 'yearly' ? `laporan-tahunan-${selectedYear}.pdf`
+        : (selectedMonth === 'all' ? `laporan-bulanan-${selectedYear}.pdf` : `laporan-bulanan-${selectedYear}-${selectedMonth as number + 1}.pdf`);
+      doc.save(filename);
+    };
+
+    // Load the logo image asynchronously and call generatePdf
+    const img = new Image();
+    img.src = logoInvoiceYuk;
+    img.onload = () => generatePdf(img);
+    img.onerror = () => generatePdf();
   };
 
   return (
