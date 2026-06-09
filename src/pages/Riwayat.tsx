@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -28,10 +28,10 @@ import { toast } from '@/hooks/use-toast';
 
 const Riwayat = () => {
   const navigate = useNavigate();
-  const { invoices, toggleStatus, deleteInvoice, fetchInvoices, isLoading } = useInvoiceStore();
+  const { invoices, toggleStatus, deleteInvoice, cancelInvoice, fetchInvoices, isLoading } = useInvoiceStore();
   const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid' | 'cancelled'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
@@ -77,6 +77,13 @@ const Riwayat = () => {
     if (user) {
       deleteInvoice(id, user.id);
       toast({ title: 'Invoice dihapus', description: 'Invoice berhasil dihapus dari riwayat' });
+    }
+  };
+
+  const handleCancel = (id: string) => {
+    if (user) {
+      cancelInvoice(id, user.id);
+      toast({ title: 'Invoice dibatalkan', description: 'Status invoice berhasil diubah menjadi dibatalkan (canceled)' });
     }
   };
 
@@ -173,6 +180,14 @@ const Riwayat = () => {
                 >
                   <Clock className="w-4 h-4 mr-1" />
                   Unpaid
+                </Button>
+                <Button
+                  variant={statusFilter === 'cancelled' ? 'default' : 'outline-light'}
+                  size="sm"
+                  onClick={() => setStatusFilter('cancelled')}
+                >
+                  <XCircle className="w-4 h-4 mr-1" />
+                  Dibatalkan
                 </Button>
               </div>
             </div>
@@ -287,13 +302,20 @@ const Riwayat = () => {
                               "inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1",
                               invoice.status === 'paid'
                                 ? "bg-accent/15 border-primary text-primary"
-                                : "bg-yellow-100 border-primary text-yellow-800"
+                                : invoice.status === 'cancelled'
+                                  ? "bg-gray-100 border-primary text-gray-500 line-through"
+                                  : "bg-yellow-100 border-primary text-yellow-800"
                             )}
                           >
                             {invoice.status === 'paid' ? (
                               <>
                                 <CheckCircle className="w-3 h-3" />
                                 Paid
+                              </>
+                            ) : invoice.status === 'cancelled' ? (
+                              <>
+                                <XCircle className="w-3 h-3" />
+                                Canceled
                               </>
                             ) : (
                               <>
@@ -314,6 +336,28 @@ const Riwayat = () => {
                             >
                               <CheckCircle className="w-4 h-4" />
                               <span className="hidden sm:inline">Set Paid</span>
+                            </Button>
+                          )}
+                          {invoice.status === 'cancelled' && (
+                            <Button
+                              variant="accent"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                              className="text-xs py-1.5 h-9"
+                            >
+                              <Clock className="w-4 h-4" />
+                              <span className="hidden sm:inline">Set Unpaid</span>
+                            </Button>
+                          )}
+                          {invoice.status !== 'cancelled' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
+                              className="text-xs py-1.5 h-9 border-destructive hover:bg-destructive/10 text-destructive font-bold"
+                            >
+                              <XCircle className="w-4 h-4" />
+                              <span className="hidden sm:inline">Batalkan</span>
                             </Button>
                           )}
                           <Button

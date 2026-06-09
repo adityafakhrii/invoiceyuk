@@ -49,7 +49,7 @@ export interface Invoice {
   signatureImage?: string;
   signatureFont?: SignatureFont;
   socialMedia?: SocialMedia;
-  status: 'paid' | 'unpaid';
+  status: 'paid' | 'unpaid' | 'cancelled';
   template: 'simple' | 'elegant' | 'corporate';
   currency: CurrencyCode;
   downPayment?: number; // DP amount (absolute value, not percentage)

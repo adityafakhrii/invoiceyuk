@@ -12,6 +12,7 @@ interface InvoiceStore {
   updateInvoice: (id: string, invoice: Partial<Invoice>, userId: string) => Promise<void>;
   deleteInvoice: (id: string, userId: string) => Promise<void>;
   toggleStatus: (id: string, userId: string) => Promise<void>;
+  cancelInvoice: (id: string, userId: string) => Promise<void>;
   getInvoice: (id: string) => Invoice | undefined;
   clearInvoices: () => void;
 }
@@ -48,7 +49,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         signatureImage: inv.signature_image || undefined,
         signatureFont: (inv.signature_font as Invoice['signatureFont']) || undefined,
         socialMedia: (inv.social_media as unknown) as Invoice['socialMedia'] || undefined,
-        status: inv.status as 'paid' | 'unpaid',
+        status: inv.status as 'paid' | 'unpaid' | 'cancelled',
         template: inv.template as Invoice['template'],
         currency: (inv.currency as Invoice['currency']) || 'IDR',
         downPayment: inv.down_payment ? Number(inv.down_payment) : undefined,
@@ -181,6 +182,10 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
     const newStatus = invoice.status === 'paid' ? 'unpaid' : 'paid';
     await get().updateInvoice(id, { status: newStatus }, userId);
+  },
+
+  cancelInvoice: async (id: string, userId: string) => {
+    await get().updateInvoice(id, { status: 'cancelled' }, userId);
   },
 
   getInvoice: (id: string) => get().invoices.find((inv) => inv.id === id),

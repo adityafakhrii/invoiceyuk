@@ -322,11 +322,13 @@ const Dashboard = () => {
                         "text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider border-2 text-center",
                         inv.status === 'paid'
                           ? "bg-green-100 text-green-700 border-green-700"
-                          : isOverdue
-                            ? "bg-destructive/10 text-destructive border-destructive"
-                            : "bg-yellow-50 text-yellow-800 border-yellow-800"
+                          : inv.status === 'cancelled'
+                            ? "bg-gray-100 text-gray-500 border-gray-500 line-through"
+                            : isOverdue
+                              ? "bg-destructive/10 text-destructive border-destructive"
+                              : "bg-yellow-50 text-yellow-800 border-yellow-800"
                       )}>
-                        {inv.status === 'paid' ? 'Lunas' : isOverdue ? 'Overdue' : 'Unpaid'}
+                        {inv.status === 'paid' ? 'Lunas' : inv.status === 'cancelled' ? 'Dibatalkan' : isOverdue ? 'Overdue' : 'Unpaid'}
                       </span>
                     </div>
                     
