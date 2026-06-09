@@ -8,13 +8,16 @@ import {
   Shield,
   Clock,
   LogIn,
-  FileEdit
+  FileEdit,
+  LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LandingNavbar from '@/components/LandingNavbar';
 import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
+import { useAuthStore } from '@/store/authStore';
 
 const Index = () => {
+  const { user } = useAuthStore();
   const features = [
     {
       icon: Zap,
@@ -82,10 +85,10 @@ const Index = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/login">
+              <Link to={user ? "/dashboard" : "/login"}>
                 <Button variant="default" size="xl" className="w-full sm:w-auto text-base">
-                  <LogIn className="w-5 h-5" />
-                  Coba Sekarang
+                  {user ? <LayoutDashboard className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+                  {user ? 'Ke Dashboard' : 'Coba Sekarang'}
                 </Button>
               </Link>
               <a href="#features">
@@ -247,10 +250,10 @@ const Index = () => {
               <p className="text-primary-foreground/90 font-bold mb-8 max-w-lg mx-auto text-base">
                 Invoice & quotation elegan = pembayaran makin niat. Mulai sekarang, gratis!
               </p>
-              <Link to="/login">
+              <Link to={user ? "/dashboard" : "/login"}>
                 <Button variant="default" size="xl" className="shadow-neo bg-primary text-primary-foreground border-2 border-primary hover:bg-primary/90">
-                  <LogIn className="w-5 h-5" />
-                  Coba Sekarang
+                  {user ? <LayoutDashboard className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+                  {user ? 'Ke Dashboard' : 'Coba Sekarang'}
                 </Button>
               </Link>
             </div>
@@ -269,7 +272,7 @@ const Index = () => {
             <div className="flex items-center gap-8 text-sm font-bold text-navy-600">
               <a href="#features" className="hover:text-primary transition-colors">Fitur</a>
               <a href="#how-it-works" className="hover:text-primary transition-colors">Cara Kerja</a>
-              <Link to="/login" className="hover:text-primary transition-colors">Dashboard</Link>
+              <Link to={user ? "/dashboard" : "/login"} className="hover:text-primary transition-colors">Dashboard</Link>
             </div>
             <div className="flex flex-col items-center md:items-end gap-2">
               <p className="text-sm font-semibold text-muted-foreground">

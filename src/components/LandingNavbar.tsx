@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { LogIn, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/store/authStore';
 import logoInvoiceYuk from '@/assets/logo-invoiceyuk.png';
 
 const LandingNavbar = () => {
   const location = useLocation();
+  const { user } = useAuthStore();
 
   const navLinks = [
     { path: '/', label: 'Home' },
@@ -57,12 +59,21 @@ const LandingNavbar = () => {
 
           {/* CTA Button */}
           <div className="flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="default" size="default">
-                <LogIn className="w-4 h-4" />
-                Coba Sekarang
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/dashboard">
+                <Button variant="default" size="default">
+                  <LayoutDashboard className="w-4 h-4" />
+                  Ke Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <Button variant="default" size="default">
+                  <LogIn className="w-4 h-4" />
+                  Coba Sekarang
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
