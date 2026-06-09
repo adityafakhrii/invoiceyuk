@@ -58,7 +58,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
                     <Link
                       key={inv.id}
                       to={`/preview/${inv.id}`}
-                      className="flex items-center justify-between text-xs bg-destructive/5 rounded-lg px-3 py-2 hover:bg-destructive/10 transition-colors group"
+                      className="flex items-center justify-between text-xs bg-destructive/5 rounded-lg px-3 py-2 hover:bg-destructive/10 transition-colors group cursor-pointer"
                     >
                       <span className="font-medium text-foreground truncate">
                         {inv.invoiceNumber} — {inv.clientName}
@@ -106,7 +106,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
                     <Link
                       key={inv.id}
                       to={`/preview/${inv.id}`}
-                      className="flex items-center justify-between text-xs bg-amber-500/5 rounded-lg px-3 py-2 hover:bg-amber-500/10 transition-colors group"
+                      className="flex items-center justify-between text-xs bg-amber-500/5 rounded-lg px-3 py-2 hover:bg-amber-500/10 transition-colors group cursor-pointer"
                     >
                       <span className="font-medium text-foreground truncate">
                         {inv.invoiceNumber} — {inv.clientName}

@@ -18,6 +18,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useInvoiceStore } from "@/store/invoiceStore";
 import { formatCurrency, calculateTotal, formatDate } from "@/lib/invoice";
 import InvoiceReminderBanner from "@/components/InvoiceReminderBanner";
+import { cn } from "@/lib/utils";
 import { 
   AreaChart, 
   Area, 
@@ -306,7 +307,7 @@ const Dashboard = () => {
                   <Link 
                     key={inv.id} 
                     to={`/preview/${inv.id}`}
-                    className="block p-3 border-2 border-primary hover:border-accent hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo-sm active:translate-x-0 active:translate-y-0 transition-all bg-card"
+                    className="block p-3 border-2 border-primary hover:border-accent hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-neo-sm active:translate-x-0 active:translate-y-0 transition-all bg-card cursor-pointer"
                   >
                     <div className="flex justify-between items-start">
                       <div className="min-w-0">

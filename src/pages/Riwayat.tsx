@@ -258,7 +258,8 @@ const Riwayat = () => {
                 {filteredInvoices.map((invoice) => (
                   <div
                     key={invoice.id}
-                    className="bg-card rounded-xl border-2 border-primary p-4 md:p-6 shadow-neo hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150"
+                    onClick={() => navigate(`/preview/${invoice.id}`)}
+                    className="bg-card rounded-xl border-2 border-primary p-4 md:p-6 shadow-neo hover:shadow-neo-accent hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer"
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
@@ -281,7 +282,7 @@ const Riwayat = () => {
                             {formatCurrency(calculateTotal(invoice.items, invoice.tax), invoice.currency)}
                           </p>
                           <button
-                            onClick={() => handleToggleStatus(invoice.id)}
+                            onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
                             className={cn(
                               "inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1",
                               invoice.status === 'paid'
@@ -308,7 +309,7 @@ const Riwayat = () => {
                             <Button
                               variant="accent"
                               size="sm"
-                              onClick={() => handleToggleStatus(invoice.id)}
+                              onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
                               className="text-xs py-1.5 h-9"
                             >
                               <CheckCircle className="w-4 h-4" />
@@ -319,22 +320,22 @@ const Riwayat = () => {
                             variant="outline"
                             size="icon"
                             title="Duplikat"
-                            onClick={() => navigate('/buat-invoice', { state: { duplicateFrom: invoice } })}
+                            onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
                             className="w-9 h-9"
                           >
                             <Copy className="w-4 h-4" />
                           </Button>
-                          <Link to={`/edit-invoice/${invoice.id}`} title="Edit">
+                          <Link to={`/edit-invoice/${invoice.id}`} title="Edit" onClick={(e) => e.stopPropagation()}>
                             <Button variant="outline" size="icon" className="w-9 h-9">
                               <Pencil className="w-4 h-4" />
                             </Button>
                           </Link>
-                          <Link to={`/preview/${invoice.id}`} title="Lihat">
+                          <Link to={`/preview/${invoice.id}`} title="Lihat" onClick={(e) => e.stopPropagation()}>
                             <Button variant="outline" size="icon" className="w-9 h-9">
                               <Eye className="w-4 h-4" />
                             </Button>
                           </Link>
-                          <Link to={`/preview/${invoice.id}`} title="Download PDF">
+                          <Link to={`/preview/${invoice.id}`} title="Download PDF" onClick={(e) => e.stopPropagation()}>
                             <Button variant="default" size="icon" className="w-9 h-9">
                               <Download className="w-4 h-4" />
                             </Button>
@@ -342,7 +343,7 @@ const Riwayat = () => {
 
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" className="w-9 h-9 border-2 border-transparent hover:border-destructive hover:bg-red-50 text-muted-foreground hover:text-destructive transition-all">
+                              <Button variant="destructive" size="icon" className="w-9 h-9" onClick={(e) => e.stopPropagation()}>
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </AlertDialogTrigger>
