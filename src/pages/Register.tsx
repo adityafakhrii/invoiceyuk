@@ -54,7 +54,7 @@ const Register = () => {
         return { score, label: 'Kuat 🟢', color: 'bg-green-500' };
       case 4:
       default:
-        return { score, label: 'Sangat Kuat 🔥', color: 'bg-emerald-500' };
+        return { score, label: 'Sangat Kuat 🟢', color: 'bg-emerald-500' };
     }
   };
 

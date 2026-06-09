@@ -150,7 +150,7 @@ const PreviewInvoice = () => {
       pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
       pdf.save(`${invoice.invoiceNumber}.pdf`);
 
-      toast({ title: 'Mantap! 🎉', description: 'PDF berhasil didownload' });
+      toast({ title: 'Mantap!', description: 'PDF berhasil didownload' });
     } catch (error) {
       toast({ title: 'Oops!', description: 'Gagal generate PDF', variant: 'destructive' });
     }

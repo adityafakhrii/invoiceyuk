@@ -44,7 +44,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-destructive text-sm">
-                {overdue.length} Invoice Jatuh Tempo! 🔴
+                {overdue.length} Invoice Jatuh Tempo!
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5 mb-2">
                 Invoice berikut sudah melewati tanggal jatuh tempo dan belum dibayar
@@ -92,7 +92,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-amber-600 text-sm">
-                {nearDue.length} Invoice Segera Jatuh Tempo ⚠️
+                {nearDue.length} Invoice Segera Jatuh Tempo 
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5 mb-2">
                 Invoice berikut akan jatuh tempo dalam 3 hari ke depan

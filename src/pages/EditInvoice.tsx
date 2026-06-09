@@ -29,7 +29,7 @@ const EditInvoice = () => {
     };
 
     await updateInvoice(id, updatedInvoice, user.id);
-    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
+    toast({ title: 'Mantap!', description: 'Invoice berhasil diupdate' });
     navigate(`/preview/${id}`);
   };
 

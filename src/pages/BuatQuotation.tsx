@@ -181,7 +181,7 @@ const BuatQuotation = () => {
     if (user) {
       addInvoice(quotation, user.id);
     }
-    toast({ title: 'Mantap! 🎉', description: 'Quotation berhasil dibuat' });
+    toast({ title: 'Mantap!', description: 'Quotation berhasil dibuat' });
     navigate(`/preview/${quotation.id}`);
   };
 

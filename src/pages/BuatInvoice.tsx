@@ -31,7 +31,7 @@ const BuatInvoice = () => {
     };
 
     await addInvoice(invoice, user.id);
-    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil dibuat dan disimpan' });
+    toast({ title: 'Mantap!', description: 'Invoice berhasil dibuat dan disimpan' });
     navigate('/riwayat');
   };
 
