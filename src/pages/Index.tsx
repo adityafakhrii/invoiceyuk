@@ -63,7 +63,7 @@ const Index = () => {
       <LandingNavbar />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden border-b-2 border-primary bg-[radial-gradient(hsl(var(--primary))_1px,transparent_1px)] [background-size:24px_24px] [background-position:center] bg-opacity-[0.03]">
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden border-b-2 border-primary bg-[radial-gradient(#94a3b8_1.5px,transparent_1.5px)] [background-size:24px_24px] [background-position:center]">
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
@@ -93,7 +93,7 @@ const Index = () => {
                 </Button>
               </Link>
               <a href="#features">
-                <Button variant="outline" size="xl" className="w-full sm:w-auto text-base">
+                <Button variant="outline" size="xl" className="w-full sm:w-auto text-base bg-white">
                   Lihat Fitur
                 </Button>
               </a>
