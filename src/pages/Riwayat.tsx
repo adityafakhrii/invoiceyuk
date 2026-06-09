@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle } from 'lucide-react';
+import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle, MoreVertical } from 'lucide-react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,12 @@ import { cn } from '@/lib/utils';
 import InvoiceReminderBanner from '@/components/InvoiceReminderBanner';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -156,7 +162,7 @@ const Riwayat = () => {
                 />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant={statusFilter === 'all' ? 'default' : 'outline-light'}
                   size="sm"
@@ -325,73 +331,158 @@ const Riwayat = () => {
                             )}
                           </button>
                         </div>
-
                         <div className="flex items-center gap-2">
-                          {invoice.status === 'unpaid' && (
-                            <Button
-                              variant="accent"
-                              size="sm"
-                              onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
-                              className="text-xs py-1.5 h-9"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                              <span className="hidden sm:inline">Set Paid</span>
-                            </Button>
-                          )}
-                          {invoice.status === 'cancelled' && (
-                            <Button
-                              variant="accent"
-                              size="sm"
-                              onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
-                              className="text-xs py-1.5 h-9"
-                            >
-                              <Clock className="w-4 h-4" />
-                              <span className="hidden sm:inline">Set Unpaid</span>
-                            </Button>
-                          )}
-                          {invoice.status !== 'cancelled' && (
+                          {/* Desktop Buttons (Visible on md and up) */}
+                          <div className="hidden md:flex items-center gap-2">
+                            {invoice.status === 'unpaid' && (
+                              <Button
+                                variant="accent"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                className="text-xs py-1.5 h-9"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                <span>Set Paid</span>
+                              </Button>
+                            )}
+                            {invoice.status === 'cancelled' && (
+                              <Button
+                                variant="accent"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                className="text-xs py-1.5 h-9"
+                              >
+                                <Clock className="w-4 h-4 mr-1" />
+                                <span>Set Unpaid</span>
+                              </Button>
+                            )}
+                            {invoice.status !== 'cancelled' && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
+                                className="text-xs py-1.5 h-9 border-destructive hover:bg-destructive/10 text-destructive font-bold"
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                <span>Batalkan</span>
+                              </Button>
+                            )}
                             <Button
                               variant="outline"
-                              size="sm"
-                              onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
-                              className="text-xs py-1.5 h-9 border-destructive hover:bg-destructive/10 text-destructive font-bold"
+                              size="icon"
+                              title="Duplikat"
+                              onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
+                              className="w-9 h-9"
                             >
-                              <XCircle className="w-4 h-4" />
-                              <span className="hidden sm:inline">Batalkan</span>
+                              <Copy className="w-4 h-4" />
                             </Button>
-                          )}
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            title="Duplikat"
-                            onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
-                            className="w-9 h-9"
-                          >
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                          <Link to={`/edit-invoice/${invoice.id}`} title="Edit" onClick={(e) => e.stopPropagation()}>
-                            <Button variant="outline" size="icon" className="w-9 h-9">
-                              <Pencil className="w-4 h-4" />
-                            </Button>
-                          </Link>
-                          <Link to={`/preview/${invoice.id}`} title="Lihat" onClick={(e) => e.stopPropagation()}>
-                            <Button variant="outline" size="icon" className="w-9 h-9">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </Link>
-                          <Link to={`/preview/${invoice.id}`} title="Download PDF" onClick={(e) => e.stopPropagation()}>
-                            <Button variant="default" size="icon" className="w-9 h-9">
-                              <Download className="w-4 h-4" />
-                            </Button>
-                          </Link>
+                            <Link to={`/edit-invoice/${invoice.id}`} title="Edit" onClick={(e) => e.stopPropagation()}>
+                              <Button variant="outline" size="icon" className="w-9 h-9">
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <Link to={`/preview/${invoice.id}`} title="Lihat" onClick={(e) => e.stopPropagation()}>
+                              <Button variant="outline" size="icon" className="w-9 h-9">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <Link to={`/preview/${invoice.id}`} title="Download PDF" onClick={(e) => e.stopPropagation()}>
+                              <Button variant="default" size="icon" className="w-9 h-9">
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          </div>
 
+                          {/* Mobile Dropdown (Visible on mobile/tablet under md) */}
+                          <div className="flex md:hidden items-center gap-2">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="outline" 
+                                  size="icon" 
+                                  className="w-9 h-9 border-2 border-primary shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all" 
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
+                                {invoice.status === 'unpaid' && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                    className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                                  >
+                                    <CheckCircle className="w-4 h-4 text-green-600" />
+                                    <span>Set Paid</span>
+                                  </DropdownMenuItem>
+                                )}
+                                {invoice.status === 'cancelled' && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                    className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                                  >
+                                    <Clock className="w-4 h-4 text-yellow-600" />
+                                    <span>Set Unpaid</span>
+                                  </DropdownMenuItem>
+                                )}
+                                {invoice.status !== 'cancelled' && (
+                                  <DropdownMenuItem 
+                                    onClick={(e) => { e.stopPropagation(); handleCancel(invoice.id); }}
+                                    className="flex items-center gap-2 font-bold focus:bg-red-50 focus:text-destructive text-destructive cursor-pointer"
+                                  >
+                                    <XCircle className="w-4 h-4" />
+                                    <span>Batalkan</span>
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem 
+                                  onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
+                                  className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                                >
+                                  <Copy className="w-4 h-4 text-primary" />
+                                  <span>Duplikat</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                  <Link 
+                                    to={`/edit-invoice/${invoice.id}`} 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-2 font-bold w-full cursor-pointer"
+                                  >
+                                    <Pencil className="w-4 h-4 text-primary" />
+                                    <span>Edit</span>
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                  <Link 
+                                    to={`/preview/${invoice.id}`} 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-2 font-bold w-full cursor-pointer"
+                                  >
+                                    <Eye className="w-4 h-4 text-primary" />
+                                    <span>Lihat</span>
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                  <Link 
+                                    to={`/preview/${invoice.id}`} 
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="flex items-center gap-2 font-bold w-full cursor-pointer"
+                                  >
+                                    <Download className="w-4 h-4 text-primary" />
+                                    <span>Download PDF</span>
+                                  </Link>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+
+                          {/* Delete Button (Always visible) */}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="destructive" size="icon" className="w-9 h-9" onClick={(e) => e.stopPropagation()}>
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
+                            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Hapus Invoice?</AlertDialogTitle>
                                 <AlertDialogDescription>
@@ -399,8 +490,8 @@ const Riwayat = () => {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Batal</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(invoice.id)}>
+                                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Batal</AlertDialogCancel>
+                                <AlertDialogAction onClick={(e) => { e.stopPropagation(); handleDelete(invoice.id); }}>
                                   Hapus
                                 </AlertDialogAction>
                               </AlertDialogFooter>
