@@ -19,6 +19,7 @@ import Laporan from "./pages/Laporan";
 import NotFound from "./pages/NotFound";
 import SidebarLayout from "./components/SidebarLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import { useAuthStore } from "./store/authStore";
 
 // InvoiceYuk - Bikin Invoice, Gampang Banget!
@@ -38,8 +39,8 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             
             {/* Authenticated routes wrapped in SidebarLayout */}
             <Route element={<ProtectedRoute><SidebarLayout /></ProtectedRoute>}>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail, Percent } from 'lucide-react';
+import { Plus, Trash2, Upload, FileText, ArrowRight, Check, CalendarIcon, Phone, Instagram, Mail, Percent, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +40,8 @@ const EditInvoice = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { getInvoice, updateInvoice } = useInvoiceStore();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const invoice = id ? getInvoice(id) : undefined;
 
@@ -185,73 +187,93 @@ const EditInvoice = () => {
 
     if (!id || !invoice) return;
 
+    setErrors({});
+    const newErrors: Record<string, string> = {};
+
     if (!businessName.trim()) {
-      toast({ title: 'Oops!', description: 'Nama bisnis wajib diisi ya', variant: 'destructive' });
-      return;
+      newErrors.businessName = 'Nama bisnis wajib diisi';
     }
 
     if (!clientName.trim()) {
-      toast({ title: 'Oops!', description: 'Nama klien wajib diisi ya', variant: 'destructive' });
-      return;
+      newErrors.clientName = 'Nama klien wajib diisi';
     }
 
     if (!dueDate) {
-      toast({ title: 'Oops!', description: 'Due date wajib diisi ya', variant: 'destructive' });
-      return;
+      newErrors.dueDate = 'Tanggal jatuh tempo (due date) wajib diisi';
     }
 
     const validItems = items.filter((item) => item.name.trim() && item.price > 0);
     if (validItems.length === 0) {
-      toast({ title: 'Oops!', description: 'Minimal ada 1 item dengan nama & harga ya', variant: 'destructive' });
+      newErrors.items = 'Minimal ada 1 item dengan nama & harga yang diisi';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast({
+        title: 'Formulir belum lengkap',
+        description: 'Periksa kembali isian formulir Anda.',
+        variant: 'destructive',
+      });
       return;
     }
 
-    // Save business name and category for future use
-    saveBusinessName(businessName);
-    setSavedNames(getSavedBusinessNames());
-    if (category.trim()) {
-      saveCategory(category);
-      setSavedCategories(getSavedCategories());
-    }
+    setIsSubmitting(true);
+    try {
+      // Save business name and category for future use
+      saveBusinessName(businessName);
+      setSavedNames(getSavedBusinessNames());
+      if (category.trim()) {
+        saveCategory(category);
+        setSavedCategories(getSavedCategories());
+      }
 
-    const updatedInvoice: Partial<Invoice> = {
-      invoiceNumber,
-      businessName,
-      businessLogo: businessLogo || undefined,
-      clientName,
-      clientContact: clientContact || undefined,
-      clientAddress: clientAddress || undefined,
-      invoiceDate: format(invoiceDate, 'yyyy-MM-dd'),
-      dueDate: format(dueDate, 'yyyy-MM-dd'),
-      items: validItems,
-      tax: tax ? parseFloat(tax) : undefined,
-      notes: notes || undefined,
-      paymentInfo: paymentMethod ? {
-        method: paymentMethod,
-        accountName: accountName,
-        accountNumber: accountNumber,
-      } : undefined,
-      signatureName: signatureName || undefined,
-      signatureImage: signatureImage || undefined,
-      signatureFont: signatureFont,
-      socialMedia: (whatsapp || instagram || email) ? {
-        whatsapp: whatsapp || undefined,
-        instagram: instagram || undefined,
-        email: email || undefined,
-      } : undefined,
-      template: selectedTemplate,
-      currency,
-      downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
-      dpType: enableDP ? dpType : undefined,
-      dpPercent: enableDP && dpPercent > 0 ? dpPercent : undefined,
-      category: category.trim() || undefined,
-    };
+      const updatedInvoice: Partial<Invoice> = {
+        invoiceNumber,
+        businessName,
+        businessLogo: businessLogo || undefined,
+        clientName,
+        clientContact: clientContact || undefined,
+        clientAddress: clientAddress || undefined,
+        invoiceDate: format(invoiceDate, 'yyyy-MM-dd'),
+        dueDate: format(dueDate, 'yyyy-MM-dd'),
+        items: validItems,
+        tax: tax ? parseFloat(tax) : undefined,
+        notes: notes || undefined,
+        paymentInfo: paymentMethod ? {
+          method: paymentMethod,
+          accountName: accountName,
+          accountNumber: accountNumber,
+        } : undefined,
+        signatureName: signatureName || undefined,
+        signatureImage: signatureImage || undefined,
+        signatureFont: signatureFont,
+        socialMedia: (whatsapp || instagram || email) ? {
+          whatsapp: whatsapp || undefined,
+          instagram: instagram || undefined,
+          email: email || undefined,
+        } : undefined,
+        template: selectedTemplate,
+        currency,
+        downPayment: enableDP && downPayment > 0 ? downPayment : undefined,
+        dpType: enableDP ? dpType : undefined,
+        dpPercent: enableDP && dpPercent > 0 ? dpPercent : undefined,
+        category: category.trim() || undefined,
+      };
 
-    if (user) {
-      await updateInvoice(id, updatedInvoice, user.id);
+      if (user) {
+        await updateInvoice(id, updatedInvoice, user.id);
+      }
+      toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
+      navigate(`/preview/${id}`);
+    } catch (err) {
+      toast({
+        title: 'Gagal mengupdate invoice',
+        description: (err as Error).message || 'Terjadi kesalahan.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    toast({ title: 'Mantap! 🎉', description: 'Invoice berhasil diupdate' });
-    navigate(`/preview/${id}`);
   };
 
   if (!invoice) {
@@ -301,7 +323,9 @@ const EditInvoice = () => {
                       onChange={(e) => handleBusinessNameChange(e.target.value)}
                       onFocus={() => setShowSavedNames(savedNames.length > 0)}
                       onBlur={() => setTimeout(() => setShowSavedNames(false), 200)}
+                      className={cn(errors.businessName && "border-destructive focus-visible:border-destructive focus-visible:shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]")}
                     />
+                    {errors.businessName && <p className="text-xs text-destructive mt-1 font-bold">{errors.businessName}</p>}
                     {showSavedNames && savedNames.length > 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-40 overflow-y-auto">
                         {savedNames
@@ -391,7 +415,9 @@ const EditInvoice = () => {
                       placeholder="Contoh: PT. Klien Keren"
                       value={clientName}
                       onChange={(e) => setClientName(e.target.value)}
+                      className={cn(errors.clientName && "border-destructive focus-visible:border-destructive focus-visible:shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]")}
                     />
+                    {errors.clientName && <p className="text-xs text-destructive mt-1 font-bold">{errors.clientName}</p>}
                   </div>
                   
                   <div className="space-y-2">
@@ -434,7 +460,7 @@ const EditInvoice = () => {
                   <div className="space-y-2">
                     <Label>Mata Uang</Label>
                     <Select value={currency} onValueChange={(v) => isValidCurrencyCode(v) && setCurrency(v)}>
-                      <SelectTrigger className="w-full h-10">
+                      <SelectTrigger className="w-full h-11">
                         <SelectValue placeholder="Pilih Mata Uang" />
                       </SelectTrigger>
                       <SelectContent>
@@ -449,16 +475,16 @@ const EditInvoice = () => {
                     <Label>Tanggal Invoice</Label>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
+                        <button
+                          type="button"
                           className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !invoiceDate && "text-muted-foreground"
+                            "flex h-11 w-full items-center justify-start rounded-none border-2 border-primary bg-background px-4 py-2 text-sm font-semibold text-foreground ring-offset-background placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:shadow-[3px_3px_0px_0px_hsl(var(--accent))] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-150",
+                            !invoiceDate && "text-muted-foreground/60"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {invoiceDate ? format(invoiceDate, "dd/MM/yyyy") : <span>Pilih tanggal</span>}
-                        </Button>
+                        </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
@@ -475,16 +501,17 @@ const EditInvoice = () => {
                     <Label>Due Date *</Label>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
+                        <button
+                          type="button"
                           className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !dueDate && "text-muted-foreground"
+                            "flex h-11 w-full items-center justify-start rounded-none border-2 border-primary bg-background px-4 py-2 text-sm font-semibold text-foreground ring-offset-background placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary focus:shadow-[3px_3px_0px_0px_hsl(var(--accent))] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-150",
+                            !dueDate && "text-muted-foreground/60",
+                            errors.dueDate && "border-destructive focus:border-destructive focus:shadow-[3px_3px_0px_0px_rgba(239,68,68,0.2)]"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {dueDate ? format(dueDate, "dd/MM/yyyy") : <span>Pilih tanggal</span>}
-                        </Button>
+                        </button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
@@ -495,6 +522,7 @@ const EditInvoice = () => {
                         />
                       </PopoverContent>
                     </Popover>
+                    {errors.dueDate && <p className="text-xs text-destructive mt-1 font-bold">{errors.dueDate}</p>}
                   </div>
                 </div>
               </section>
@@ -538,11 +566,10 @@ const EditInvoice = () => {
                       <div className="col-span-2 md:col-span-1">
                         <Button
                           type="button"
-                          variant="ghost"
+                          variant="destructive"
                           size="icon"
                           onClick={() => removeItem(item.id)}
                           disabled={items.length === 1}
-                          className="text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -559,6 +586,7 @@ const EditInvoice = () => {
                     <Plus className="w-4 h-4" />
                     Tambah Item
                   </Button>
+                  {errors.items && <p className="text-xs text-destructive mt-2 font-bold text-center">{errors.items}</p>}
                 </div>
 
                 {/* Tax & DP */}
@@ -832,9 +860,18 @@ const EditInvoice = () => {
 
               {/* Submit Button */}
               <div className="flex justify-center pt-4">
-                <Button type="submit" variant="hero" size="xl">
-                  Update Invoice
-                  <ArrowRight className="w-5 h-5" />
+                <Button type="submit" variant="hero" size="xl" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Memproses...
+                    </>
+                  ) : (
+                    <>
+                      Update Invoice
+                      <ArrowRight className="w-5 h-5" />
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
