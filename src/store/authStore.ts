@@ -35,9 +35,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // Fetch profile from pin_users
+        // Fetch profile from profiles
         const { data: profile } = await supabase
-          .from('pin_users')
+          .from('profiles')
           .select('name, username, email, pekerjaan, tujuan_penggunaan')
           .eq('id', session.user.id)
           .maybeSingle() as unknown as { data: { name: string; username: string; email: string | null; pekerjaan: string | null; tujuan_penggunaan: string | null } | null; error: unknown };

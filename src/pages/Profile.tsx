@@ -10,6 +10,7 @@ import {
   EyeOff,
   CheckCircle2,
   Globe,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,10 +29,10 @@ const profileSchema = z.object({
   username: z.string().min(3, 'Username minimal 3 karakter').max(50, 'Username terlalu panjang').regex(/^[a-z0-9_]+$/, 'Username hanya boleh huruf kecil, angka, dan underscore'),
 });
 
-const pinSchema = z.object({
-  oldPin: z.string().length(6, 'PIN lama harus 6 digit').regex(/^\d+$/, 'PIN harus angka'),
-  newPin: z.string().length(6, 'PIN baru harus 6 digit').regex(/^\d+$/, 'PIN harus angka'),
-  confirmPin: z.string().length(6, 'Konfirmasi PIN harus 6 digit').regex(/^\d+$/, 'PIN harus angka'),
+const passwordSchema = z.object({
+  oldPassword: z.string().min(6, 'Password lama minimal 6 karakter'),
+  newPassword: z.string().min(6, 'Password baru minimal 6 karakter'),
+  confirmPassword: z.string().min(6, 'Konfirmasi password baru minimal 6 karakter'),
 });
 
 const Profile = () => {
@@ -45,15 +46,15 @@ const Profile = () => {
   const [profileErrors, setProfileErrors] = useState<{ name?: string; username?: string }>({});
   const [defaultCurrency, setDefaultCurrency] = useState<CurrencyCode>('IDR');
 
-  // PIN form
-  const [oldPin, setOldPin] = useState('');
-  const [newPin, setNewPin] = useState('');
-  const [confirmPin, setConfirmPin] = useState('');
-  const [showOldPin, setShowOldPin] = useState(false);
-  const [showNewPin, setShowNewPin] = useState(false);
-  const [showConfirmPin, setShowConfirmPin] = useState(false);
-  const [isSavingPin, setIsSavingPin] = useState(false);
-  const [pinErrors, setPinErrors] = useState<{ oldPin?: string; newPin?: string; confirmPin?: string }>({});
+  // Password form
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<{ oldPassword?: string; newPassword?: string; confirmPassword?: string }>({});
 
   useEffect(() => {
     if (user) {
@@ -112,60 +113,72 @@ const Profile = () => {
     }
   };
 
-  const handleChangePin = async () => {
-    setPinErrors({});
+  const handleChangePassword = async () => {
+    setPasswordErrors({});
 
-    const validation = pinSchema.safeParse({ oldPin, newPin, confirmPin });
+    const validation = passwordSchema.safeParse({ oldPassword, newPassword, confirmPassword });
 
     if (!validation.success) {
-      const fieldErrors: { oldPin?: string; newPin?: string; confirmPin?: string } = {};
+      const fieldErrors: { oldPassword?: string; newPassword?: string; confirmPassword?: string } = {};
       validation.error.errors.forEach(err => {
-        if (err.path[0] === 'oldPin') fieldErrors.oldPin = err.message;
-        if (err.path[0] === 'newPin') fieldErrors.newPin = err.message;
-        if (err.path[0] === 'confirmPin') fieldErrors.confirmPin = err.message;
+        if (err.path[0] === 'oldPassword') fieldErrors.oldPassword = err.message;
+        if (err.path[0] === 'newPassword') fieldErrors.newPassword = err.message;
+        if (err.path[0] === 'confirmPassword') fieldErrors.confirmPassword = err.message;
       });
-      setPinErrors(fieldErrors);
+      setPasswordErrors(fieldErrors);
       return;
     }
 
-    if (newPin !== confirmPin) {
-      setPinErrors({ confirmPin: 'PIN baru tidak sama' });
+    if (newPassword !== confirmPassword) {
+      setPasswordErrors({ confirmPassword: 'Password baru tidak sama' });
       return;
     }
 
-    if (oldPin === newPin) {
-      setPinErrors({ newPin: 'PIN baru tidak boleh sama dengan PIN lama' });
+    if (oldPassword === newPassword) {
+      setPasswordErrors({ newPassword: 'Password baru tidak boleh sama dengan password lama' });
       return;
     }
 
-    setIsSavingPin(true);
+    setIsSavingPassword(true);
     try {
-      const { data, error } = await supabase.rpc('change_user_pin', {
-        _user_id: user?.id,
-        _old_pin: oldPin,
-        _new_pin: newPin,
+      // Re-authenticate user to verify old password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: oldPassword,
       });
 
-      if (error) throw error;
-
-      if (data === false) {
-        setPinErrors({ oldPin: 'PIN lama salah' });
+      if (signInError) {
+        setPasswordErrors({ oldPassword: 'Password lama salah' });
         return;
       }
 
-      toast({ title: 'Berhasil!', description: 'PIN berhasil diubah' });
-      setOldPin('');
-      setNewPin('');
-      setConfirmPin('');
+      // Update to new password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) {
+        toast({
+          title: 'Error',
+          description: updateError.message,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      toast({ title: 'Berhasil!', description: 'Password berhasil diubah' });
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (error) {
-      logErrorSecurely('handleChangePin', error);
+      logErrorSecurely('handleChangePassword', error);
       toast({ 
         title: 'Error', 
         description: mapDatabaseError(error), 
         variant: 'destructive' 
       });
     } finally {
-      setIsSavingPin(false);
+      setIsSavingPassword(false);
     }
   };
 
@@ -176,8 +189,8 @@ const Profile = () => {
       <div className="pb-10">
         <div className="max-w-2xl mx-auto">
           <h1 className="text-3xl font-black text-primary uppercase tracking-tight mb-8 flex items-center gap-3">
-            <User className="w-7 h-7 text-accent" />
-            Pengaturan Profil
+            <Settings className="w-7 h-7 text-accent" />
+            Pengaturan
           </h1>
 
           {/* Profile Section */}
@@ -259,104 +272,101 @@ const Profile = () => {
             </div>
           </section>
 
-          {/* Change PIN Section */}
+          {/* Change Password Section */}
           <section className="bg-card rounded-xl border-2 border-primary p-6 md:p-8 shadow-neo">
             <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-2 uppercase tracking-tight">
               <KeyRound className="w-5 h-5 text-accent" />
-              Ganti PIN
+              Ganti Password
             </h2>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="oldPin" className="text-primary font-bold uppercase tracking-wider text-xs">PIN Lama</Label>
+                <Label htmlFor="oldPassword" className="text-primary font-bold uppercase tracking-wider text-xs">Password Lama</Label>
                 <div className="relative">
                   <Input
-                    id="oldPin"
-                    type={showOldPin ? 'text' : 'password'}
-                    maxLength={6}
-                    placeholder="******"
-                    value={oldPin}
-                    onChange={(e) => setOldPin(e.target.value.replace(/\D/g, ''))}
+                    id="oldPassword"
+                    type={showOldPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowOldPin(!showOldPin)}
+                    onClick={() => setShowOldPassword(!showOldPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showOldPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showOldPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                {pinErrors.oldPin && (
-                  <p className="text-xs text-destructive">{pinErrors.oldPin}</p>
+                {passwordErrors.oldPassword && (
+                  <p className="text-xs text-destructive">{passwordErrors.oldPassword}</p>
                 )}
               </div>
 
               <Separator />
 
               <div className="space-y-2">
-                <Label htmlFor="newPin" className="text-primary font-bold uppercase tracking-wider text-xs">PIN Baru</Label>
+                <Label htmlFor="newPassword" className="text-primary font-bold uppercase tracking-wider text-xs">Password Baru</Label>
                 <div className="relative">
                   <Input
-                    id="newPin"
-                    type={showNewPin ? 'text' : 'password'}
-                    maxLength={6}
-                    placeholder="******"
-                    value={newPin}
-                    onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                    id="newPassword"
+                    type={showNewPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowNewPin(!showNewPin)}
+                    onClick={() => setShowNewPassword(!showNewPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showNewPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                {pinErrors.newPin && (
-                  <p className="text-xs text-destructive">{pinErrors.newPin}</p>
+                {passwordErrors.newPassword && (
+                  <p className="text-xs text-destructive">{passwordErrors.newPassword}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPin" className="text-primary font-bold uppercase tracking-wider text-xs">Konfirmasi PIN Baru</Label>
+                <Label htmlFor="confirmPassword" className="text-primary font-bold uppercase tracking-wider text-xs">Konfirmasi Password Baru</Label>
                 <div className="relative">
                   <Input
-                    id="confirmPin"
-                    type={showConfirmPin ? 'text' : 'password'}
-                    maxLength={6}
-                    placeholder="******"
-                    value={confirmPin}
-                    onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className="pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPin(!showConfirmPin)}
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    {showConfirmPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                {pinErrors.confirmPin && (
-                  <p className="text-xs text-destructive">{pinErrors.confirmPin}</p>
+                {passwordErrors.confirmPassword && (
+                  <p className="text-xs text-destructive">{passwordErrors.confirmPassword}</p>
                 )}
-                {newPin && confirmPin && newPin === confirmPin && (
+                {newPassword && confirmPassword && newPassword === confirmPassword && (
                   <p className="text-xs text-green-500 flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3" />
-                    PIN cocok
+                    Password cocok
                   </p>
                 )}
               </div>
 
-              <Button onClick={handleChangePin} disabled={isSavingPin} className="w-full sm:w-auto">
-                {isSavingPin ? (
+              <Button onClick={handleChangePassword} disabled={isSavingPassword} className="w-full sm:w-auto">
+                {isSavingPassword ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
                 ) : (
                   <KeyRound className="w-4 h-4 mr-2" />
                 )}
-                Ganti PIN
+                Ganti Password
               </Button>
             </div>
           </section>

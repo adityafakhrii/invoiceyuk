@@ -6,7 +6,7 @@ import {
   FileEdit, 
   History, 
   BarChart3, 
-  User, 
+  Settings, 
   Users, 
   LogOut, 
   Menu, 
@@ -37,7 +37,7 @@ const SidebarLayout = () => {
     { path: '/buat-quotation', label: 'Buat Quotation', icon: FileEdit },
     { path: '/riwayat', label: 'Riwayat', icon: History },
     { path: '/laporan', label: 'Laporan', icon: BarChart3 },
-    { path: '/profile', label: 'Pengaturan Profil', icon: User },
+    { path: '/profile', label: 'Pengaturan', icon: Settings },
   ];
 
   if (user?.role === 'admin') {

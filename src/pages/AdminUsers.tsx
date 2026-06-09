@@ -35,7 +35,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { mapDatabaseError, logErrorSecurely } from '@/lib/errors';
 
-interface PinUser {
+interface UserProfile {
   id: string;
   name: string;
   username: string;
@@ -48,7 +48,7 @@ interface PinUser {
 
 const AdminUsers = () => {
   const { user } = useAuthStore();
-  const [users, setUsers] = useState<PinUser[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -59,7 +59,7 @@ const AdminUsers = () => {
   const fetchUsers = async () => {
     try {
       const { data, error } = await supabase
-        .from('pin_users')
+        .from('profiles')
         .select(`
           id,
           name,
@@ -84,7 +84,7 @@ const AdminUsers = () => {
 
       if (error) throw error;
 
-      const usersWithRoles: PinUser[] = (data || []).map((u) => {
+      const usersWithRoles: UserProfile[] = (data || []).map((u) => {
         const roles = u.user_roles;
         const role = Array.isArray(roles) 
           ? (roles[0]?.role || 'user') 
@@ -126,7 +126,7 @@ const AdminUsers = () => {
 
     try {
       const { error } = await supabase
-        .from('pin_users')
+        .from('profiles')
         .delete()
         .eq('id', userId);
 

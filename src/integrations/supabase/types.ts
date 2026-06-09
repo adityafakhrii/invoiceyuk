@@ -107,7 +107,7 @@ export type Database = {
             foreignKeyName: "invoices_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "pin_users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -130,12 +130,14 @@ export type Database = {
         }
         Relationships: []
       }
-      pin_users: {
+      profiles: {
         Row: {
           created_at: string
           id: string
           name: string
-          pin: string
+          email: string | null
+          pekerjaan: string | null
+          tujuan_penggunaan: string | null
           updated_at: string
           username: string
         }
@@ -143,7 +145,9 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
-          pin: string
+          email?: string | null
+          pekerjaan?: string | null
+          tujuan_penggunaan?: string | null
           updated_at?: string
           username: string
         }
@@ -151,7 +155,9 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
-          pin?: string
+          email?: string | null
+          pekerjaan?: string | null
+          tujuan_penggunaan?: string | null
           updated_at?: string
           username?: string
         }
@@ -178,7 +184,7 @@ export type Database = {
             foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "pin_users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
