@@ -20,6 +20,7 @@ import {
   calculateSubtotal,
   calculateTotal,
   signatureFonts,
+  INVOICE_TEMPLATE_STYLES,
 } from '@/lib/invoice';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -136,7 +137,7 @@ const PreviewInvoice = () => {
         containerRef.current.style.height = originalContainerHeight;
       }
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -146,7 +147,7 @@ const PreviewInvoice = () => {
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
       pdf.save(`${invoice.invoiceNumber}.pdf`);
 
       toast({ title: 'Mantap! 🎉', description: 'PDF berhasil didownload' });
@@ -196,33 +197,7 @@ const PreviewInvoice = () => {
     toast({ title: 'WhatsApp dibuka!', description: 'Pesan invoice siap dikirim ke klien' });
   };
 
-  const getTemplateStyles = () => {
-    switch (invoice.template) {
-      case 'elegant':
-        return {
-          headerBg: 'bg-gradient-to-r from-navy-800 to-navy-600',
-          headerText: 'text-primary-foreground',
-          accentColor: 'text-accent',
-          tableBorder: 'border-navy-100',
-        };
-      case 'corporate':
-        return {
-          headerBg: 'bg-navy-900',
-          headerText: 'text-primary-foreground',
-          accentColor: 'text-navy-700',
-          tableBorder: 'border-navy-200',
-        };
-      default: // simple
-        return {
-          headerBg: 'bg-card',
-          headerText: 'text-foreground',
-          accentColor: 'text-accent',
-          tableBorder: 'border-border',
-        };
-    }
-  };
-
-  const styles = getTemplateStyles();
+  const styles = INVOICE_TEMPLATE_STYLES[invoice.template || 'simple'];
 
   // Get signature font style
   const getSignatureFontStyle = () => {

@@ -140,3 +140,56 @@ export const saveCategory = (name: string): void => {
     localStorage.setItem(SAVED_CATEGORIES_KEY, JSON.stringify(cats.slice(0, 20)));
   }
 };
+
+export interface InvoiceTemplateStyle {
+  headerBg: string;
+  headerText: string;
+  accentColor: string;
+  tableBorder: string;
+}
+
+export const INVOICE_TEMPLATE_STYLES: Record<'simple' | 'elegant' | 'corporate', InvoiceTemplateStyle> = {
+  elegant: {
+    headerBg: 'bg-gradient-to-r from-navy-800 to-navy-600',
+    headerText: 'text-primary-foreground',
+    accentColor: 'text-accent',
+    tableBorder: 'border-navy-100',
+  },
+  corporate: {
+    headerBg: 'bg-navy-900',
+    headerText: 'text-primary-foreground',
+    accentColor: 'text-navy-700',
+    tableBorder: 'border-navy-200',
+  },
+  simple: {
+    headerBg: 'bg-card',
+    headerText: 'text-foreground',
+    accentColor: 'text-accent',
+    tableBorder: 'border-border',
+  },
+};
+
+export interface TemplatePreviewStyle {
+  header: string;
+  headerText: string;
+  accent: string;
+}
+
+export const TEMPLATE_PREVIEW_STYLES: Record<'simple' | 'elegant' | 'corporate', TemplatePreviewStyle> = {
+  elegant: {
+    header: 'bg-gradient-to-r from-slate-800 to-slate-600',
+    headerText: 'text-white',
+    accent: 'bg-emerald-500',
+  },
+  corporate: {
+    header: 'bg-slate-900',
+    headerText: 'text-white',
+    accent: 'bg-slate-700',
+  },
+  simple: {
+    header: 'bg-gray-100',
+    headerText: 'text-gray-800',
+    accent: 'bg-emerald-500',
+  },
+};
+

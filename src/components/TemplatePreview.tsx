@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { TEMPLATE_PREVIEW_STYLES } from '@/lib/invoice';
 
 interface TemplatePreviewProps {
   template: 'simple' | 'elegant' | 'corporate';
@@ -6,30 +7,7 @@ interface TemplatePreviewProps {
 }
 
 const TemplatePreview = ({ template, isSelected }: TemplatePreviewProps) => {
-  const getStyles = () => {
-    switch (template) {
-      case 'elegant':
-        return {
-          header: 'bg-gradient-to-r from-slate-800 to-slate-600',
-          headerText: 'text-white',
-          accent: 'bg-emerald-500',
-        };
-      case 'corporate':
-        return {
-          header: 'bg-slate-900',
-          headerText: 'text-white',
-          accent: 'bg-slate-700',
-        };
-      default:
-        return {
-          header: 'bg-gray-100',
-          headerText: 'text-gray-800',
-          accent: 'bg-emerald-500',
-        };
-    }
-  };
-
-  const styles = getStyles();
+  const styles = TEMPLATE_PREVIEW_STYLES[template || 'simple'];
 
   return (
     <div className={cn(
