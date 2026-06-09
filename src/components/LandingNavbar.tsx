@@ -112,6 +112,14 @@ const LandingNavbar = () => {
         </div>
       </div>
 
+      {/* Mobile Backdrop Overlay */}
+      {isMobileOpen && (
+        <div 
+          className="md:hidden fixed inset-0 top-16 bg-navy-950/20 backdrop-blur-[2px] z-30" 
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
       {/* Mobile Drawer Menu */}
       {isMobileOpen && (
         <div className="md:hidden fixed inset-x-0 top-16 bg-card border-b-2 border-primary z-40 p-6 flex flex-col gap-4 shadow-neo animate-slide-in">

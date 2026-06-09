@@ -67,7 +67,7 @@ const Index = () => {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md border-2 border-primary bg-secondary text-primary text-sm font-bold mb-8 shadow-neo-sm">
+            <div className="inline-flex items-center justify-center text-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-none border-2 border-primary bg-secondary text-primary text-[10px] xs:text-xs md:text-sm font-bold mb-8 shadow-neo-sm">
               Invoice & Quotation Generator untuk Bisnis Modern
             </div>
 
@@ -100,18 +100,18 @@ const Index = () => {
             </div>
 
             {/* Social Proof */}
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-4 md:gap-8 max-w-sm sm:max-w-2xl md:max-w-none mx-auto text-sm font-bold text-navy-600">
-              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                <span>100% Gratis</span>
+            <div className="mt-12 grid grid-cols-3 gap-2 sm:gap-4 md:flex md:flex-wrap md:justify-center md:gap-8 max-w-md sm:max-w-2xl md:max-w-none mx-auto text-[9px] xs:text-[10px] sm:text-xs md:text-sm font-bold text-navy-600">
+              <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left gap-1 sm:gap-2 border-2 border-primary px-1 py-1.5 sm:px-3 sm:py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0" />
+                <span className="leading-tight">100% Gratis</span>
               </div>
-              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                <span>Akses Email & Password</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left gap-1 sm:gap-2 border-2 border-primary px-1 py-1.5 sm:px-3 sm:py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0" />
+                <span className="leading-tight">Custom Logo</span>
               </div>
-              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
-                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
-                <span>Export PDF Langsung</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center text-center sm:text-left gap-1 sm:gap-2 border-2 border-primary px-1 py-1.5 sm:px-3 sm:py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent flex-shrink-0" />
+                <span className="leading-tight">Export PDF</span>
               </div>
             </div>
           </div>
@@ -124,53 +124,55 @@ const Index = () => {
           <div className="max-w-4xl mx-auto">
             {/* Preview Card */}
             <div className="relative">
-              <div className="relative bg-card rounded-2xl border-2 border-primary shadow-neo p-6 md:p-10">
-                <div className="absolute top-4 right-4 bg-accent text-accent-foreground border-2 border-primary px-3 py-1 rounded text-xs font-black uppercase tracking-wider shadow-neo-sm">
-                  Preview Template
+              <div className="relative bg-card rounded-none border-2 border-primary shadow-neo p-3 xs:p-4 md:p-10">
+                <div className="flex justify-center md:block mb-6 md:mb-0">
+                  <div className="md:absolute md:top-4 md:right-4 bg-accent text-accent-foreground border-2 border-primary px-3 py-1 rounded-none text-xs font-black uppercase tracking-wider shadow-neo-sm">
+                    Preview Template
+                  </div>
                 </div>
                 {/* Mini Invoice Preview */}
-                <div className="bg-background rounded-xl p-6 md:p-8 border-2 border-primary shadow-neo-sm mt-4">
+                <div className="bg-background rounded-none p-3 xs:p-4 md:p-8 border-2 border-primary shadow-neo-sm mt-4">
                   <div className="flex justify-between items-start mb-8">
                     <div>
-                      <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-12 w-12 rounded-lg border-2 border-primary mb-3" />
-                      <h3 className="font-extrabold text-xl text-primary">Studio Kreatif Lo</h3>
-                      <p className="text-sm font-bold text-muted-foreground">studio@bisnis.co</p>
+                      <img src={logoInvoiceYuk} alt="InvoiceYuk Logo" className="h-9 w-9 md:h-12 md:w-12 rounded-none border-2 border-primary mb-2 md:mb-3" />
+                      <h3 className="font-extrabold text-sm md:text-xl text-primary leading-tight">Studio Kreatif Lo</h3>
+                      <p className="text-[10px] md:text-sm font-bold text-muted-foreground">studio@bisnis.co</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-black text-accent tracking-widest uppercase mb-1">INVOICE</p>
-                      <p className="text-2xl font-black text-primary">#INV-2026-001</p>
+                      <p className="text-[10px] md:text-xs font-black text-accent tracking-widest uppercase mb-1">INVOICE</p>
+                      <p className="text-sm md:text-2xl font-black text-primary whitespace-nowrap">#INV-2026-001</p>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 mb-8 text-sm">
+                  <div className="grid grid-cols-2 gap-2 md:gap-4 mb-6 md:mb-8 text-[10px] md:text-sm">
                     <div>
-                      <p className="text-muted-foreground font-bold mb-1">Tagihan Untuk:</p>
-                      <p className="font-extrabold text-primary text-base">PT. Klien Keren</p>
+                      <p className="text-muted-foreground font-bold mb-0.5 md:mb-1">Tagihan Untuk:</p>
+                      <p className="font-extrabold text-primary text-xs md:text-base leading-tight">PT. Klien Keren</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-muted-foreground font-bold mb-1">Tanggal:</p>
-                      <p className="font-extrabold text-primary text-base">29 Desember 2024</p>
+                      <p className="text-muted-foreground font-bold mb-0.5 md:mb-1">Tanggal:</p>
+                      <p className="font-extrabold text-primary text-xs md:text-base leading-tight">29 Desember 2024</p>
                     </div>
                   </div>
 
-                  <div className="border-t-2 border-b-2 border-primary py-4 mb-6">
-                    <div className="flex justify-between text-xs font-black text-primary uppercase tracking-wider mb-2">
+                  <div className="border-t-2 border-b-2 border-primary py-3 md:py-4 mb-5 md:mb-6">
+                    <div className="flex justify-between text-[10px] md:text-xs font-black text-primary uppercase tracking-wider mb-2">
                       <span>Item</span>
                       <span>Total</span>
                     </div>
-                    <div className="flex justify-between text-navy-800 text-sm font-bold">
-                      <span>Desain Logo Premium</span>
-                      <span className="font-extrabold">Rp 2.500.000</span>
+                    <div className="flex justify-between text-navy-800 text-xs md:text-sm font-bold gap-2">
+                      <span className="truncate">Desain Logo Premium</span>
+                      <span className="font-extrabold whitespace-nowrap">Rp 2.500.000</span>
                     </div>
-                    <div className="flex justify-between text-navy-800 text-sm font-bold mt-2">
-                      <span>Social Media Kit</span>
-                      <span className="font-extrabold">Rp 1.500.000</span>
+                    <div className="flex justify-between text-navy-800 text-xs md:text-sm font-bold mt-2 gap-2">
+                      <span className="truncate">Social Media Kit</span>
+                      <span className="font-extrabold whitespace-nowrap">Rp 1.500.000</span>
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center bg-secondary p-4 rounded-lg border-2 border-primary">
-                    <span className="text-lg font-black text-primary uppercase tracking-wide">Total Tagihan</span>
-                    <span className="text-2xl font-black text-accent">Rp 4.000.000</span>
+                  <div className="flex justify-between items-center bg-secondary p-2.5 md:p-4 rounded-none border-2 border-primary">
+                    <span className="text-[10px] xs:text-xs md:text-lg font-black text-primary uppercase tracking-wide">Total Tagihan</span>
+                    <span className="text-sm md:text-2xl font-black text-accent whitespace-nowrap">Rp 4.000.000</span>
                   </div>
                 </div>
               </div>
