@@ -25,7 +25,7 @@ const Laporan = () => {
   const { invoices, fetchInvoices } = useInvoiceStore();
   const { user } = useAuthStore();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
   const [hasFetched, setHasFetched] = useState(false);
 
