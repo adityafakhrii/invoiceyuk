@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Download, Phone, Instagram, Mail, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,11 +30,57 @@ const PreviewInvoice = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const getInvoice = useInvoiceStore((state) => state.getInvoice);
   const [waNumber, setWaNumber] = useState('');
   const [waDialogOpen, setWaDialogOpen] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [height, setHeight] = useState<number | 'auto'>('auto');
 
   const invoice = id ? getInvoice(id) : undefined;
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current && invoiceRef.current && invoice) {
+        const containerWidth = containerRef.current.getBoundingClientRect().width;
+        const targetWidth = 800; // Fixed width matching desktop/A4 preview layout
+        
+        if (containerWidth < targetWidth) {
+          const newScale = containerWidth / targetWidth;
+          setScale(newScale);
+          
+          // Temporarily reset styles to measure the real scroll height
+          const originalTransform = invoiceRef.current.style.transform;
+          const originalWidth = invoiceRef.current.style.width;
+          
+          invoiceRef.current.style.transform = 'none';
+          invoiceRef.current.style.width = '800px';
+          
+          const invoiceHeight = invoiceRef.current.getBoundingClientRect().height;
+          
+          // Re-apply scale
+          invoiceRef.current.style.transform = `scale(${newScale})`;
+          invoiceRef.current.style.width = '800px';
+          
+          setHeight(invoiceHeight * newScale);
+        } else {
+          setScale(1);
+          setHeight('auto');
+          invoiceRef.current.style.transform = 'none';
+          invoiceRef.current.style.width = '100%';
+        }
+      }
+    };
+
+    // Delay slightly to ensure fonts and styles are fully loaded
+    const timer = setTimeout(updateScale, 100);
+
+    window.addEventListener('resize', updateScale);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', updateScale);
+    };
+  }, [invoice]);
 
   if (!invoice) {
     return (
@@ -63,11 +109,32 @@ const PreviewInvoice = () => {
     try {
       toast({ title: 'Generating PDF...', description: 'Tunggu bentar ya' });
 
+      // Save original styles to restore after capture
+      const originalTransform = invoiceRef.current.style.transform;
+      const originalWidth = invoiceRef.current.style.width;
+      let originalContainerHeight = '';
+      
+      if (containerRef.current) {
+        originalContainerHeight = containerRef.current.style.height;
+        containerRef.current.style.height = 'auto';
+      }
+
+      // Reset scale temporarily for high quality capture
+      invoiceRef.current.style.transform = 'none';
+      invoiceRef.current.style.width = '800px';
+
       const canvas = await html2canvas(invoiceRef.current, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
       });
+
+      // Restore original scaled styles
+      invoiceRef.current.style.transform = originalTransform;
+      invoiceRef.current.style.width = originalWidth;
+      if (containerRef.current && originalContainerHeight) {
+        containerRef.current.style.height = originalContainerHeight;
+      }
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF({
@@ -227,8 +294,21 @@ const PreviewInvoice = () => {
             </div>
 
             {/* Invoice Preview */}
-            <div className="bg-card rounded-xl border-2 border-primary shadow-neo overflow-hidden print:border-none print:shadow-none print:rounded-none">
-              <div ref={invoiceRef} className="bg-white">
+            <div 
+              ref={containerRef}
+              className="bg-card rounded-xl border-2 border-primary shadow-neo overflow-hidden print:border-none print:shadow-none print:rounded-none"
+              style={{ height: height !== 'auto' ? `${height}px` : 'auto' }}
+            >
+              <div 
+                ref={invoiceRef} 
+                className="bg-white print:transform-none"
+                style={{
+                  width: scale < 1 ? '800px' : '100%',
+                  transform: scale < 1 ? `scale(${scale})` : 'none',
+                  transformOrigin: 'top left',
+                  transition: 'transform 0.1s ease-out'
+                }}
+              >
                 {/* Header */}
                 <div className={cn('p-8 md:p-10', styles.headerBg)}>
                   <div className="flex flex-col md:flex-row justify-between items-start gap-6">
