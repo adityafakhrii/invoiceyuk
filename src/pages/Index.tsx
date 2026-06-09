@@ -100,18 +100,18 @@ const Index = () => {
             </div>
 
             {/* Social Proof */}
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm font-bold text-navy-600">
-              <div className="flex items-center gap-2 border-2 border-primary px-3 py-1.5 rounded-md bg-white shadow-neo-sm">
-                <CheckCircle2 className="w-4 h-4 text-accent" />
-                100% Gratis
+            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-4 md:gap-8 max-w-sm sm:max-w-2xl md:max-w-none mx-auto text-sm font-bold text-navy-600">
+              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                <span>100% Gratis</span>
               </div>
-              <div className="flex items-center gap-2 border-2 border-primary px-3 py-1.5 rounded-md bg-white shadow-neo-sm">
-                <CheckCircle2 className="w-4 h-4 text-accent" />
-                Akses Email & Password
+              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                <span>Akses Email & Password</span>
               </div>
-              <div className="flex items-center gap-2 border-2 border-primary px-3 py-1.5 rounded-md bg-white shadow-neo-sm">
-                <CheckCircle2 className="w-4 h-4 text-accent" />
-                Export PDF Langsung
+              <div className="flex items-center justify-center gap-2 border-2 border-primary px-4 py-2 bg-white shadow-neo-sm rounded-none">
+                <CheckCircle2 className="w-4 h-4 text-accent flex-shrink-0" />
+                <span>Export PDF Langsung</span>
               </div>
             </div>
           </div>
