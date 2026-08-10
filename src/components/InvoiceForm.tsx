@@ -337,12 +337,12 @@ const InvoiceForm = ({
                     <Label>Logo (Opsional)</Label>
                     <div className="flex items-center gap-4">
                       {businessLogo ? (
-                        <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-border">
-                          <img src={businessLogo} alt="Logo" className="w-full h-full object-cover" />
+                        <div className="relative p-1 rounded-lg border border-border bg-muted/20 flex items-center justify-center">
+                          <img src={businessLogo} alt="Logo" className="max-h-16 max-w-[160px] w-auto h-auto object-contain rounded" />
                           <button
                             type="button"
                             onClick={() => setBusinessLogo('')}
-                            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs"
+                            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs shadow-sm hover:scale-110 transition-transform"
                           >
                             ×
                           </button>

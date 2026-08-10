@@ -297,7 +297,7 @@ const PreviewInvoice = () => {
                         <img
                           src={invoice.businessLogo}
                           alt="Logo"
-                          className="w-16 h-16 rounded-lg object-cover"
+                          className="max-h-16 max-w-[160px] w-auto h-auto rounded-lg object-contain"
                         />
                       ) : null}
                       <div>
