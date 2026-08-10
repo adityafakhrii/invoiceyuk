@@ -1,6 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, FileText, Eye, Trash2, CheckCircle, Clock, Filter, Pencil, Loader2, Copy, Download, CalendarIcon, X, XCircle, MoreVertical, Check } from 'lucide-react';
+import {
+  Search,
+  FileText,
+  Eye,
+  Trash2,
+  CheckCircle,
+  Clock,
+  Filter,
+  Pencil,
+  Loader2,
+  Copy,
+  Download,
+  CalendarIcon,
+  X,
+  XCircle,
+  MoreVertical,
+  Check,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -30,11 +47,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { downloadInvoicePDF } from '@/lib/pdfUtils';
 import { toast } from '@/hooks/use-toast';
 
 const Riwayat = () => {
   const navigate = useNavigate();
-  const { invoices, toggleStatus, deleteInvoice, cancelInvoice, fetchInvoices, isLoading } = useInvoiceStore();
+  const { invoices, toggleStatus, deleteInvoice, cancelInvoice, fetchInvoices, isLoading } =
+    useInvoiceStore();
   const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid' | 'cancelled'>('all');
@@ -43,8 +62,11 @@ const Riwayat = () => {
   const [dateTo, setDateTo] = useState<Date | undefined>();
   const [hasFetched, setHasFetched] = useState(false);
   const [invoiceToCancel, setInvoiceToCancel] = useState<any>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
-  const uniqueCategories = Array.from(new Set(invoices.map(i => i.category).filter(Boolean))) as string[];
+  const uniqueCategories = Array.from(
+    new Set(invoices.map((i) => i.category).filter(Boolean))
+  ) as string[];
 
   useEffect(() => {
     if (user && !hasFetched) {
@@ -60,13 +82,10 @@ const Riwayat = () => {
       invoice.businessName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (invoice.category || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === 'all' ||
-      invoice.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
 
     const matchesCategory =
-      categoryFilter === 'all' ||
-      (invoice.category || '') === categoryFilter;
+      categoryFilter === 'all' || (invoice.category || '') === categoryFilter;
 
     const invoiceDate = new Date(invoice.invoiceDate);
     const matchesDateFrom = !dateFrom || invoiceDate >= dateFrom;
@@ -99,7 +118,10 @@ const Riwayat = () => {
     if (user) {
       try {
         await cancelInvoice(id, user.id);
-        toast({ title: 'Invoice dibatalkan', description: 'Status invoice berhasil diubah menjadi dibatalkan (canceled)' });
+        toast({
+          title: 'Invoice dibatalkan',
+          description: 'Status invoice berhasil diubah menjadi dibatalkan (canceled)',
+        });
       } catch (err) {
         toast({
           title: 'Gagal membatalkan invoice',
@@ -119,10 +141,10 @@ const Riwayat = () => {
       'Tanggal Invoice': formatDate(inv.invoiceDate),
       'Jatuh Tempo': formatDate(inv.dueDate),
       'Mata Uang': inv.currency || 'IDR',
-      'Subtotal': calculateSubtotal(inv.items),
+      Subtotal: calculateSubtotal(inv.items),
       'Pajak (%)': inv.tax || 0,
-      'Total': calculateTotal(inv.items, inv.tax),
-      'Status': inv.status === 'paid' ? 'Lunas' : 'Belum Lunas',
+      Total: calculateTotal(inv.items, inv.tax),
+      Status: inv.status === 'paid' ? 'Lunas' : 'Belum Lunas',
     }));
 
     const csv = Papa.unparse(dataToExport);
@@ -133,7 +155,10 @@ const Riwayat = () => {
     link.download = `invoice-export-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    toast({ title: 'Export berhasil! 📥', description: `${dataToExport.length} invoice berhasil di-export ke CSV` });
+    toast({
+      title: 'Export berhasil! 📥',
+      description: `${dataToExport.length} invoice berhasil di-export ke CSV`,
+    });
   };
 
   const handleToggleStatus = async (id: string) => {
@@ -149,6 +174,14 @@ const Riwayat = () => {
         });
       }
     }
+  };
+
+  const handleDirectDownload = async (inv: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (downloadingId) return;
+    setDownloadingId(inv.id);
+    await downloadInvoicePDF(inv);
+    setDownloadingId(null);
   };
 
   return (
@@ -174,7 +207,7 @@ const Riwayat = () => {
 
             {/* Overdue Reminders */}
             <InvoiceReminderBanner invoices={invoices} />
-            
+
             <div className="space-y-4 mb-8">
               {/* Row 1: Search input & Desktop Date Range Filter */}
               <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -189,25 +222,42 @@ const Riwayat = () => {
                   />
                 </div>
 
-                {/* Desktop Date Range Filter (rata kanan sejajar kolom cari) */}
+                {/* Desktop Date Range Filter */}
                 <div className="hidden md:flex items-center gap-2 flex-shrink-0">
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline-light" size="sm" className={cn(!dateFrom && "text-muted-foreground")}>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        className={cn(!dateFrom && 'text-muted-foreground')}
+                      >
                         <CalendarIcon className="w-4 h-4 mr-1" />
-                        {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                        {dateFrom
+                          ? format(dateFrom, 'd MMM yyyy', { locale: idLocale })
+                          : 'Dari tanggal'}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                      <Calendar
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        initialFocus
+                      />
                     </PopoverContent>
                   </Popover>
                   <span className="text-muted-foreground text-sm">—</span>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline-light" size="sm" className={cn(!dateTo && "text-muted-foreground")}>
+                      <Button
+                        variant="outline-light"
+                        size="sm"
+                        className={cn(!dateTo && 'text-muted-foreground')}
+                      >
                         <CalendarIcon className="w-4 h-4 mr-1" />
-                        {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
+                        {dateTo
+                          ? format(dateTo, 'd MMM yyyy', { locale: idLocale })
+                          : 'Sampai tanggal'}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -215,7 +265,12 @@ const Riwayat = () => {
                     </PopoverContent>
                   </Popover>
                   {(dateFrom || dateTo) && (
-                    <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearDateFilter}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
                       <X className="w-4 h-4 mr-1" />
                       Reset
                     </Button>
@@ -223,12 +278,15 @@ const Riwayat = () => {
                 </div>
               </div>
 
-              {/* Mobile Filter Buttons (Dropdowns triggered by three-dots / compact menus) */}
+              {/* Mobile Filter Buttons */}
               <div className="flex md:hidden gap-2 w-full">
                 {/* Status Filter Trigger */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline-light" className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm">
+                    <Button
+                      variant="outline-light"
+                      className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm"
+                    >
                       <span className="flex items-center gap-2">
                         <Filter className="w-4 h-4" />
                         <span>Filter</span>
@@ -236,20 +294,35 @@ const Riwayat = () => {
                       <MoreVertical className="w-4 h-4 ml-2" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
-                    <DropdownMenuItem onClick={() => setStatusFilter('all')} className="font-bold cursor-pointer flex items-center justify-between">
+                  <DropdownMenuContent
+                    align="start"
+                    className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => setStatusFilter('all')}
+                      className="font-bold cursor-pointer flex items-center justify-between"
+                    >
                       <span>Semua Status</span>
                       {statusFilter === 'all' && <Check className="w-4 h-4 text-primary" />}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('paid')} className="font-bold cursor-pointer flex items-center justify-between">
+                    <DropdownMenuItem
+                      onClick={() => setStatusFilter('paid')}
+                      className="font-bold cursor-pointer flex items-center justify-between"
+                    >
                       <span>Paid</span>
                       {statusFilter === 'paid' && <Check className="w-4 h-4 text-primary" />}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('unpaid')} className="font-bold cursor-pointer flex items-center justify-between">
+                    <DropdownMenuItem
+                      onClick={() => setStatusFilter('unpaid')}
+                      className="font-bold cursor-pointer flex items-center justify-between"
+                    >
                       <span>Unpaid</span>
                       {statusFilter === 'unpaid' && <Check className="w-4 h-4 text-primary" />}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatusFilter('cancelled')} className="font-bold cursor-pointer flex items-center justify-between">
+                    <DropdownMenuItem
+                      onClick={() => setStatusFilter('cancelled')}
+                      className="font-bold cursor-pointer flex items-center justify-between"
+                    >
                       <span>Dibatalkan</span>
                       {statusFilter === 'cancelled' && <Check className="w-4 h-4 text-primary" />}
                     </DropdownMenuItem>
@@ -260,7 +333,10 @@ const Riwayat = () => {
                 {uniqueCategories.length > 0 && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline-light" className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm">
+                      <Button
+                        variant="outline-light"
+                        className="flex-1 justify-between h-11 border-2 border-primary font-bold shadow-neo-sm"
+                      >
                         <span className="flex items-center gap-2">
                           <FileText className="w-4 h-4" />
                           <span>Kategori</span>
@@ -268,13 +344,23 @@ const Riwayat = () => {
                         <MoreVertical className="w-4 h-4 ml-2" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
-                      <DropdownMenuItem onClick={() => setCategoryFilter('all')} className="font-bold cursor-pointer flex items-center justify-between">
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-[calc(100vw-2rem)] xs:w-64 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50"
+                    >
+                      <DropdownMenuItem
+                        onClick={() => setCategoryFilter('all')}
+                        className="font-bold cursor-pointer flex items-center justify-between"
+                      >
                         <span>Semua Kategori</span>
                         {categoryFilter === 'all' && <Check className="w-4 h-4 text-primary" />}
                       </DropdownMenuItem>
                       {uniqueCategories.map((cat) => (
-                        <DropdownMenuItem key={cat} onClick={() => setCategoryFilter(cat)} className="font-bold cursor-pointer flex items-center justify-between">
+                        <DropdownMenuItem
+                          key={cat}
+                          onClick={() => setCategoryFilter(cat)}
+                          className="font-bold cursor-pointer flex items-center justify-between"
+                        >
                           <span>{cat}</span>
                           {categoryFilter === cat && <Check className="w-4 h-4 text-primary" />}
                         </DropdownMenuItem>
@@ -285,7 +371,6 @@ const Riwayat = () => {
               </div>
 
               {/* Row 2: Desktop Status & Category Filters */}
-              {/* Desktop view */}
               <div className="hidden md:flex flex-row items-center justify-between gap-4 pt-1">
                 {/* Status Filter */}
                 <div className="flex flex-wrap gap-2">
@@ -323,7 +408,7 @@ const Riwayat = () => {
                   </Button>
                 </div>
 
-                {/* Desktop Category Filter (rata kanan) */}
+                {/* Desktop Category Filter */}
                 {uniqueCategories.length > 0 && (
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Button
@@ -351,19 +436,34 @@ const Riwayat = () => {
               <div className="flex md:hidden flex-wrap items-center gap-2 w-full pt-1">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline-light" size="sm" className={cn("flex-1", !dateFrom && "text-muted-foreground")}>
+                    <Button
+                      variant="outline-light"
+                      size="sm"
+                      className={cn('flex-1', !dateFrom && 'text-muted-foreground')}
+                    >
                       <CalendarIcon className="w-4 h-4 mr-1" />
-                      {dateFrom ? format(dateFrom, 'd MMM yyyy', { locale: idLocale }) : 'Dari tanggal'}
+                      {dateFrom
+                        ? format(dateFrom, 'd MMM yyyy', { locale: idLocale })
+                        : 'Dari tanggal'}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                    <Calendar
+                      mode="single"
+                      selected={dateFrom}
+                      onSelect={setDateFrom}
+                      initialFocus
+                    />
                   </PopoverContent>
                 </Popover>
                 <span className="text-muted-foreground text-sm">—</span>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline-light" size="sm" className={cn("flex-1", !dateTo && "text-muted-foreground")}>
+                    <Button
+                      variant="outline-light"
+                      size="sm"
+                      className={cn('flex-1', !dateTo && 'text-muted-foreground')}
+                    >
                       <CalendarIcon className="w-4 h-4 mr-1" />
                       {dateTo ? format(dateTo, 'd MMM yyyy', { locale: idLocale }) : 'Sampai tanggal'}
                     </Button>
@@ -373,7 +473,12 @@ const Riwayat = () => {
                   </PopoverContent>
                 </Popover>
                 {(dateFrom || dateTo) && (
-                  <Button variant="ghost" size="sm" onClick={clearDateFilter} className="text-muted-foreground hover:text-destructive w-full justify-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearDateFilter}
+                    className="text-muted-foreground hover:text-destructive w-full justify-center"
+                  >
                     <X className="w-4 h-4 mr-1" />
                     Reset
                   </Button>
@@ -415,11 +520,17 @@ const Riwayat = () => {
                           <FileText className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-extrabold text-lg text-primary">{invoice.clientName}</h3>
-                          <p className="text-sm font-bold text-muted-foreground">{invoice.invoiceNumber}</p>
+                          <h3 className="font-extrabold text-lg text-primary">
+                            {invoice.clientName}
+                          </h3>
+                          <p className="text-sm font-bold text-muted-foreground">
+                            {invoice.invoiceNumber}
+                          </p>
                           <p className="text-xs font-bold text-navy-600 mt-1">
                             {invoice.businessName} • {formatDate(invoice.invoiceDate)}
-                            {invoice.category && <span className="ml-1 font-bold">• {invoice.category}</span>}
+                            {invoice.category && (
+                              <span className="ml-1 font-bold">• {invoice.category}</span>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -427,17 +538,23 @@ const Riwayat = () => {
                       <div className="flex items-center justify-between md:justify-end gap-4 md:gap-6">
                         <div className="text-left md:text-right">
                           <p className="font-black text-lg text-primary">
-                            {formatCurrency(calculateTotal(invoice.items, invoice.tax), invoice.currency)}
+                            {formatCurrency(
+                              calculateTotal(invoice.items, invoice.tax),
+                              invoice.currency
+                            )}
                           </p>
                           <button
-                            onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatus(invoice.id);
+                            }}
                             className={cn(
-                              "inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1",
+                              'inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1',
                               invoice.status === 'paid'
-                                ? "bg-accent/15 border-primary text-primary"
+                                ? 'bg-accent/15 border-primary text-primary'
                                 : invoice.status === 'cancelled'
-                                  ? "bg-gray-100 border-primary text-gray-500 line-through"
-                                  : "bg-yellow-100 border-primary text-yellow-800"
+                                  ? 'bg-gray-100 border-primary text-gray-500 line-through'
+                                  : 'bg-yellow-100 border-primary text-yellow-800'
                             )}
                           >
                             {invoice.status === 'paid' ? (
@@ -459,13 +576,16 @@ const Riwayat = () => {
                           </button>
                         </div>
                         <div className="flex items-center gap-2">
-                          {/* Desktop Buttons (Visible on md and up) */}
+                          {/* Desktop Buttons */}
                           <div className="hidden md:flex items-center gap-2">
                             {invoice.status === 'unpaid' && (
                               <Button
                                 variant="accent"
                                 size="sm"
-                                onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleStatus(invoice.id);
+                                }}
                                 className="text-xs py-1.5 h-9"
                               >
                                 <CheckCircle className="w-4 h-4 mr-1" />
@@ -476,7 +596,10 @@ const Riwayat = () => {
                               <Button
                                 variant="accent"
                                 size="sm"
-                                onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleStatus(invoice.id);
+                                }}
                                 className="text-xs py-1.5 h-9"
                               >
                                 <Clock className="w-4 h-4 mr-1" />
@@ -487,7 +610,10 @@ const Riwayat = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(invoice); }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setInvoiceToCancel(invoice);
+                                }}
                                 className="text-xs py-1.5 h-9 border-destructive hover:bg-destructive/10 text-destructive font-bold"
                               >
                                 <XCircle className="w-4 h-4 mr-1" />
@@ -498,45 +624,71 @@ const Riwayat = () => {
                               variant="outline"
                               size="icon"
                               title="Duplikat"
-                              onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/buat-invoice', { state: { duplicateFrom: invoice } });
+                              }}
                               className="w-9 h-9"
                             >
                               <Copy className="w-4 h-4" />
                             </Button>
-                            <Link to={`/edit-invoice/${invoice.id}`} title="Edit" onClick={(e) => e.stopPropagation()}>
+                            <Link
+                              to={`/edit-invoice/${invoice.id}`}
+                              title="Edit"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <Button variant="outline" size="icon" className="w-9 h-9">
                                 <Pencil className="w-4 h-4" />
                               </Button>
                             </Link>
-                            <Link to={`/preview/${invoice.id}`} title="Lihat" onClick={(e) => e.stopPropagation()}>
+                            <Link
+                              to={`/preview/${invoice.id}`}
+                              title="Lihat"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <Button variant="outline" size="icon" className="w-9 h-9">
                                 <Eye className="w-4 h-4" />
                               </Button>
                             </Link>
-                            <Link to={`/preview/${invoice.id}`} title="Download PDF" onClick={(e) => e.stopPropagation()}>
-                              <Button variant="default" size="icon" className="w-9 h-9">
+                            <Button
+                              variant="default"
+                              size="icon"
+                              className="w-9 h-9"
+                              title="Download PDF"
+                              disabled={downloadingId === invoice.id}
+                              onClick={(e) => handleDirectDownload(invoice, e)}
+                            >
+                              {downloadingId === invoice.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
                                 <Download className="w-4 h-4" />
-                              </Button>
-                            </Link>
+                              )}
+                            </Button>
                           </div>
 
-                          {/* Mobile Dropdown (Visible on mobile/tablet under md) */}
+                          {/* Mobile Dropdown */}
                           <div className="flex md:hidden items-center gap-2">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="icon" 
-                                  className="w-9 h-9 border-2 border-primary shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all" 
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="w-9 h-9 border-2 border-primary shadow-neo-sm hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0 active:translate-y-0 transition-all"
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <MoreVertical className="w-4 h-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-48 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50">
+                              <DropdownMenuContent
+                                align="end"
+                                className="w-48 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50"
+                              >
                                 {invoice.status === 'unpaid' && (
-                                  <DropdownMenuItem 
-                                    onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleStatus(invoice.id);
+                                    }}
                                     className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
                                   >
                                     <CheckCircle className="w-4 h-4 text-green-600" />
@@ -544,8 +696,11 @@ const Riwayat = () => {
                                   </DropdownMenuItem>
                                 )}
                                 {invoice.status === 'cancelled' && (
-                                  <DropdownMenuItem 
-                                    onClick={(e) => { e.stopPropagation(); handleToggleStatus(invoice.id); }}
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleStatus(invoice.id);
+                                    }}
                                     className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
                                   >
                                     <Clock className="w-4 h-4 text-yellow-600" />
@@ -553,24 +708,32 @@ const Riwayat = () => {
                                   </DropdownMenuItem>
                                 )}
                                 {invoice.status !== 'cancelled' && (
-                                  <DropdownMenuItem 
-                                    onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(invoice); }}
+                                  <DropdownMenuItem
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setInvoiceToCancel(invoice);
+                                    }}
                                     className="flex items-center gap-2 font-bold focus:bg-red-50 focus:text-destructive text-destructive cursor-pointer"
                                   >
                                     <XCircle className="w-4 h-4" />
                                     <span>Batalkan</span>
                                   </DropdownMenuItem>
                                 )}
-                                <DropdownMenuItem 
-                                  onClick={(e) => { e.stopPropagation(); navigate('/buat-invoice', { state: { duplicateFrom: invoice } }); }}
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate('/buat-invoice', {
+                                      state: { duplicateFrom: invoice },
+                                    });
+                                  }}
                                   className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
                                 >
                                   <Copy className="w-4 h-4 text-primary" />
                                   <span>Duplikat</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                  <Link 
-                                    to={`/edit-invoice/${invoice.id}`} 
+                                  <Link
+                                    to={`/edit-invoice/${invoice.id}`}
                                     onClick={(e) => e.stopPropagation()}
                                     className="flex items-center gap-2 font-bold w-full cursor-pointer"
                                   >
@@ -579,8 +742,8 @@ const Riwayat = () => {
                                   </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                  <Link 
-                                    to={`/preview/${invoice.id}`} 
+                                  <Link
+                                    to={`/preview/${invoice.id}`}
                                     onClick={(e) => e.stopPropagation()}
                                     className="flex items-center gap-2 font-bold w-full cursor-pointer"
                                   >
@@ -588,24 +751,31 @@ const Riwayat = () => {
                                     <span>Lihat</span>
                                   </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                  <Link 
-                                    to={`/preview/${invoice.id}`} 
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center gap-2 font-bold w-full cursor-pointer"
-                                  >
+                                <DropdownMenuItem
+                                  onClick={(e) => handleDirectDownload(invoice, e)}
+                                  disabled={downloadingId === invoice.id}
+                                  className="flex items-center gap-2 font-bold w-full cursor-pointer"
+                                >
+                                  {downloadingId === invoice.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                                  ) : (
                                     <Download className="w-4 h-4 text-primary" />
-                                    <span>Download PDF</span>
-                                  </Link>
+                                  )}
+                                  <span>Download PDF</span>
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
 
-                          {/* Delete Button (Always visible) */}
+                          {/* Delete Button */}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="icon" className="w-9 h-9" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="w-9 h-9"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </AlertDialogTrigger>
@@ -617,8 +787,15 @@ const Riwayat = () => {
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Batal</AlertDialogCancel>
-                                <AlertDialogAction onClick={(e) => { e.stopPropagation(); handleDelete(invoice.id); }}>
+                                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                                  Batal
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDelete(invoice.id);
+                                  }}
+                                >
                                   Hapus
                                 </AlertDialogAction>
                               </AlertDialogFooter>
@@ -636,20 +813,28 @@ const Riwayat = () => {
             {invoices.length > 0 && (
               <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-6 rounded-xl border-2 border-primary shadow-neo">
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
-                  <p className="text-3xl font-black text-primary leading-none mb-1">{invoices.length}</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Invoice</p>
+                  <p className="text-3xl font-black text-primary leading-none mb-1">
+                    {invoices.length}
+                  </p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Total Invoice
+                  </p>
                 </div>
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-accent/10 shadow-neo-sm">
                   <p className="text-3xl font-black text-accent leading-none mb-1">
                     {invoices.filter((i) => i.status === 'paid').length}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Sudah Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Sudah Dibayar
+                  </p>
                 </div>
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-yellow-50 shadow-neo-sm">
                   <p className="text-3xl font-black text-yellow-800 leading-none mb-1">
                     {invoices.filter((i) => i.status === 'unpaid').length}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Belum Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Belum Dibayar
+                  </p>
                 </div>
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
                   <p className="text-xl font-black text-primary truncate leading-none mb-2 mt-1">
@@ -659,24 +844,38 @@ const Riwayat = () => {
                         .reduce((sum, i) => sum + calculateTotal(i.items, i.tax), 0)
                     )}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total Dibayar</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Total Dibayar
+                  </p>
                 </div>
               </div>
             )}
+
             {/* Cancel Confirmation Dialog */}
-            <AlertDialog open={invoiceToCancel !== null} onOpenChange={(open) => !open && setInvoiceToCancel(null)}>
+            <AlertDialog
+              open={invoiceToCancel !== null}
+              onOpenChange={(open) => !open && setInvoiceToCancel(null)}
+            >
               <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Batalkan Invoice?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Status invoice {invoiceToCancel?.invoiceNumber} akan diubah menjadi dibatalkan (canceled). Tindakan ini tidak menghapus data invoice, tapi mengubah statusnya.
+                    Status invoice {invoiceToCancel?.invoiceNumber} akan diubah menjadi dibatalkan
+                    (canceled). Tindakan ini tidak menghapus data invoice, tapi mengubah statusnya.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={(e) => { e.stopPropagation(); setInvoiceToCancel(null); }}>Kembali</AlertDialogCancel>
-                  <AlertDialogAction 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
+                  <AlertDialogCancel
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setInvoiceToCancel(null);
+                    }}
+                  >
+                    Kembali
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (invoiceToCancel) {
                         handleCancel(invoiceToCancel.id);
                         setInvoiceToCancel(null);
