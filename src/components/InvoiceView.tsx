@@ -147,29 +147,29 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({ invoice }) => {
           {/* Totals */}
           <div>
             <div className="space-y-2">
-              <div className="flex justify-between text-muted-foreground">
-                <span>SUB TOTAL :</span>
-                <span>{formatCurrency(subtotal, invoice.currency)}</span>
+              <div className="flex justify-between items-center gap-4 text-muted-foreground">
+                <span className="whitespace-nowrap">SUB TOTAL :</span>
+                <span className="whitespace-nowrap">{formatCurrency(subtotal, invoice.currency)}</span>
               </div>
               {invoice.tax && invoice.tax > 0 ? (
-                <div className="flex justify-between text-muted-foreground">
-                  <span>PAJAK ({invoice.tax}%) :</span>
-                  <span>{formatCurrency(taxAmount, invoice.currency)}</span>
+                <div className="flex justify-between items-center gap-4 text-muted-foreground">
+                  <span className="whitespace-nowrap">PAJAK ({invoice.tax}%) :</span>
+                  <span className="whitespace-nowrap">{formatCurrency(taxAmount, invoice.currency)}</span>
                 </div>
               ) : null}
-              <div className="flex justify-between text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
-                <span>TOTAL :</span>
-                <span>{formatCurrency(total, invoice.currency)}</span>
+              <div className="flex justify-between items-center gap-4 text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
+                <span className="whitespace-nowrap">TOTAL :</span>
+                <span className="whitespace-nowrap">{formatCurrency(total, invoice.currency)}</span>
               </div>
               {dpAmount > 0 && (
                 <>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>DOWN PAYMENT (DP){dpPercent > 0 ? ` — ${dpPercent}%` : ''} :</span>
-                    <span>- {formatCurrency(dpAmount, invoice.currency)}</span>
+                  <div className="flex justify-between items-center gap-4 text-muted-foreground text-sm">
+                    <span className="whitespace-nowrap">DOWN PAYMENT{dpPercent > 0 ? ` (${dpPercent}%)` : ' (DP)'} :</span>
+                    <span className="whitespace-nowrap">- {formatCurrency(dpAmount, invoice.currency)}</span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold text-foreground border-t border-border pt-3 mt-2">
-                    <span>SISA TAGIHAN :</span>
-                    <span>{formatCurrency(remaining, invoice.currency)}</span>
+                  <div className="flex justify-between items-center gap-4 text-lg font-bold text-foreground border-t border-border pt-3 mt-2">
+                    <span className="whitespace-nowrap">SISA TAGIHAN :</span>
+                    <span className="whitespace-nowrap">{formatCurrency(remaining, invoice.currency)}</span>
                   </div>
                 </>
               )}
