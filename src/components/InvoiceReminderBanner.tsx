@@ -15,7 +15,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
     const threeDaysLater = new Date(now);
     threeDaysLater.setDate(threeDaysLater.getDate() + 3);
 
-    const unpaid = invoices.filter((inv) => inv.status === 'unpaid');
+    const unpaid = invoices.filter((inv) => inv.status === 'unpaid' || inv.status === 'paid_dp');
 
     const overdue = unpaid.filter((inv) => {
       const due = new Date(inv.dueDate);

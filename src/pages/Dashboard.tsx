@@ -56,23 +56,41 @@ const Dashboard = () => {
   const overdueInvoices = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    return unpaidInvoices.filter((inv) => {
+    return invoices.filter((inv) => {
+      if (inv.status !== 'unpaid' && inv.status !== 'paid_dp') return false;
       const due = new Date(inv.dueDate);
       due.setHours(0, 0, 0, 0);
       return due < now;
     });
-  }, [unpaidInvoices]);
+  }, [invoices]);
 
   const totalRevenue = useMemo(() => {
-    return paidInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
-  }, [paidInvoices]);
+    return invoices.reduce((sum, inv) => {
+      if (inv.status === 'paid') return sum + calculateTotal(inv.items, inv.tax);
+      if (inv.status === 'paid_dp') return sum + (inv.downPayment || 0);
+      return sum;
+    }, 0);
+  }, [invoices]);
 
   const outstandingRevenue = useMemo(() => {
-    return unpaidInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
-  }, [unpaidInvoices]);
+    return invoices.reduce((sum, inv) => {
+      if (inv.status === 'unpaid') return sum + calculateTotal(inv.items, inv.tax);
+      if (inv.status === 'paid_dp') {
+        const total = calculateTotal(inv.items, inv.tax);
+        return sum + Math.max(0, total - (inv.downPayment || 0));
+      }
+      return sum;
+    }, 0);
+  }, [invoices]);
 
   const overdueRevenue = useMemo(() => {
-    return overdueInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+    return overdueInvoices.reduce((sum, inv) => {
+      if (inv.status === 'paid_dp') {
+        const total = calculateTotal(inv.items, inv.tax);
+        return sum + Math.max(0, total - (inv.downPayment || 0));
+      }
+      return sum + calculateTotal(inv.items, inv.tax);
+    }, 0);
   }, [overdueInvoices]);
 
   // Recent invoices (sorted by date or createdAt descending)
@@ -322,13 +340,23 @@ const Dashboard = () => {
                         "text-[9px] font-bold px-2 py-0.5 uppercase tracking-wider border-2 text-center",
                         inv.status === 'paid'
                           ? "bg-green-100 text-green-700 border-green-700"
-                          : inv.status === 'cancelled'
-                            ? "bg-gray-100 text-gray-500 border-gray-500 line-through"
-                            : isOverdue
-                              ? "bg-destructive/10 text-destructive border-destructive"
-                              : "bg-yellow-50 text-yellow-800 border-yellow-800"
+                          : inv.status === 'paid_dp'
+                            ? "bg-amber-100 text-amber-800 border-amber-600 font-bold"
+                            : inv.status === 'cancelled'
+                              ? "bg-gray-100 text-gray-500 border-gray-500 line-through"
+                              : isOverdue
+                                ? "bg-destructive/10 text-destructive border-destructive"
+                                : "bg-yellow-50 text-yellow-800 border-yellow-800"
                       )}>
-                        {inv.status === 'paid' ? 'Lunas' : inv.status === 'cancelled' ? 'Dibatalkan' : isOverdue ? 'Overdue' : 'Unpaid'}
+                        {inv.status === 'paid'
+                          ? 'Lunas'
+                          : inv.status === 'paid_dp'
+                            ? 'Paid DP'
+                            : inv.status === 'cancelled'
+                              ? 'Dibatalkan'
+                              : isOverdue
+                                ? 'Overdue'
+                                : 'Unpaid'}
                       </span>
                     </div>
                     

@@ -31,6 +31,8 @@ export const isValidCurrencyCode = (code: string): code is CurrencyCode => {
   return CURRENCIES.some((c) => c.code === code);
 };
 
+export type InvoiceStatus = 'paid' | 'unpaid' | 'cancelled' | 'paid_dp';
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -49,7 +51,7 @@ export interface Invoice {
   signatureImage?: string;
   signatureFont?: SignatureFont;
   socialMedia?: SocialMedia;
-  status: 'paid' | 'unpaid' | 'cancelled';
+  status: InvoiceStatus;
   template: 'simple' | 'elegant' | 'corporate';
   currency: CurrencyCode;
   downPayment?: number; // DP amount (absolute value, not percentage)

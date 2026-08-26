@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { formatCurrency, formatDate, calculateTotal, calculateSubtotal } from '@/lib/invoice';
+import { formatCurrency, formatDate, calculateTotal, calculateSubtotal, InvoiceStatus } from '@/lib/invoice';
 import Papa from 'papaparse';
 import { cn } from '@/lib/utils';
 import InvoiceReminderBanner from '@/components/InvoiceReminderBanner';
@@ -56,7 +56,7 @@ const Riwayat = () => {
     useInvoiceStore();
   const { user } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'unpaid' | 'cancelled'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'paid_dp' | 'unpaid' | 'cancelled'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
@@ -144,7 +144,14 @@ const Riwayat = () => {
       Subtotal: calculateSubtotal(inv.items),
       'Pajak (%)': inv.tax || 0,
       Total: calculateTotal(inv.items, inv.tax),
-      Status: inv.status === 'paid' ? 'Lunas' : 'Belum Lunas',
+      Status:
+        inv.status === 'paid'
+          ? 'Lunas'
+          : inv.status === 'paid_dp'
+            ? 'Paid DP'
+            : inv.status === 'cancelled'
+              ? 'Dibatalkan'
+              : 'Belum Lunas',
     }));
 
     const csv = Papa.unparse(dataToExport);
@@ -161,11 +168,36 @@ const Riwayat = () => {
     });
   };
 
-  const handleToggleStatus = async (id: string) => {
+  const handleToggleStatus = async (id: string, targetStatus?: InvoiceStatus) => {
     if (user) {
       try {
-        await toggleStatus(id, user.id);
-        toast({ title: 'Status diperbarui' });
+        const inv = invoices.find((i) => i.id === id);
+        await toggleStatus(id, user.id, targetStatus);
+        if (inv) {
+          const hasDP = Boolean(inv.downPayment && inv.downPayment > 0);
+          if (targetStatus === 'paid_dp' || (!targetStatus && hasDP && inv.status === 'unpaid')) {
+            toast({
+              title: 'DP Berhasil Ditandai Lunas! 💰',
+              description: 'Status invoice kini Paid DP. Menunggu pelunasan sisa tagihan.',
+            });
+          } else if (
+            targetStatus === 'paid' ||
+            (!targetStatus &&
+              ((hasDP && inv.status === 'paid_dp') || (!hasDP && inv.status === 'unpaid')))
+          ) {
+            toast({
+              title: 'Invoice Lunas Sepenuhnya! 🎉',
+              description: 'Status invoice telah diperbarui menjadi Lunas (Paid).',
+            });
+          } else {
+            toast({
+              title: 'Status Diperbarui',
+              description: 'Status invoice berhasil diubah.',
+            });
+          }
+        } else {
+          toast({ title: 'Status Diperbarui' });
+        }
       } catch (err) {
         toast({
           title: 'Gagal memperbarui status',
@@ -309,8 +341,15 @@ const Riwayat = () => {
                       onClick={() => setStatusFilter('paid')}
                       className="font-bold cursor-pointer flex items-center justify-between"
                     >
-                      <span>Paid</span>
+                      <span>Paid (Lunas)</span>
                       {statusFilter === 'paid' && <Check className="w-4 h-4 text-primary" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setStatusFilter('paid_dp')}
+                      className="font-bold cursor-pointer flex items-center justify-between"
+                    >
+                      <span>Paid DP</span>
+                      {statusFilter === 'paid_dp' && <Check className="w-4 h-4 text-primary" />}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setStatusFilter('unpaid')}
@@ -389,6 +428,14 @@ const Riwayat = () => {
                   >
                     <CheckCircle className="w-4 h-4 mr-1" />
                     Paid
+                  </Button>
+                  <Button
+                    variant={statusFilter === 'paid_dp' ? 'default' : 'outline-light'}
+                    size="sm"
+                    onClick={() => setStatusFilter('paid_dp')}
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Paid DP
                   </Button>
                   <Button
                     variant={statusFilter === 'unpaid' ? 'default' : 'outline-light'}
@@ -548,19 +595,27 @@ const Riwayat = () => {
                               e.stopPropagation();
                               handleToggleStatus(invoice.id);
                             }}
+                            title="Klik untuk ubah status"
                             className={cn(
-                              'inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-colors cursor-pointer shadow-sm mt-1',
+                              'inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border-2 transition-transform hover:scale-105 cursor-pointer shadow-sm mt-1',
                               invoice.status === 'paid'
                                 ? 'bg-accent/15 border-primary text-primary'
-                                : invoice.status === 'cancelled'
-                                  ? 'bg-gray-100 border-primary text-gray-500 line-through'
-                                  : 'bg-yellow-100 border-primary text-yellow-800'
+                                : invoice.status === 'paid_dp'
+                                  ? 'bg-amber-100 border-amber-600 text-amber-900 font-black'
+                                  : invoice.status === 'cancelled'
+                                    ? 'bg-gray-100 border-primary text-gray-500 line-through'
+                                    : 'bg-yellow-100 border-primary text-yellow-800'
                             )}
                           >
                             {invoice.status === 'paid' ? (
                               <>
-                                <CheckCircle className="w-3 h-3" />
+                                <CheckCircle className="w-3 h-3 text-emerald-600" />
                                 Paid
+                              </>
+                            ) : invoice.status === 'paid_dp' ? (
+                              <>
+                                <Clock className="w-3 h-3 text-amber-700" />
+                                Paid DP
                               </>
                             ) : invoice.status === 'cancelled' ? (
                               <>
@@ -579,17 +634,46 @@ const Riwayat = () => {
                           {/* Desktop Buttons */}
                           <div className="hidden md:flex items-center gap-2">
                             {invoice.status === 'unpaid' && (
+                              invoice.downPayment && invoice.downPayment > 0 ? (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleStatus(invoice.id);
+                                  }}
+                                  className="text-xs py-1.5 h-9 bg-amber-400 hover:bg-amber-500 text-slate-950 border-2 border-primary shadow-neo-sm font-black transition-all hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0 active:translate-y-0"
+                                >
+                                  <Clock className="w-4 h-4 mr-1 text-slate-950" />
+                                  <span>Paid DP</span>
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="accent"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleStatus(invoice.id);
+                                  }}
+                                  className="text-xs py-1.5 h-9 font-black"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  <span>Set Paid</span>
+                                </Button>
+                              )
+                            )}
+                            {invoice.status === 'paid_dp' && (
                               <Button
-                                variant="accent"
+                                variant="outline"
                                 size="sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleToggleStatus(invoice.id);
                                 }}
-                                className="text-xs py-1.5 h-9"
+                                className="text-xs py-1.5 h-9 bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-primary shadow-neo-sm font-black transition-all hover:translate-x-0.5 hover:translate-y-0.5 active:translate-x-0 active:translate-y-0"
                               >
                                 <CheckCircle className="w-4 h-4 mr-1" />
-                                <span>Set Paid</span>
+                                <span>Pelunasan</span>
                               </Button>
                             )}
                             {invoice.status === 'cancelled' && (
@@ -600,7 +684,7 @@ const Riwayat = () => {
                                   e.stopPropagation();
                                   handleToggleStatus(invoice.id);
                                 }}
-                                className="text-xs py-1.5 h-9"
+                                className="text-xs py-1.5 h-9 font-black"
                               >
                                 <Clock className="w-4 h-4 mr-1" />
                                 <span>Set Unpaid</span>
@@ -684,15 +768,40 @@ const Riwayat = () => {
                                 className="w-48 bg-white border-2 border-primary shadow-neo-sm rounded-none p-1 z-50"
                               >
                                 {invoice.status === 'unpaid' && (
+                                  invoice.downPayment && invoice.downPayment > 0 ? (
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleStatus(invoice.id);
+                                      }}
+                                      className="flex items-center gap-2 font-bold text-amber-700 focus:bg-amber-50 focus:text-amber-800 cursor-pointer"
+                                    >
+                                      <Clock className="w-4 h-4 text-amber-600" />
+                                      <span>Paid DP</span>
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleStatus(invoice.id);
+                                      }}
+                                      className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                                    >
+                                      <CheckCircle className="w-4 h-4 text-green-600" />
+                                      <span>Set Paid</span>
+                                    </DropdownMenuItem>
+                                  )
+                                )}
+                                {invoice.status === 'paid_dp' && (
                                   <DropdownMenuItem
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       handleToggleStatus(invoice.id);
                                     }}
-                                    className="flex items-center gap-2 font-bold focus:bg-accent focus:text-accent-foreground cursor-pointer"
+                                    className="flex items-center gap-2 font-bold text-emerald-700 focus:bg-emerald-50 focus:text-emerald-800 cursor-pointer"
                                   >
-                                    <CheckCircle className="w-4 h-4 text-green-600" />
-                                    <span>Set Paid</span>
+                                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                                    <span>Pelunasan</span>
                                   </DropdownMenuItem>
                                 )}
                                 {invoice.status === 'cancelled' && (
@@ -811,7 +920,7 @@ const Riwayat = () => {
 
             {/* Stats */}
             {invoices.length > 0 && (
-              <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 bg-white p-6 rounded-xl border-2 border-primary shadow-neo">
+              <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 bg-white p-6 rounded-xl border-2 border-primary shadow-neo">
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
                   <p className="text-3xl font-black text-primary leading-none mb-1">
                     {invoices.length}
@@ -825,7 +934,15 @@ const Riwayat = () => {
                     {invoices.filter((i) => i.status === 'paid').length}
                   </p>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Sudah Dibayar
+                    Sudah Lunas
+                  </p>
+                </div>
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-amber-50 shadow-neo-sm">
+                  <p className="text-3xl font-black text-amber-700 leading-none mb-1">
+                    {invoices.filter((i) => i.status === 'paid_dp').length}
+                  </p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                    Paid DP
                   </p>
                 </div>
                 <div className="p-4 text-center border-2 border-primary rounded-lg bg-yellow-50 shadow-neo-sm">
@@ -836,16 +953,18 @@ const Riwayat = () => {
                     Belum Dibayar
                   </p>
                 </div>
-                <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm">
+                <div className="p-4 text-center border-2 border-primary rounded-lg bg-secondary/50 shadow-neo-sm col-span-2 sm:col-span-1">
                   <p className="text-xl font-black text-primary truncate leading-none mb-2 mt-1">
                     {formatCurrency(
-                      invoices
-                        .filter((i) => i.status === 'paid')
-                        .reduce((sum, i) => sum + calculateTotal(i.items, i.tax), 0)
+                      invoices.reduce((sum, i) => {
+                        if (i.status === 'paid') return sum + calculateTotal(i.items, i.tax);
+                        if (i.status === 'paid_dp') return sum + (i.downPayment || 0);
+                        return sum;
+                      }, 0)
                     )}
                   </p>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                    Total Dibayar
+                    Total Masuk
                   </p>
                 </div>
               </div>

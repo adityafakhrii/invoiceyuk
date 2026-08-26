@@ -37,8 +37,14 @@ const Laporan = () => {
     }
   }, [user, fetchInvoices, hasFetched]);
 
+  const getInvPaidAmount = (inv: Invoice) => {
+    if (inv.status === 'paid') return calculateTotal(inv.items, inv.tax);
+    if (inv.status === 'paid_dp') return inv.downPayment || 0;
+    return 0;
+  };
+
   const paidInvoices = useMemo(
-    () => invoices.filter((inv) => inv.status === 'paid'),
+    () => invoices.filter((inv) => inv.status === 'paid' || (inv.status === 'paid_dp' && (inv.downPayment || 0) > 0)),
     [invoices]
   );
 
@@ -54,7 +60,7 @@ const Laporan = () => {
         const d = new Date(inv.invoiceDate);
         return d.getFullYear() === selectedYear && d.getMonth() === idx;
       });
-      const revenue = monthInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+      const revenue = monthInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
       return { name, revenue, count: monthInvoices.length };
     });
   }, [paidInvoices, selectedYear]);
@@ -71,7 +77,7 @@ const Laporan = () => {
         const d = new Date(inv.invoiceDate);
         return d.getFullYear() === selectedYear && d.getMonth() === selectedMonth && d.getDate() === day;
       });
-      const revenue = dayInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+      const revenue = dayInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
       return { name: String(day), revenue, count: dayInvoices.length };
     });
   }, [paidInvoices, selectedYear, selectedMonth]);
@@ -82,7 +88,7 @@ const Laporan = () => {
         const yearInvoices = paidInvoices.filter(
           (inv) => new Date(inv.invoiceDate).getFullYear() === year
         );
-        const revenue = yearInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+        const revenue = yearInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
         return { name: String(year), revenue, count: yearInvoices.length };
       })
       .reverse();
@@ -91,7 +97,7 @@ const Laporan = () => {
   const chartData = viewMode === 'yearly' ? yearlyData : (selectedMonth === 'all' ? monthlyData : dailyData);
 
   const stats = useMemo(() => {
-    const totalRevenue = paidInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+    const totalRevenue = paidInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
 
     let dynamicLabel = '';
     let dynamicRevenue = 0;
@@ -105,14 +111,14 @@ const Laporan = () => {
         const thisYearInvoices = paidInvoices.filter(
           (inv) => new Date(inv.invoiceDate).getFullYear() === selectedYear
         );
-        dynamicRevenue = thisYearInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+        dynamicRevenue = thisYearInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
       } else {
         dynamicLabel = `Pendapatan ${MONTH_NAMES[selectedMonth]}`;
         const thisMonthInvoices = paidInvoices.filter((inv) => {
           const d = new Date(inv.invoiceDate);
           return d.getFullYear() === selectedYear && d.getMonth() === selectedMonth;
         });
-        dynamicRevenue = thisMonthInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+        dynamicRevenue = thisMonthInvoices.reduce((sum, inv) => sum + getInvPaidAmount(inv), 0);
       }
     }
 

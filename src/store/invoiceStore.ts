@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Invoice, InvoiceItem } from '@/lib/invoice';
+import { Invoice, InvoiceItem, InvoiceStatus } from '@/lib/invoice';
 import { supabase } from '@/integrations/supabase/client';
 import { logErrorSecurely } from '@/lib/errors';
 import type { Json } from '@/integrations/supabase/types';
@@ -11,7 +11,7 @@ interface InvoiceStore {
   addInvoice: (invoice: Invoice, userId: string) => Promise<string | undefined>;
   updateInvoice: (id: string, invoice: Partial<Invoice>, userId: string) => Promise<void>;
   deleteInvoice: (id: string, userId: string) => Promise<void>;
-  toggleStatus: (id: string, userId: string) => Promise<void>;
+  toggleStatus: (id: string, userId: string, targetStatus?: InvoiceStatus) => Promise<void>;
   cancelInvoice: (id: string, userId: string) => Promise<void>;
   getInvoice: (id: string) => Invoice | undefined;
   clearInvoices: () => void;
@@ -49,7 +49,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         signatureImage: inv.signature_image || undefined,
         signatureFont: (inv.signature_font as Invoice['signatureFont']) || undefined,
         socialMedia: (inv.social_media as unknown) as Invoice['socialMedia'] || undefined,
-        status: inv.status as 'paid' | 'unpaid' | 'cancelled',
+        status: (inv.status || 'unpaid') as InvoiceStatus,
         template: inv.template as Invoice['template'],
         currency: (inv.currency as Invoice['currency']) || 'IDR',
         downPayment: inv.down_payment ? Number(inv.down_payment) : undefined,
@@ -177,11 +177,30 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
     }
   },
 
-  toggleStatus: async (id: string, userId: string) => {
+  toggleStatus: async (id: string, userId: string, targetStatus?: InvoiceStatus) => {
     const invoice = get().invoices.find(inv => inv.id === id);
     if (!invoice) return;
 
-    const newStatus = invoice.status === 'paid' ? 'unpaid' : 'paid';
+    if (targetStatus) {
+      await get().updateInvoice(id, { status: targetStatus }, userId);
+      return;
+    }
+
+    const hasDP = Boolean(invoice.downPayment && invoice.downPayment > 0);
+    let newStatus: InvoiceStatus;
+
+    if (hasDP) {
+      if (invoice.status === 'unpaid') {
+        newStatus = 'paid_dp';
+      } else if (invoice.status === 'paid_dp') {
+        newStatus = 'paid';
+      } else {
+        newStatus = 'unpaid';
+      }
+    } else {
+      newStatus = invoice.status === 'paid' ? 'unpaid' : 'paid';
+    }
+
     await get().updateInvoice(id, { status: newStatus }, userId);
   },
 
