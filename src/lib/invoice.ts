@@ -33,6 +33,8 @@ export const isValidCurrencyCode = (code: string): code is CurrencyCode => {
 
 export type InvoiceStatus = 'paid' | 'unpaid' | 'cancelled' | 'paid_dp';
 
+export type TaxType = 'addition' | 'withholding';
+
 export interface Invoice {
   id: string;
   invoiceNumber: string;
@@ -45,6 +47,7 @@ export interface Invoice {
   dueDate?: string;
   items: InvoiceItem[];
   tax?: number;
+  taxType?: TaxType;
   notes?: string;
   paymentInfo?: PaymentInfo;
   signatureName?: string;
@@ -68,13 +71,47 @@ export const signatureFonts: { id: SignatureFont; name: string; fontFamily: stri
 ];
 
 export const calculateSubtotal = (items: InvoiceItem[]): number => {
-  return items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  return items.reduce((sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.price) || 0), 0);
 };
 
-export const calculateTotal = (items: InvoiceItem[], tax?: number): number => {
+export const calculateTaxAmount = (
+  subtotal: number,
+  tax?: number,
+  currency: CurrencyCode = 'IDR'
+): number => {
+  if (!tax || tax <= 0) return 0;
+  const rawTax = (subtotal * tax) / 100;
+  return currency === 'IDR' ? Math.round(rawTax) : Math.round(rawTax * 100) / 100;
+};
+
+export const calculateTotal = (
+  items: InvoiceItem[],
+  tax?: number,
+  taxType: TaxType = 'addition',
+  currency: CurrencyCode = 'IDR'
+): number => {
   const subtotal = calculateSubtotal(items);
-  const taxAmount = tax ? (subtotal * tax) / 100 : 0;
+  const taxAmount = calculateTaxAmount(subtotal, tax, currency);
+  if (taxType === 'withholding') {
+    return Math.max(0, subtotal - taxAmount);
+  }
   return subtotal + taxAmount;
+};
+
+export const calculateGrossFromNet = (
+  netAmount: number,
+  taxPercent: number,
+  currency: CurrencyCode = 'IDR'
+): { gross: number; taxAmount: number; net: number } => {
+  if (!taxPercent || taxPercent <= 0 || taxPercent >= 100 || netAmount <= 0) {
+    return { gross: netAmount, taxAmount: 0, net: netAmount };
+  }
+  const taxRate = taxPercent / 100;
+  const rawGross = netAmount / (1 - taxRate);
+  const gross = currency === 'IDR' ? Math.round(rawGross) : Math.round(rawGross * 100) / 100;
+  const taxAmount = calculateTaxAmount(gross, taxPercent, currency);
+  const calculatedNet = gross - taxAmount;
+  return { gross, taxAmount, net: calculatedNet };
 };
 
 export const formatCurrency = (amount: number, currency: CurrencyCode = 'IDR'): string => {

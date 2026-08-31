@@ -18,6 +18,7 @@ import {
   formatCurrency,
   formatDate,
   calculateSubtotal,
+  calculateTaxAmount,
   calculateTotal,
   signatureFonts,
   INVOICE_TEMPLATE_STYLES,
@@ -98,8 +99,8 @@ const PreviewInvoice = () => {
   }
 
   const subtotal = calculateSubtotal(invoice.items);
-  const taxAmount = invoice.tax ? (subtotal * invoice.tax) / 100 : 0;
-  const total = calculateTotal(invoice.items, invoice.tax);
+  const taxAmount = calculateTaxAmount(subtotal, invoice.tax, invoice.currency);
+  const total = calculateTotal(invoice.items, invoice.tax, invoice.taxType, invoice.currency);
   const dpAmount = invoice.downPayment || 0;
   const dpPercent = invoice.dpPercent || (total > 0 && dpAmount > 0 ? Math.round((dpAmount / total) * 100 * 100) / 100 : 0);
   const remaining = total - dpAmount;
@@ -174,6 +175,15 @@ const PreviewInvoice = () => {
     }
 
     const formattedNum = formatWhatsAppNumber(clean);
+    const isWithholding = invoice.taxType === 'withholding';
+
+    const taxText = invoice.tax && invoice.tax > 0
+      ? (isWithholding
+          ? `PPh (${invoice.tax}%): -${formatCurrency(taxAmount, invoice.currency)}\n`
+          : `Pajak (${invoice.tax}%): +${formatCurrency(taxAmount, invoice.currency)}\n`)
+      : '';
+
+    const totalLabel = isWithholding ? 'TOTAL DIBAYARKAN' : 'TOTAL';
 
     const message = encodeURIComponent(
       `Halo ${invoice.clientName},\n\n` +
@@ -184,8 +194,9 @@ const PreviewInvoice = () => {
       `*Detail Item:*\n` +
       invoice.items.map((item, i) => `${i + 1}. ${item.name} (${item.quantity}x) - ${formatCurrency(item.quantity * item.price, invoice.currency)}`).join('\n') +
       `\n\n` +
-      (invoice.tax ? `Pajak (${invoice.tax}%): ${formatCurrency(taxAmount, invoice.currency)}\n` : '') +
-      `*TOTAL: ${formatCurrency(total, invoice.currency)}*\n` +
+      `${isWithholding ? 'Subtotal / Bruto' : 'Subtotal'}: ${formatCurrency(subtotal, invoice.currency)}\n` +
+      taxText +
+      `*${totalLabel}: ${formatCurrency(total, invoice.currency)}*\n` +
       (dpAmount > 0 ? `DP${dpPercent > 0 ? ` (${dpPercent}%)` : ''}: ${formatCurrency(dpAmount, invoice.currency)}\n*SISA: ${formatCurrency(remaining, invoice.currency)}*\n` : '') +
       `\n` +
       (invoice.paymentInfo ? `💳 Pembayaran:\n${invoice.paymentInfo.method}\n${invoice.paymentInfo.accountName}\n${invoice.paymentInfo.accountNumber}\n\n` : '') +
@@ -406,17 +417,27 @@ const PreviewInvoice = () => {
                     <div className={cn(!invoice.paymentInfo && 'md:col-start-2')}>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center gap-4 text-muted-foreground">
-                          <span className="whitespace-nowrap">SUB TOTAL :</span>
+                          <span className="whitespace-nowrap">
+                            {invoice.taxType === 'withholding' ? 'SUBTOTAL / BRUTO :' : 'SUB TOTAL :'}
+                          </span>
                           <span className="whitespace-nowrap">{formatCurrency(subtotal, invoice.currency)}</span>
                         </div>
                         {invoice.tax && invoice.tax > 0 && (
                           <div className="flex justify-between items-center gap-4 text-muted-foreground">
-                            <span className="whitespace-nowrap">PAJAK ({invoice.tax}%) :</span>
-                            <span className="whitespace-nowrap">{formatCurrency(taxAmount, invoice.currency)}</span>
+                            <span className="whitespace-nowrap">
+                              {invoice.taxType === 'withholding' ? `PPh (${invoice.tax}%) :` : `PAJAK (${invoice.tax}%) :`}
+                            </span>
+                            <span className={cn("whitespace-nowrap font-medium", invoice.taxType === 'withholding' && "text-destructive")}>
+                              {invoice.taxType === 'withholding'
+                                ? `- ${formatCurrency(taxAmount, invoice.currency)}`
+                                : `+ ${formatCurrency(taxAmount, invoice.currency)}`}
+                            </span>
                           </div>
                         )}
                         <div className="flex justify-between items-center gap-4 text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
-                          <span className="whitespace-nowrap">TOTAL :</span>
+                          <span className="whitespace-nowrap">
+                            {invoice.taxType === 'withholding' ? 'TOTAL DIBAYARKAN :' : 'TOTAL :'}
+                          </span>
                           <span className="whitespace-nowrap">{formatCurrency(total, invoice.currency)}</span>
                         </div>
                         {dpAmount > 0 && (

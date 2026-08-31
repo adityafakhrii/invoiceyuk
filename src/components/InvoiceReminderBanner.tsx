@@ -65,7 +65,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0 ml-2">
                         <span className="text-destructive font-semibold">
-                          {formatCurrency(calculateTotal(inv.items, inv.tax), inv.currency)}
+                          {formatCurrency(calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency), inv.currency)}
                         </span>
                         <span className="text-destructive/70">({daysOverdue} hari lalu)</span>
                         <ArrowRight className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -113,7 +113,7 @@ const InvoiceReminderBanner = ({ invoices }: InvoiceReminderBannerProps) => {
                       </span>
                       <span className="flex items-center gap-2 flex-shrink-0 ml-2">
                         <span className="text-amber-600 font-semibold">
-                          {formatCurrency(calculateTotal(inv.items, inv.tax), inv.currency)}
+                          {formatCurrency(calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency), inv.currency)}
                         </span>
                         <span className="text-amber-600/70">
                           ({daysLeft === 0 ? 'Hari ini' : `${daysLeft} hari lagi`})

@@ -3,6 +3,7 @@ import { Phone, Instagram, Mail } from 'lucide-react';
 import {
   Invoice,
   calculateSubtotal,
+  calculateTaxAmount,
   calculateTotal,
   formatDate,
   formatCurrency,
@@ -17,8 +18,8 @@ interface InvoiceViewProps {
 
 export const InvoiceView: React.FC<InvoiceViewProps> = ({ invoice }) => {
   const subtotal = calculateSubtotal(invoice.items);
-  const taxAmount = invoice.tax ? (subtotal * invoice.tax) / 100 : 0;
-  const total = calculateTotal(invoice.items, invoice.tax);
+  const taxAmount = calculateTaxAmount(subtotal, invoice.tax, invoice.currency);
+  const total = calculateTotal(invoice.items, invoice.tax, invoice.taxType, invoice.currency);
   const dpAmount = invoice.downPayment || 0;
   const dpPercent =
     invoice.dpPercent ||
@@ -148,17 +149,27 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({ invoice }) => {
           <div>
             <div className="space-y-2">
               <div className="flex justify-between items-center gap-4 text-muted-foreground">
-                <span className="whitespace-nowrap">SUB TOTAL :</span>
+                <span className="whitespace-nowrap">
+                  {invoice.taxType === 'withholding' ? 'SUBTOTAL / BRUTO :' : 'SUB TOTAL :'}
+                </span>
                 <span className="whitespace-nowrap">{formatCurrency(subtotal, invoice.currency)}</span>
               </div>
               {invoice.tax && invoice.tax > 0 ? (
                 <div className="flex justify-between items-center gap-4 text-muted-foreground">
-                  <span className="whitespace-nowrap">PAJAK ({invoice.tax}%) :</span>
-                  <span className="whitespace-nowrap">{formatCurrency(taxAmount, invoice.currency)}</span>
+                  <span className="whitespace-nowrap">
+                    {invoice.taxType === 'withholding' ? `PPh (${invoice.tax}%) :` : `PAJAK (${invoice.tax}%) :`}
+                  </span>
+                  <span className={cn("whitespace-nowrap font-medium", invoice.taxType === 'withholding' && "text-destructive")}>
+                    {invoice.taxType === 'withholding'
+                      ? `- ${formatCurrency(taxAmount, invoice.currency)}`
+                      : `+ ${formatCurrency(taxAmount, invoice.currency)}`}
+                  </span>
                 </div>
               ) : null}
               <div className="flex justify-between items-center gap-4 text-xl font-bold text-foreground border-t border-border pt-3 mt-3">
-                <span className="whitespace-nowrap">TOTAL :</span>
+                <span className="whitespace-nowrap">
+                  {invoice.taxType === 'withholding' ? 'TOTAL DIBAYARKAN :' : 'TOTAL :'}
+                </span>
                 <span className="whitespace-nowrap">{formatCurrency(total, invoice.currency)}</span>
               </div>
               {dpAmount > 0 && (

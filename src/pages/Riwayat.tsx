@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { formatCurrency, formatDate, calculateTotal, calculateSubtotal, InvoiceStatus } from '@/lib/invoice';
+import { formatCurrency, formatDate, calculateTotal, calculateSubtotal, calculateTaxAmount, InvoiceStatus } from '@/lib/invoice';
 import Papa from 'papaparse';
 import { cn } from '@/lib/utils';
 import InvoiceReminderBanner from '@/components/InvoiceReminderBanner';
@@ -133,26 +133,33 @@ const Riwayat = () => {
   };
 
   const handleExportCSV = () => {
-    const dataToExport = filteredInvoices.map((inv) => ({
-      'No Invoice': inv.invoiceNumber,
-      'Nama Bisnis': inv.businessName,
-      'Nama Klien': inv.clientName,
-      'Kontak Klien': inv.clientContact || '-',
-      'Tanggal Invoice': formatDate(inv.invoiceDate),
-      'Jatuh Tempo': formatDate(inv.dueDate),
-      'Mata Uang': inv.currency || 'IDR',
-      Subtotal: calculateSubtotal(inv.items),
-      'Pajak (%)': inv.tax || 0,
-      Total: calculateTotal(inv.items, inv.tax),
-      Status:
-        inv.status === 'paid'
-          ? 'Lunas'
-          : inv.status === 'paid_dp'
-            ? 'Paid DP'
-            : inv.status === 'cancelled'
-              ? 'Dibatalkan'
-              : 'Belum Lunas',
-    }));
+    const dataToExport = filteredInvoices.map((inv) => {
+      const subtotal = calculateSubtotal(inv.items);
+      const taxAmount = calculateTaxAmount(subtotal, inv.tax, inv.currency);
+      const total = calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
+      return {
+        'No Invoice': inv.invoiceNumber,
+        'Nama Bisnis': inv.businessName,
+        'Nama Klien': inv.clientName,
+        'Kontak Klien': inv.clientContact || '-',
+        'Tanggal Invoice': formatDate(inv.invoiceDate),
+        'Jatuh Tempo': formatDate(inv.dueDate),
+        'Mata Uang': inv.currency || 'IDR',
+        Subtotal: subtotal,
+        'Perlakuan Pajak': inv.taxType === 'withholding' ? 'Withholding (Dipotong)' : 'Addition (Ditambahkan)',
+        'Pajak (%)': inv.tax || 0,
+        'Nominal Pajak': inv.taxType === 'withholding' ? -taxAmount : taxAmount,
+        Total: total,
+        Status:
+          inv.status === 'paid'
+            ? 'Lunas'
+            : inv.status === 'paid_dp'
+              ? 'Paid DP'
+              : inv.status === 'cancelled'
+                ? 'Dibatalkan'
+                : 'Belum Lunas',
+      };
+    });
 
     const csv = Papa.unparse(dataToExport);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -586,7 +593,7 @@ const Riwayat = () => {
                         <div className="text-left md:text-right">
                           <p className="font-black text-lg text-primary">
                             {formatCurrency(
-                              calculateTotal(invoice.items, invoice.tax),
+                              calculateTotal(invoice.items, invoice.tax, invoice.taxType, invoice.currency),
                               invoice.currency
                             )}
                           </p>
@@ -957,7 +964,7 @@ const Riwayat = () => {
                   <p className="text-xl font-black text-primary truncate leading-none mb-2 mt-1">
                     {formatCurrency(
                       invoices.reduce((sum, i) => {
-                        if (i.status === 'paid') return sum + calculateTotal(i.items, i.tax);
+                        if (i.status === 'paid') return sum + calculateTotal(i.items, i.tax, i.taxType, i.currency);
                         if (i.status === 'paid_dp') return sum + (i.downPayment || 0);
                         return sum;
                       }, 0)

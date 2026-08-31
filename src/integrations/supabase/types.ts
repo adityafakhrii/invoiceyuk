@@ -40,6 +40,7 @@ export type Database = {
           social_media: Json | null
           status: string
           tax: number | null
+          tax_type: string | null
           template: string
           updated_at: string
           user_id: string
@@ -69,6 +70,7 @@ export type Database = {
           social_media?: Json | null
           status?: string
           tax?: number | null
+          tax_type?: string | null
           template?: string
           updated_at?: string
           user_id: string
@@ -98,6 +100,7 @@ export type Database = {
           social_media?: Json | null
           status?: string
           tax?: number | null
+          tax_type?: string | null
           template?: string
           updated_at?: string
           user_id?: string

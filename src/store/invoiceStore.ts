@@ -43,6 +43,7 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
         dueDate: inv.due_date,
         items: (inv.items as unknown) as InvoiceItem[],
         tax: inv.tax ? Number(inv.tax) : undefined,
+        taxType: ((inv as any).tax_type as Invoice['taxType']) || ((inv.payment_info as any)?._tax_type as Invoice['taxType']) || 'addition',
         notes: inv.notes || undefined,
         paymentInfo: (inv.payment_info as unknown) as Invoice['paymentInfo'] || undefined,
         signatureName: inv.signature_name || undefined,
@@ -68,42 +69,62 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
   addInvoice: async (invoice: Invoice, userId: string) => {
     try {
-      const { data, error } = await supabase
+      const paymentInfoWithMeta = {
+        ...(invoice.paymentInfo || {}),
+        _tax_type: invoice.taxType || 'addition',
+      };
+
+      const payload: any = {
+        user_id: userId,
+        invoice_number: invoice.invoiceNumber,
+        business_name: invoice.businessName,
+        business_logo: invoice.businessLogo || '',
+        client_name: invoice.clientName,
+        client_contact: invoice.clientContact || '',
+        client_address: invoice.clientAddress || '',
+        invoice_date: invoice.invoiceDate,
+        due_date: invoice.dueDate || null,
+        items: invoice.items as unknown as Json,
+        tax: invoice.tax || 0,
+        tax_type: invoice.taxType || 'addition',
+        notes: invoice.notes || '',
+        payment_info: paymentInfoWithMeta as unknown as Json,
+        signature_name: invoice.signatureName || '',
+        signature_image: invoice.signatureImage || '',
+        signature_font: invoice.signatureFont || '',
+        social_media: (invoice.socialMedia || {}) as unknown as Json,
+        status: invoice.status,
+        template: invoice.template,
+        category: invoice.category || '',
+        down_payment: invoice.downPayment || null,
+        dp_type: invoice.dpType || null,
+        dp_percent: invoice.dpPercent || null,
+        currency: invoice.currency || 'IDR',
+      };
+
+      let { data, error } = await supabase
         .from('invoices')
-        .insert([{
-          user_id: userId,
-          invoice_number: invoice.invoiceNumber,
-          business_name: invoice.businessName,
-          business_logo: invoice.businessLogo || '',
-          client_name: invoice.clientName,
-          client_contact: invoice.clientContact || '',
-          client_address: invoice.clientAddress || '',
-          invoice_date: invoice.invoiceDate,
-          due_date: invoice.dueDate || null,
-          items: invoice.items as unknown as Json,
-          tax: invoice.tax || 0,
-          notes: invoice.notes || '',
-          payment_info: (invoice.paymentInfo || {}) as unknown as Json,
-          signature_name: invoice.signatureName || '',
-          signature_image: invoice.signatureImage || '',
-          signature_font: invoice.signatureFont || '',
-          social_media: (invoice.socialMedia || {}) as unknown as Json,
-          status: invoice.status,
-          template: invoice.template,
-          category: invoice.category || '',
-          down_payment: invoice.downPayment || null,
-          dp_type: invoice.dpType || null,
-          dp_percent: invoice.dpPercent || null,
-          currency: invoice.currency || 'IDR',
-        }])
+        .insert([payload])
         .select('id')
         .single();
 
+      // Fallback if remote table does not have tax_type column yet
+      if (error && (error.message?.includes('tax_type') || (error as any).code === 'PGRST204')) {
+        delete payload.tax_type;
+        const retry = await supabase
+          .from('invoices')
+          .insert([payload])
+          .select('id')
+          .single();
+        data = retry.data;
+        error = retry.error;
+      }
+
       if (error) throw error;
 
-      const newInvoice = { ...invoice, id: data.id };
+      const newInvoice = { ...invoice, id: data!.id };
       set((state) => ({ invoices: [newInvoice, ...state.invoices] }));
-      return data.id;
+      return data!.id;
     } catch (error) {
       logErrorSecurely('addInvoice', error);
       throw error;
@@ -117,34 +138,52 @@ export const useInvoiceStore = create<InvoiceStore>()((set, get) => ({
 
       const merged = { ...currentInvoice, ...updatedInvoice };
 
-      const { error } = await supabase
+      const paymentInfoWithMeta = {
+        ...(merged.paymentInfo || {}),
+        _tax_type: merged.taxType || 'addition',
+      };
+
+      const payload: any = {
+        invoice_number: merged.invoiceNumber,
+        business_name: merged.businessName,
+        business_logo: merged.businessLogo || '',
+        client_name: merged.clientName,
+        client_contact: merged.clientContact || '',
+        client_address: merged.clientAddress || '',
+        invoice_date: merged.invoiceDate,
+        due_date: merged.dueDate || null,
+        items: merged.items as unknown as Json,
+        tax: merged.tax || 0,
+        tax_type: merged.taxType || 'addition',
+        notes: merged.notes || '',
+        payment_info: paymentInfoWithMeta as unknown as Json,
+        signature_name: merged.signatureName || '',
+        signature_image: merged.signatureImage || '',
+        signature_font: merged.signatureFont || '',
+        social_media: (merged.socialMedia || {}) as unknown as Json,
+        status: merged.status,
+        template: merged.template,
+        category: merged.category || '',
+        down_payment: merged.downPayment || null,
+        dp_type: merged.dpType || null,
+        dp_percent: merged.dpPercent || null,
+        currency: merged.currency || 'IDR',
+      };
+
+      let { error } = await supabase
         .from('invoices')
-        .update({
-          invoice_number: merged.invoiceNumber,
-          business_name: merged.businessName,
-          business_logo: merged.businessLogo || '',
-          client_name: merged.clientName,
-          client_contact: merged.clientContact || '',
-          client_address: merged.clientAddress || '',
-          invoice_date: merged.invoiceDate,
-          due_date: merged.dueDate || null,
-          items: merged.items as unknown as Json,
-          tax: merged.tax || 0,
-          notes: merged.notes || '',
-          payment_info: (merged.paymentInfo || {}) as unknown as Json,
-          signature_name: merged.signatureName || '',
-          signature_image: merged.signatureImage || '',
-          signature_font: merged.signatureFont || '',
-          social_media: (merged.socialMedia || {}) as unknown as Json,
-          status: merged.status,
-          template: merged.template,
-          category: merged.category || '',
-          down_payment: merged.downPayment || null,
-          dp_type: merged.dpType || null,
-          dp_percent: merged.dpPercent || null,
-          currency: merged.currency || 'IDR',
-        })
+        .update(payload)
         .eq('id', id);
+
+      // Fallback if remote table does not have tax_type column yet
+      if (error && (error.message?.includes('tax_type') || (error as any).code === 'PGRST204')) {
+        delete payload.tax_type;
+        const retry = await supabase
+          .from('invoices')
+          .update(payload)
+          .eq('id', id);
+        error = retry.error;
+      }
 
       if (error) throw error;
 

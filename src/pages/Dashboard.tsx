@@ -66,7 +66,7 @@ const Dashboard = () => {
 
   const totalRevenue = useMemo(() => {
     return invoices.reduce((sum, inv) => {
-      if (inv.status === 'paid') return sum + calculateTotal(inv.items, inv.tax);
+      if (inv.status === 'paid') return sum + calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
       if (inv.status === 'paid_dp') return sum + (inv.downPayment || 0);
       return sum;
     }, 0);
@@ -74,9 +74,9 @@ const Dashboard = () => {
 
   const outstandingRevenue = useMemo(() => {
     return invoices.reduce((sum, inv) => {
-      if (inv.status === 'unpaid') return sum + calculateTotal(inv.items, inv.tax);
+      if (inv.status === 'unpaid') return sum + calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
       if (inv.status === 'paid_dp') {
-        const total = calculateTotal(inv.items, inv.tax);
+        const total = calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
         return sum + Math.max(0, total - (inv.downPayment || 0));
       }
       return sum;
@@ -86,10 +86,10 @@ const Dashboard = () => {
   const overdueRevenue = useMemo(() => {
     return overdueInvoices.reduce((sum, inv) => {
       if (inv.status === 'paid_dp') {
-        const total = calculateTotal(inv.items, inv.tax);
+        const total = calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
         return sum + Math.max(0, total - (inv.downPayment || 0));
       }
-      return sum + calculateTotal(inv.items, inv.tax);
+      return sum + calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
     }, 0);
   }, [overdueInvoices]);
 
@@ -110,7 +110,7 @@ const Dashboard = () => {
         const d = new Date(inv.invoiceDate);
         return d.getFullYear() === currentYear && d.getMonth() === idx;
       });
-      const revenue = monthInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax), 0);
+      const revenue = monthInvoices.reduce((sum, inv) => sum + calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency), 0);
       return { name, Pendapatan: revenue };
     });
   }, [paidInvoices]);
@@ -318,7 +318,7 @@ const Dashboard = () => {
               </div>
             ) : (
               recentInvoices.map((inv) => {
-                const totalAmount = calculateTotal(inv.items, inv.tax);
+                const totalAmount = calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
                 const isOverdue = inv.status === 'unpaid' && new Date(inv.dueDate) < new Date();
                 
                 return (

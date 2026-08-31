@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, Upload, FileEdit, ArrowRight, CalendarIcon, Phone, Instagram, Mail } from 'lucide-react';
+import { Plus, Trash2, Upload, FileEdit, ArrowRight, CalendarIcon, Phone, Instagram, Mail, Percent, Calculator, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import CurrencyInput from '@/components/CurrencyInput';
 import TemplatePreview from '@/components/TemplatePreview';
 import SignatureInput from '@/components/SignatureInput';
 import { useInvoiceStore } from '@/store/invoiceStore';
@@ -17,6 +18,12 @@ import {
   getSavedBusinessNames,
   saveBusinessName,
   SignatureFont,
+  TaxType,
+  calculateSubtotal,
+  calculateTaxAmount,
+  calculateTotal,
+  calculateGrossFromNet,
+  formatCurrency,
 } from '@/lib/invoice';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -62,6 +69,8 @@ const BuatQuotation = () => {
     { id: '1', name: '', quantity: 1, price: 0 }
   ]);
   const [tax, setTax] = useState<string>('');
+  const [taxType, setTaxType] = useState<TaxType>('addition');
+  const [targetNet, setTargetNet] = useState<number>(0);
   const [notes, setNotes] = useState('Penawaran harga ini berlaku sampai tanggal yang tertera. Harga dapat berubah tanpa pemberitahuan terlebih dahulu.');
 
   // Signature
@@ -148,6 +157,8 @@ const BuatQuotation = () => {
     saveBusinessName(businessName);
     setSavedNames(getSavedBusinessNames());
 
+    const taxNum = tax ? parseFloat(tax) : undefined;
+
     const quotation: Invoice = {
       id: Date.now().toString(),
       invoiceNumber: quotationNumber, // Using invoiceNumber field for quotation number
@@ -159,7 +170,8 @@ const BuatQuotation = () => {
       invoiceDate: format(quotationDate, 'yyyy-MM-dd'),
       dueDate: validUntil ? format(validUntil, 'yyyy-MM-dd') : undefined, // Using dueDate for validUntil
       items: validItems,
-      tax: tax ? parseFloat(tax) : undefined,
+      tax: taxNum !== undefined && taxNum > 0 ? taxNum : undefined,
+      taxType: taxNum !== undefined && taxNum > 0 ? taxType : undefined,
       notes: notes || undefined,
       signatureName: signatureName || undefined,
       signatureImage: signatureImage || undefined,
@@ -439,20 +451,235 @@ const BuatQuotation = () => {
                   </Button>
                 </div>
 
-                {/* Tax */}
-                <div className="mt-6 pt-6 border-t border-border">
-                  <div className="max-w-xs space-y-2">
-                    <Label htmlFor="tax">Pajak % (Opsional)</Label>
-                    <Input
-                      id="tax"
-                      type="number"
-                      min="0"
-                      max="100"
-                      placeholder="Contoh: 11"
-                      value={tax}
-                      onChange={(e) => setTax(e.target.value)}
-                    />
+                {/* Tax & Tax Treatment */}
+                <div className="mt-8 pt-6 border-t-2 border-primary/20 space-y-6">
+                  <div>
+                    <h3 className="text-base font-black text-primary uppercase tracking-tight mb-1 flex items-center gap-2">
+                      <Percent className="w-4 h-4 text-accent" />
+                      Perhitungan Pajak (Opsional)
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Pilih apakah pajak ditambahkan ke quotation (PPN) atau dipotong dari nilai bruto (PPh / Withholding Tax).
+                    </p>
                   </div>
+
+                  <div className="grid md:grid-cols-2 gap-6 items-start">
+                    {/* Tax Percentage */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="tax">Persentase Pajak (%)</Label>
+                        {tax && parseFloat(tax) > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTax('');
+                              setTargetNet(0);
+                            }}
+                            className="text-[11px] text-muted-foreground hover:text-destructive underline"
+                          >
+                            Hapus Pajak
+                          </button>
+                        )}
+                      </div>
+                      <Input
+                        id="tax"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="Contoh: 11 atau 2.5"
+                        value={tax}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^\d.]/g, '');
+                          setTax(val);
+                        }}
+                        className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+
+                      {/* Quick Presets */}
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        <span className="text-[11px] text-muted-foreground self-center mr-1">Preset:</span>
+                        {[
+                          { label: '11% PPN', val: '11', type: 'addition' as TaxType },
+                          { label: '2.5% PPh', val: '2.5', type: 'withholding' as TaxType },
+                          { label: '2% PPh 23', val: '2', type: 'withholding' as TaxType },
+                          { label: '0.5% UMKM', val: '0.5', type: 'withholding' as TaxType },
+                        ].map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => {
+                              setTax(preset.val);
+                              setTaxType(preset.type);
+                            }}
+                            className={cn(
+                              "text-xs px-2.5 py-1 rounded-md border font-semibold transition-colors",
+                              tax === preset.val && taxType === preset.type
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/40 hover:bg-muted text-foreground border-border"
+                            )}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Tax Treatment Selection */}
+                    <div className="space-y-2">
+                      <Label>Perlakuan Pajak</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setTaxType('addition')}
+                          className={cn(
+                            "p-3 rounded-lg border-2 text-left transition-all",
+                            taxType === 'addition'
+                              ? "border-primary bg-primary/5 shadow-sm font-bold"
+                              : "border-border hover:border-primary/50 text-muted-foreground"
+                          )}
+                        >
+                          <div className="text-xs uppercase tracking-wide font-black text-foreground">
+                            Pajak Ditambahkan (+)
+                          </div>
+                          <div className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                            Total = Subtotal + Pajak (Contoh: PPN)
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setTaxType('withholding')}
+                          className={cn(
+                            "p-3 rounded-lg border-2 text-left transition-all",
+                            taxType === 'withholding'
+                              ? "border-primary bg-primary/5 shadow-sm font-bold"
+                              : "border-border hover:border-primary/50 text-muted-foreground"
+                          )}
+                        >
+                          <div className="text-xs uppercase tracking-wide font-black text-foreground">
+                            Pajak Dipotong / PPh (-)
+                          </div>
+                          <div className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                            Total = Bruto - PPh (Withholding)
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Net to Gross Calculator Box (When Withholding Tax is Selected) */}
+                  {taxType === 'withholding' && (
+                    <div className="bg-muted/30 border-2 border-dashed border-primary/40 rounded-xl p-4 md:p-5 space-y-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <Calculator className="w-4 h-4 text-accent" />
+                            <h4 className="text-sm font-black text-primary uppercase">
+                              Kalkulator Target Bersih (NET &rarr; BRUTO)
+                            </h4>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            Jika Anda ingin menerima nominal bersih tertentu, masukkan target NET di bawah untuk menghitung otomatis nominal bruto yang harus ditagih.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-12 gap-4 items-end">
+                        <div className="md:col-span-6 space-y-1.5">
+                          <Label htmlFor="targetNet" className="text-xs font-bold">
+                            Nominal yang ingin diterima (NET)
+                          </Label>
+                          <CurrencyInput
+                            value={targetNet}
+                            onChange={(val) => setTargetNet(val)}
+                            placeholder="Contoh: 1.300.000"
+                          />
+                        </div>
+
+                        {targetNet > 0 && parseFloat(tax || '0') > 0 && (
+                          <div className="md:col-span-6">
+                            {(() => {
+                              const calc = calculateGrossFromNet(targetNet, parseFloat(tax || '0'), 'IDR');
+                              return (
+                                <div className="space-y-3 bg-card p-3.5 rounded-lg border border-border">
+                                  <div className="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                      <span className="text-muted-foreground">Bruto Dihitung:</span>
+                                      <p className="font-bold text-foreground text-sm">
+                                        {formatCurrency(calc.gross, 'IDR')}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <span className="text-muted-foreground">Potongan PPh ({tax}%):</span>
+                                      <p className="font-bold text-destructive text-sm">
+                                        - {formatCurrency(calc.taxAmount, 'IDR')}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="default"
+                                    onClick={() => {
+                                      if (items.length > 0) {
+                                        const updated = [...items];
+                                        updated[0] = {
+                                          ...updated[0],
+                                          price: calc.gross,
+                                          quantity: updated[0].quantity || 1,
+                                        };
+                                        setItems(updated);
+                                        toast({
+                                          title: 'Nominal Bruto Diterapkan!',
+                                          description: `Harga ${updated[0].name || 'Item 1'} diubah menjadi ${formatCurrency(calc.gross, 'IDR')}`,
+                                        });
+                                      }
+                                    }}
+                                    className="w-full text-xs font-bold gap-1.5"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                    Terapkan Bruto ({formatCurrency(calc.gross, 'IDR')}) ke Item
+                                  </Button>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Realtime Summary Preview */}
+                  {(() => {
+                    const subtotal = calculateSubtotal(items);
+                    const taxRate = tax ? parseFloat(tax) : 0;
+                    const taxAmt = calculateTaxAmount(subtotal, taxRate, 'IDR');
+                    const total = calculateTotal(items, taxRate, taxType, 'IDR');
+
+                    return (
+                      <div className="bg-muted/40 rounded-xl p-4 border border-border space-y-2">
+                        <div className="flex justify-between items-center text-xs text-muted-foreground">
+                          <span>{taxType === 'withholding' ? 'Subtotal / Bruto :' : 'Subtotal :'}</span>
+                          <span className="font-semibold text-foreground">{formatCurrency(subtotal, 'IDR')}</span>
+                        </div>
+
+                        {taxRate > 0 && (
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-muted-foreground">
+                              {taxType === 'withholding' ? `PPh (${taxRate}%) Dipotong :` : `Pajak (${taxRate}%) Ditambahkan :`}
+                            </span>
+                            <span className={cn("font-semibold", taxType === 'withholding' ? "text-destructive" : "text-foreground")}>
+                              {taxType === 'withholding' ? `- ${formatCurrency(taxAmt, 'IDR')}` : `+ ${formatCurrency(taxAmt, 'IDR')}`}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center text-sm font-black text-primary border-t border-border pt-2 mt-2">
+                          <span>{taxType === 'withholding' ? 'TOTAL DIBAYARKAN :' : 'TOTAL QUOTATION :'}</span>
+                          <span className="text-base">{formatCurrency(total, 'IDR')}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </section>
 

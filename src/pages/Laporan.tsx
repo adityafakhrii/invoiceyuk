@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useInvoiceStore } from '@/store/invoiceStore';
 import { useAuthStore } from '@/store/authStore';
-import { formatCurrency, calculateTotal } from '@/lib/invoice';
+import { Invoice, formatCurrency, calculateTotal } from '@/lib/invoice';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
@@ -38,7 +38,7 @@ const Laporan = () => {
   }, [user, fetchInvoices, hasFetched]);
 
   const getInvPaidAmount = (inv: Invoice) => {
-    if (inv.status === 'paid') return calculateTotal(inv.items, inv.tax);
+    if (inv.status === 'paid') return calculateTotal(inv.items, inv.tax, inv.taxType, inv.currency);
     if (inv.status === 'paid_dp') return inv.downPayment || 0;
     return 0;
   };
